@@ -296,9 +296,8 @@ nav.agm-breadcrumb > ol > li > a {
   white-space: nowrap;
 }
 
-// A device details section's content starts where its heading's words start,
-// after the section's icon, and its tables run edge to edge, so their columns
-// line up with the text above them instead of adding an indent of their own.
+// A device details section's tables run edge to edge, so their columns line up
+// with the text above them instead of adding an indent of their own.
 // Their header row drops its top padding too, so a table starts as close to
 // what precedes it as any other content does.
 .agm-details-section__content .pf-v6-c-table {
@@ -366,15 +365,13 @@ nav.agm-breadcrumb > ol > li > a {
 
 // One table, so its columns line up across categories by themselves and take
 // the width their content needs. The minimum width is where it stops narrowing
-// and the box scrolls.
-.agm-entries-table .pf-v6-c-table {
-  min-width: 40rem;
-}
-
-// Inside the page box, so its first and last columns take the regular cell
-// padding rather than the wider one meant for a table against the page edge.
+// and the box scrolls. Inside the page box, its first and last columns take the
+// regular cell padding rather than the wider one meant for a table against the
+// page edge.
 .agm-entries-table .pf-v6-c-table {
   --pf-v6-c-table--cell--first-last-child--PaddingInline: var(--pf-t--global--spacer--md);
+
+  min-width: 40rem;
 }
 
 // A group of rows inside a table, under a title row naming it
@@ -472,13 +469,6 @@ nav.agm-breadcrumb > ol > li > a {
   font-family: var(--pf-t--global--font--family--mono);
   font-size: var(--agm-t--font--size--xxs);
   color: var(--pf-t--global--text--color--subtle);
-}
-
-// Except where the line is a sentence rather than a value, such as the reasons
-// the system gives for something it cannot do. Prose set in the face for values
-// reads as output to be parsed, and runs wider than it needs to.
-.agm-row-note--prose {
-  font-family: inherit;
 }
 
 // A dashed line between consecutive parts of a device sheet section, lighter

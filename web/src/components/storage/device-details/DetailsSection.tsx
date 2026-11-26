@@ -56,18 +56,8 @@ export type DetailsSectionProps = {
 export default function DetailsSection({ title, children }: DetailsSectionProps) {
   const titleId = useId();
   return (
-    <Flex
-      component="section"
-      direction={{ default: "column" }}
-      gap={{ default: "gapMd" }}
-      className="agm-details-section"
-    >
-      <Title
-        id={titleId}
-        headingLevel="h3"
-        size="md"
-        className={`agm-details-section__title ${textStyles.textColorBrand}`}
-      >
+    <Flex component="section" direction={{ default: "column" }} gap={{ default: "gapMd" }}>
+      <Title id={titleId} headingLevel="h3" size="md" className={textStyles.textColorBrand}>
         {title}
       </Title>
       <Flex

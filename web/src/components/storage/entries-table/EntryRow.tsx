@@ -73,10 +73,7 @@ export default function EntryRow({
     open !== null && open.collection === subject.collection && open.index === subject.index;
 
   return (
-    <Tr
-      className={css("agm-entries-table__row", isIdle && "agm-entries-table__row--idle")}
-      isRowSelected={isOpen}
-    >
+    <Tr className={css(isIdle && "agm-entries-table__row--idle")} isRowSelected={isOpen}>
       <Th scope="row" dataLabel={columnName("device")}>
         <Stack>
           <StackItem>
