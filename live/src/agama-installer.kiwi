@@ -179,6 +179,18 @@
         <package name="gnome-session-wayland" arch="aarch64,x86_64,ppc64le,s390x,riscv64"/>
         <package name="gnome-kiosk" arch="aarch64,x86_64,ppc64le,s390x,riscv64"/>
         <package name="spice-vdagent" arch="aarch64,x86_64,ppc64le,s390x,riscv64"/>
+        <!-- a11y packages -->
+        <package name="orca" arch="aarch64,x86_64,ppc64le,s390x,riscv64"/>
+        <package name="at-spi2-core" arch="aarch64,x86_64,ppc64le,s390x,riscv64"/>
+        <package name="speech-dispatcher" arch="aarch64,x86_64,ppc64le,s390x,riscv64"/>
+        <package name="speech-dispatcher-module-espeak" arch="aarch64,x86_64,ppc64le,s390x,riscv64"/>
+        <!-- needed for Orca/speech-dispatcher to produce sound, do not rely on
+        them being pulled in transitively by some other package -->
+        <package name="alsa" arch="aarch64,x86_64,ppc64le,s390x,riscv64"/>
+        <package name="alsa-utils" arch="aarch64,x86_64,ppc64le,s390x,riscv64"/>
+        <package name="alsa-ucm-conf" arch="aarch64,x86_64,ppc64le,s390x,riscv64"/>
+        <!-- braille display support -->
+        <package name="brltty" arch="aarch64,x86_64,ppc64le,s390x,riscv64"/>
     </packages>
 
     <!-- common packages for openSUSE Tumbleweed and Leap distributions -->

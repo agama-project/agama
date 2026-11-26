@@ -44,7 +44,7 @@ mod tests {
     use tokio::sync::broadcast;
 
     fn build_question_spec() -> QuestionSpec {
-        QuestionSpec::new("Do you want to continue?", "continue")
+        QuestionSpec::new("Unknown error", "Do you want to continue?", "continue")
             .with_action_ids(&[gettext_noop("Yes"), gettext_noop("No")])
             .with_default_action("No")
     }

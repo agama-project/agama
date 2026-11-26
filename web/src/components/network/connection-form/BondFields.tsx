@@ -38,6 +38,8 @@ const bondModeOptions = () =>
 
 type BondFieldsProps = {
   isEditing?: boolean;
+  /** Names of the devices that cannot be a port, besides the loopback. */
+  excludedDevices?: string[];
 };
 
 /**
@@ -52,8 +54,9 @@ const BondFields = withForm({
   ...defaultOptions,
   props: {
     isEditing: false,
+    excludedDevices: [],
   } as BondFieldsProps,
-  render: function Render({ form, isEditing }) {
+  render: function Render({ form, isEditing, excludedDevices }) {
     return (
       <>
         <form.AppField name="bondIface">
@@ -102,6 +105,7 @@ const BondFields = withForm({
         <PortsField
           form={form}
           name="bondPorts"
+          excludedDevices={excludedDevices}
           controllerField="bondIface"
           label={
             // TRANSLATORS: label for the bond ports field.

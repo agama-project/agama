@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
 import {
   Connection,
@@ -62,6 +62,7 @@ const mockDevice2 = {
 const mockMutateAsync = jest.fn().mockResolvedValue({});
 const mockUseConfig = jest.fn().mockReturnValue({ connections: [] });
 const mockUseSystem = jest.fn().mockReturnValue({ connections: [] });
+const mockUseDevices = jest.fn().mockReturnValue([mockLoopback, mockDevice1, mockDevice2]);
 
 jest.mock("~/hooks/model/config/network", () => ({
   useConnectionMutation: () => ({ mutateAsync: mockMutateAsync }),
@@ -69,7 +70,7 @@ jest.mock("~/hooks/model/config/network", () => ({
 }));
 
 jest.mock("~/hooks/model/system/network", () => ({
-  useDevices: () => [mockLoopback, mockDevice1, mockDevice2],
+  useDevices: () => mockUseDevices(),
   useConnections: () => [],
   useSystem: () => mockUseSystem(),
 }));
@@ -574,6 +575,124 @@ describe("ConnectionForm", () => {
           expect.objectContaining({ id: "eth0", nameservers: ["8.8.8.8"] }),
         ),
       );
+    });
+  });
+
+  describe("when editing a port of a bond or a bridge", () => {
+    beforeEach(() => {
+      mockParams({ id: "eth0" });
+      mockUseSystem.mockReturnValue({
+        connections: [
+          buildConnection("bond0", {
+            interface: "bond0",
+            bond: { mode: "active-backup", options: "", ports: [buildConnection("eth0")] },
+          }),
+        ],
+      });
+    });
+
+    afterEach(() => {
+      mockUseConfig.mockReturnValue({ connections: [] });
+    });
+
+    it("does not show the IP and DNS settings", () => {
+      installerRender(<ConnectionForm />);
+      expect(screen.queryByText("IPv4 Settings")).not.toBeInTheDocument();
+      expect(screen.queryByText("IPv6 Settings")).not.toBeInTheDocument();
+      expect(screen.queryByText("Use custom DNS servers")).not.toBeInTheDocument();
+      expect(screen.queryByText("Use custom DNS search domains")).not.toBeInTheDocument();
+    });
+
+    it("submits the port without IP settings, even the ones the config had", async () => {
+      mockUseConfig.mockReturnValue({
+        connections: [
+          buildConnection("bond0", {
+            interface: "bond0",
+            bond: {
+              mode: "active-backup",
+              options: "",
+              ports: [buildConnection("eth0", { method4: "manual", nameservers: ["8.8.8.8"] })],
+            },
+          }),
+        ],
+      });
+      const { user } = installerRender(<ConnectionForm />);
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+      await waitFor(() => expect(mockMutateAsync).toHaveBeenCalled());
+
+      const payload = mockMutateAsync.mock.calls[0][0];
+      expect(payload.id).toBe("eth0");
+      expect(payload.toApi()).not.toHaveProperty("method4");
+      expect(payload.nameservers).toEqual([]);
+    });
+
+    it("shows the IP settings when the config moved it out of its controller", () => {
+      mockUseConfig.mockReturnValue({
+        connections: [
+          buildConnection("bond0", {
+            interface: "bond0",
+            bond: { mode: "active-backup", options: "", ports: [] },
+          }),
+          buildConnection("eth0"),
+        ],
+      });
+      installerRender(<ConnectionForm />);
+      screen.getByText("IPv4 Settings");
+    });
+  });
+
+  describe("when editing a bond that is a port of a bridge", () => {
+    const bondDevice = (name: string, connection: string) => ({
+      ...mockDevice1,
+      name,
+      connection,
+      type: CONNECTION_TYPE.BOND,
+    });
+
+    beforeEach(() => {
+      mockParams({ id: "bond0" });
+      mockUseDevices.mockReturnValue([
+        { ...mockDevice1, connection: "enp1s0" },
+        { ...mockDevice2, connection: "enp2s0" },
+        bondDevice("bond0", "bond0"),
+        // The device of a bridge whose connection is not bound to an interface.
+        bondDevice("br0", "Bridge 1"),
+      ]);
+      mockUseSystem.mockReturnValue({
+        connections: [
+          buildConnection("Bridge 1", {
+            bridge: {
+              portConnections: [
+                {
+                  id: "bond0",
+                  interface: "bond0",
+                  bond: {
+                    mode: "active-backup",
+                    options: "",
+                    portConnections: [{ id: "enp1s0", interface: "enp1s0" }],
+                  },
+                },
+              ],
+            },
+          }),
+        ],
+      });
+    });
+
+    afterEach(() => {
+      mockUseDevices.mockReturnValue([mockLoopback, mockDevice1, mockDevice2]);
+    });
+
+    it("does not offer the bond itself nor its bridge as ports", async () => {
+      const { user } = installerRender(<ConnectionForm />);
+
+      await screen.findByLabelText("Bond mode");
+      await user.click(screen.getByRole("button", { name: "Show options" }));
+      const list = within(screen.getByRole("listbox", { name: "Bond ports" }));
+      list.getByRole("option", { name: /enp1s0/ });
+      list.getByRole("option", { name: /enp2s0/ });
+      expect(list.queryByRole("option", { name: /bond0/ })).not.toBeInTheDocument();
+      expect(list.queryByRole("option", { name: /br0/ })).not.toBeInTheDocument();
     });
   });
 

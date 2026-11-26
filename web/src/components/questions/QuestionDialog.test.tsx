@@ -32,6 +32,7 @@ let question: Question;
 const questionMock: Question = {
   id: 1,
   class: "none",
+  title: "Question",
   text: "Do you want to proceed?",
   field: { type: FieldType.None },
   actions: [

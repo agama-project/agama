@@ -31,6 +31,7 @@ import {
 import { Link } from "~/components/core";
 import Page from "~/components/layout/Page";
 import { useConnections } from "~/hooks/model/proposal/network";
+import { controllerConnection } from "~/types/network";
 import { _ } from "~/i18n";
 import { SYSTEM_QUERY_KEY } from "~/hooks/model/system";
 import { sprintf } from "sprintf-js";
@@ -71,6 +72,8 @@ export default function ConnectionPage() {
   const { id } = useParams();
   const connections = useConnections();
   const connection = connections.find((c) => c.id === id);
+  // The connections include the ports nested in bonds and bridges.
+  const controller = connection && controllerConnection(connections, connection);
 
   return (
     <Page
@@ -80,7 +83,7 @@ export default function ConnectionPage() {
       <Page.Content>
         <NoPersistentConnectionsAlert />
         {connection ? (
-          <ConnectionDetails connection={connection} />
+          <ConnectionDetails connection={connection} controller={controller} />
         ) : (
           <ConnectionNotFound id={id} />
         )}

@@ -75,11 +75,7 @@ export default function UnsupportedAutoYaST({
   const unsupported = question.data.unsupported ? question.data.unsupported.split(",") : [];
 
   return (
-    <QuestionDialog
-      question={question}
-      answerCallback={answerCallback}
-      title={_("Unsupported AutoYaST elements")}
-    >
+    <QuestionDialog question={question} answerCallback={answerCallback} title={question.title}>
       <Stack hasGutter>
         <Content>{_("Some of the elements in your AutoYaST profile are not supported.")}</Content>
         <Grid hasGutter>
@@ -104,7 +100,8 @@ export default function UnsupportedAutoYaST({
           {/* gettext v0.26 does not handle correctly escaped single quote inside */}
           {/* a single quote string ('foo\'s') so split it into several parts */}
           {_(
-            'If you want to disable this check, please specify "inst.ay_check=0" at kernel\'s command-line',
+            'If you want to disable this check, please specify "inst.ay_check=0" at ' +
+              "kernel's command-line",
           )}
         </Content>
       </Stack>

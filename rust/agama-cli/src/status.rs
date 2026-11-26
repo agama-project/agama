@@ -179,9 +179,10 @@ mod tests {
     #[test]
     fn test_from_status_question() {
         let mut status = default_status();
-        status
-            .questions
-            .push(Question::new(1, QuestionSpec::new("text", "class")));
+        status.questions.push(Question::new(
+            1,
+            QuestionSpec::new("title", "text", "class"),
+        ));
         assert_eq!(
             InstallationEnum::from_status(&status),
             InstallationEnum::Question
@@ -277,9 +278,10 @@ mod tests {
             scope: Scope::Manager,
             issue: Issue::new("class", "description"),
         });
-        status
-            .questions
-            .push(Question::new(1, QuestionSpec::new("text", "class")));
+        status.questions.push(Question::new(
+            1,
+            QuestionSpec::new("title", "text", "class"),
+        ));
 
         // Precedence 1: Question over issues and proposin
         assert_eq!(
@@ -319,7 +321,7 @@ mod tests {
         });
         status.questions.push(Question::new(
             1,
-            QuestionSpec::new("What is your name?", "class2"),
+            QuestionSpec::new("User", "What is your name?", "class2"),
         ));
         let report = StatusReport::new(status);
         let output = report.to_string();

@@ -30,11 +30,11 @@ fn test_connection_match_settings_conversion() {
         path: vec!["pci-0000:00:1f.6".to_string()],
         kernel: vec!["eth*".to_string()],
     };
-    let net_conn = NetworkConnection {
+    let net_conn = NetworkConnection::from(ConnectionCommon {
         id: "eth0".to_string(),
         match_settings: Some(match_settings),
         ..Default::default()
-    };
+    });
 
     // NetworkConnection -> Connection
     let conn = Connection::try_from(net_conn.clone()).unwrap();
@@ -45,7 +45,10 @@ fn test_connection_match_settings_conversion() {
 
     // Connection -> NetworkConnection
     let net_conn2 = NetworkConnection::try_from(conn).unwrap();
-    assert_eq!(net_conn.match_settings, net_conn2.match_settings);
+    assert_eq!(
+        net_conn.common.match_settings,
+        net_conn2.common.match_settings
+    );
 }
 
 #[test]
@@ -105,8 +108,14 @@ fn test_update_state_optimized() {
 
     // Initial config
     let net_conn = NetworkConnection {
-        id: "eth0".to_string(),
-        method4: Some(Ipv4Method::Manual),
+        common: ConnectionCommon {
+            id: "eth0".to_string(),
+            ..Default::default()
+        },
+        ip: IpSettings {
+            method4: Some(Ipv4Method::Manual),
+            ..Default::default()
+        },
         ..Default::default()
     };
     let config = Config {
@@ -123,6 +132,7 @@ fn test_update_state_optimized() {
             .as_ref()
             .unwrap()
             .0[0]
+            .ip
             .method4,
         Some(Ipv4Method::Manual)
     );
@@ -148,8 +158,14 @@ fn test_update_state_optimized() {
 
     // Update with DIFFERENT config
     let net_conn_diff = NetworkConnection {
-        id: "eth0".to_string(),
-        method4: Some(Ipv4Method::Auto),
+        common: ConnectionCommon {
+            id: "eth0".to_string(),
+            ..Default::default()
+        },
+        ip: IpSettings {
+            method4: Some(Ipv4Method::Auto),
+            ..Default::default()
+        },
         ..Default::default()
     };
     let config3 = Config {
@@ -168,13 +184,25 @@ fn test_update_state_optimized() {
 fn test_changed_connections() {
     let mut state = NetworkState::default();
     let conn1 = NetworkConnection {
-        id: "eth1".to_string(),
-        method4: Some(Ipv4Method::Auto),
+        common: ConnectionCommon {
+            id: "eth1".to_string(),
+            ..Default::default()
+        },
+        ip: IpSettings {
+            method4: Some(Ipv4Method::Auto),
+            ..Default::default()
+        },
         ..Default::default()
     };
     let conn2 = NetworkConnection {
-        id: "eth2".to_string(),
-        method4: Some(Ipv4Method::Manual),
+        common: ConnectionCommon {
+            id: "eth2".to_string(),
+            ..Default::default()
+        },
+        ip: IpSettings {
+            method4: Some(Ipv4Method::Manual),
+            ..Default::default()
+        },
         ..Default::default()
     };
 
@@ -196,20 +224,26 @@ fn test_changed_connections() {
 
     // One changed, one new
     let conn1_mod = NetworkConnection {
-        id: "eth1".to_string(),
-        method4: Some(Ipv4Method::Manual),
+        common: ConnectionCommon {
+            id: "eth1".to_string(),
+            ..Default::default()
+        },
+        ip: IpSettings {
+            method4: Some(Ipv4Method::Manual),
+            ..Default::default()
+        },
         ..Default::default()
     };
-    let conn3 = NetworkConnection {
+    let conn3 = NetworkConnection::from(ConnectionCommon {
         id: "eth3".to_string(),
         ..Default::default()
-    };
+    });
     let collection =
         NetworkConnectionsCollection(vec![conn1_mod.clone(), conn2.clone(), conn3.clone()]);
     let changed = state.changed_connections(&collection);
     assert_eq!(changed.len(), 2);
-    assert!(changed.iter().any(|c| c.id == "eth1"));
-    assert!(changed.iter().any(|c| c.id == "eth3"));
+    assert!(changed.iter().any(|c| c.common.id == "eth1"));
+    assert!(changed.iter().any(|c| c.common.id == "eth3"));
 }
 
 #[test]

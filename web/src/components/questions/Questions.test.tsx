@@ -41,10 +41,6 @@ jest.mock("~/components/questions/LoadConfigRetryQuestion", () => () => (
   <div>LoadConfigRetryQuestion mock</div>
 ));
 
-jest.mock("~/components/questions/StorageCommitErrorQuestion", () => () => (
-  <div>StorageCommitErrorQuestion mock</div>
-));
-
 jest.mock("~/api", () => ({
   ...jest.requireActual("~/api"),
   patchQuestion: (...args) => mockPatchQuestionFn(...args),
@@ -53,6 +49,7 @@ jest.mock("~/api", () => ({
 const genericQuestion: Question = {
   id: 1,
   class: "generic",
+  title: "Question",
   text: "Do you write unit tests?",
   field: { type: FieldType.None },
   actions: [
@@ -66,6 +63,7 @@ const genericQuestion: Question = {
 const passwordQuestion: Question = {
   id: 2,
   class: "password",
+  title: "Password",
   text: "Please, introduce the password",
   field: { type: FieldType.Password },
   actions: [
@@ -78,6 +76,7 @@ const passwordQuestion: Question = {
 const luksActivationQuestion: Question = {
   id: 3,
   class: "luksActivation",
+  title: "LUKS activation",
   text: "Password to decrypt the device",
   field: { type: FieldType.Password },
   actions: [
@@ -90,6 +89,7 @@ const luksActivationQuestion: Question = {
 const loadConfigurationQuestion: Question = {
   id: 4,
   class: "loadConfigError",
+  title: "Configuration error",
   text: "Do you want to retry loading the configuration?",
   field: { type: FieldType.None },
   actions: [
@@ -97,18 +97,6 @@ const loadConfigurationQuestion: Question = {
     { id: "no", label: "No" },
   ],
   defaultAction: "no",
-};
-
-const storageCommitErrorQuestion: Question = {
-  id: 5,
-  class: "storageCommitError",
-  text: "Storage configuration could not be applied. Do you want to retry?",
-  field: { type: FieldType.None },
-  actions: [
-    { id: "retry", label: "Retry" },
-    { id: "cancel", label: "Cancel" },
-  ],
-  defaultAction: "cancel",
 };
 
 describe("Questions", () => {
@@ -187,17 +175,6 @@ describe("Questions", () => {
     it("renders a LoadConfigRetryQuestion component", () => {
       installerRender(<Questions />);
       screen.getByText("LoadConfigRetryQuestion mock");
-    });
-  });
-
-  describe("when there is a storage commit error question pending", () => {
-    beforeEach(() => {
-      mockQuestions([storageCommitErrorQuestion]);
-    });
-
-    it("renders a StorageCommitErrorQuestion component", () => {
-      installerRender(<Questions />);
-      screen.getByText("StorageCommitErrorQuestion mock");
     });
   });
 });

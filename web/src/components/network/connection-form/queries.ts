@@ -33,16 +33,19 @@ import { useConfig } from "~/hooks/model/config/network";
 import { useSystem, useDevices } from "~/hooks/model/system/network";
 import { extendCollection } from "~/utils";
 
+import { controllerConnection, flattenConnections, isPort } from "~/types/network";
+
 import type { Connection, Device } from "~/types/network";
 
 /**
- * System connections available to the form, excluding removed ones.
+ * System connections available to the form, excluding removed ones and
+ * including the ports nested in bonds and bridges.
  *
  * Used to generate non-colliding names for new connections.
  */
 export function useSystemConnections(): Connection[] {
   const { connections = [] } = useSystem();
-  return connections.filter((c) => c.status !== "removed");
+  return flattenConnections(connections).filter((c) => c.status !== "removed");
 }
 
 /**
@@ -62,6 +65,9 @@ export function useSystemConnections(): Connection[] {
  *
  * Removed connections are filtered out before merging to avoid carrying over
  * stale entries that may still exist in persisted config or system state.
+ *
+ * Both sides are flattened first, so a port nested in a bond or a bridge can be
+ * edited like any other connection.
  */
 export function useInitialConnection(): Connection | null {
   const { id } = useParams();
@@ -69,11 +75,76 @@ export function useInitialConnection(): Connection | null {
   const systemConns = useSystemConnections();
 
   const { all: connections } = extendCollection(
-    configConns.filter((c) => c.status !== "removed"),
+    flattenConnections(configConns).filter((c) => c.status !== "removed"),
     { with: systemConns, mergeArrays: true },
   );
 
   return connections.find((c) => c.id === id) ?? null;
+}
+
+/**
+ * Connections that decide the controllers of the connection being edited.
+ *
+ * The config decides for a connection it knows about, since a port may have
+ * been moved out of its controller or into another one there. The system
+ * decides otherwise.
+ */
+function useControllerScope(): Connection[] {
+  const { id } = useParams();
+  const { connections: configConns = [] } = useConfig();
+  const systemConns = useSystemConnections();
+
+  const known = flattenConnections(configConns).some((c) => c.id === id);
+  return known ? configConns : systemConns;
+}
+
+/**
+ * Whether the connection being edited is a port of a bond or a bridge.
+ *
+ * @see useControllerScope
+ */
+export function useIsPort(): boolean {
+  const connections = useControllerScope();
+  const connection = useInitialConnection();
+  if (!connection) return false;
+
+  return isPort(connections, connection);
+}
+
+/**
+ * Returns the names of the devices that cannot be a port of the given
+ * connection: its own device and the devices of the controllers above it, as
+ * any of them would make a loop.
+ *
+ * A device is told by its name, the interface of the connection, or by the
+ * connection it runs.
+ */
+export function selfAndControllerDevices(
+  devices: Device[],
+  connections: Connection[],
+  connection: Connection | null,
+): string[] {
+  const ids = new Set<string>();
+  const ifaces = new Set<string>();
+  let current = connection;
+
+  // Following the controllers up, guarding against a loop of them.
+  while (current && !ids.has(current.id)) {
+    ids.add(current.id);
+    if (current.iface) ifaces.add(current.iface);
+    current = controllerConnection(connections, current);
+  }
+
+  return devices.filter((d) => ifaces.has(d.name) || ids.has(d.connection)).map((d) => d.name);
+}
+
+/**
+ * Names of the devices that cannot be a port of the connection being edited.
+ *
+ * @see selfAndControllerDevices
+ */
+export function useNonPortDevices(): string[] {
+  return selfAndControllerDevices(useDevices(), useControllerScope(), useInitialConnection());
 }
 
 /**
@@ -84,7 +155,10 @@ export function useInitialConnection(): Connection | null {
  */
 export type ConnectionFormContentQuery = {
   initialConnection: Connection | null;
+  isPort: boolean;
   devices: Device[];
+  /** Names of the devices that cannot be a port of the connection. */
+  nonPortDevices: string[];
   systemConnections: Connection[];
 };
 
@@ -95,7 +169,9 @@ export type ConnectionFormContentQuery = {
 export function useConnectionFormContentQuery(): ConnectionFormContentQuery {
   return {
     initialConnection: useInitialConnection(),
+    isPort: useIsPort(),
     devices: useDevices(),
+    nonPortDevices: useNonPortDevices(),
     systemConnections: useSystemConnections(),
   };
 }
