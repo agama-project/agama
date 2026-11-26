@@ -27,26 +27,23 @@ import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 const TitleIdContext = createContext<string | undefined>(undefined);
 
 /**
- * Returns the id of the title of the section the caller is in, or undefined
- * outside any section. Useful to name something after the section, as in
- * `aria-labelledby={useDetailsSectionTitleId()}`.
+ * The id of the enclosing section title, or undefined outside a section. Use it
+ * to name something after the section, with `aria-labelledby`.
  */
 export function useDetailsSectionTitleId() {
   return useContext(TitleIdContext);
 }
 
 export type DetailsSectionProps = {
-  /** What the section holds, such as "Current content". */
+  /** The section title, such as "Current content". */
   title: React.ReactNode;
-  /** What the section shows, such as a table or a sentence. */
+  /** The section content. */
   children: React.ReactNode;
 };
 
 /**
- * A part of the device details under its own heading.
- *
- * The heading is one level under the panel title, so screen reader users can
- * jump between the parts of the panel the same way sighted users scan them.
+ * A section of the device details, with a heading one level under the panel
+ * title.
  *
  * @example
  * <DetailsSection title={_("Current content")}>

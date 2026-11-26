@@ -38,28 +38,17 @@ import type { Related } from "~/components/storage/shared/users";
 
 export type PropertiesSectionProps = {
   entry: Entry;
-  /** Where the entry is written, which is how its edit form is addressed. */
+  /** Where the volume group is in the configuration. */
   subject: DetailsSubject;
 };
 
 /**
- * What defines a volume group the installation creates, and the way to change
- * it.
+ * The properties of a volume group the installation creates: the devices its
+ * physical volumes come from, each a link to its panel, and a link to the form
+ * changing them.
  *
- * A volume group being created is not a piece of hardware: it is defined by
- * the devices it takes its room from and a few decisions about how to use
- * them. That is neither what it holds today, since it holds nothing yet, nor
- * what the installation creates in it, so it gets a section of its own.
- *
- * It says where the physical volumes come from in one sentence, with each
- * device a way to its own panel, and the link to the form that changes it
- * comes after. Only what that form can change is said here: the group's name
- * is already in the panel's heading and its row, and other settings the form
- * does not offer would be a summary the reader cannot act on.
- *
- * @todo The section's heading reads "Properties". Other names considered, to
- * revisit once the same section serves a RAID too: "Settings", "Definition",
- * "Setup".
+ * @todo Revisit the "Properties" heading once a RAID uses this section too:
+ * "Settings", "Definition" and "Setup" were also considered.
  */
 export default function PropertiesSection({ entry, subject }: PropertiesSectionProps) {
   const config = useConfigModel();
@@ -75,17 +64,12 @@ export default function PropertiesSection({ entry, subject }: PropertiesSectionP
       <FlexItem component="p">
         {sources.length ? (
           <Interpolate
-            // TRANSLATORS: says where an LVM volume group being created gets its
-            // physical volumes: partitions created on these disks. %s is a
-            // list of disks, such as "vdb, vdc and vdd", each a link to its
-            // panel.
+            // TRANSLATORS: %s is a list of disks, such as "vdb, vdc and vdd"
             sentence={_("LVM physical volumes will be added as partitions on %s.")}
           >
             {() => <RelatedNames items={sources} />}
           </Interpolate>
         ) : (
-          // TRANSLATORS: said of an LVM volume group with no disk chosen for it
-          // yet.
           _("No device chosen yet for its physical volumes.")
         )}
       </FlexItem>
@@ -96,11 +80,7 @@ export default function PropertiesSection({ entry, subject }: PropertiesSectionP
           variant="link"
           isInline
         >
-          {
-            // TRANSLATORS: offered inside an LVM volume group's panel: change
-            // which disks it is built on and how it uses them.
-            _("Edit the volume group")
-          }
+          {_("Edit the volume group")}
         </Link>
       </FlexItem>
     </Flex>

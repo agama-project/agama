@@ -80,7 +80,7 @@ function rowsOf(entry: Entry): Row[] {
 /**
  * Whether the device will contain partitions or logical volumes.
  *
- * TODO: this is COMPLETELY misplaced here.
+ * TODO: move to the model.
  */
 export function hasCurrentContent(entry: Entry): boolean {
   return rowsOf(entry).length > 0;
@@ -244,8 +244,8 @@ function statusFor(
       }
 
       return {
-        // TRANSLATORS: action for an existing partition: make it smaller if room is
-        // needed, keeping its data
+        // TRANSLATORS: action for an existing partition: make it smaller if room is needed, keeping
+        // its data
         text: _("Shrink if needed"),
         destroys: false,
         note: recoverable
@@ -427,7 +427,7 @@ export default function CurrentContentSection({
   );
 
   const someReused = entries.some((e) => e.name && e.mountPath);
-  /* Only where the partitions are the reader's to decide. */
+  /* Only where each partition has its own decision. */
   const isDecidable = !fixedDecision && governed.length > 0;
 
   /* Kept in the URL, so reload, Back and shared links keep it. Closed by

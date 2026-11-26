@@ -189,8 +189,7 @@ export default function DeviceDetailsBody({
     );
   }
 
-  // If the workflow reached this point, then no usage is defined yet
-  // (not used for booting, for creating partitions neither for mounting/formatting
+  // Not used yet: neither for booting, partitions nor a file system.
 
   if (isCurrentlyPartitioned || entry.device?.filesystem) {
     return (

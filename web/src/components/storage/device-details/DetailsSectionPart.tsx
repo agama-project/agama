@@ -24,11 +24,9 @@ import React from "react";
 import { FlexItem } from "@patternfly/react-core";
 
 /**
- * One part of what a section of the device sheet says, such as a table or a
- * sentence. A dashed line separates it from the part before it.
- *
- * Parts must be siblings in a column layout: the line is only drawn between
- * consecutive ones.
+ * A part of a device details section, such as a table or a sentence, separated
+ * from the part before it by a dashed line. Parts must be siblings in a column
+ * layout.
  *
  * @example
  * <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>

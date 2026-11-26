@@ -35,7 +35,7 @@ export type ExistingContentProps = {
   isDeleted?: boolean;
 };
 
-/** A sentence whose part in brackets, the loss, is set apart. */
+/** A sentence with its bracketed part, the data loss, set apart. */
 function Deleted({ sentence }: { sentence: string }) {
   return (
     <p>
@@ -44,9 +44,7 @@ function Deleted({ sentence }: { sentence: string }) {
   );
 }
 
-/**
- * Says what is on a device today and whether the installation deletes it.
- */
+/** What is on a device and whether the installation deletes it. */
 export default function ExistingContent({ entry, isDeleted = false }: ExistingContentProps) {
   const systemDevices = useSystemDevices();
   const device = entry.device;
@@ -58,8 +56,8 @@ export default function ExistingContent({ entry, isDeleted = false }: ExistingCo
       return (
         <Deleted
           sentence={sprintf(
-            // TRANSLATORS: %s is a filesystem type like "Ext4". Keep the brackets
-            // around the words about the data loss.
+            // TRANSLATORS: %s is a filesystem type like "Ext4". Keep the brackets around the words
+            // about the data loss.
             _("%s file system: [it will be deleted and its data lost]."),
             type,
           )}
@@ -84,8 +82,8 @@ export default function ExistingContent({ entry, isDeleted = false }: ExistingCo
       return (
         <Deleted
           sentence={sprintf(
-            // TRANSLATORS: %s is an LVM volume group name, like "system". Keep the
-            // brackets around the words about the data loss.
+            // TRANSLATORS: %s is an LVM volume group name, like "system". Keep the brackets around
+            // the words about the data loss.
             _(
               "LVM physical volume: [the whole volume group %s will be deleted and its data lost].",
             ),
@@ -112,8 +110,8 @@ export default function ExistingContent({ entry, isDeleted = false }: ExistingCo
       return (
         <Deleted
           sentence={sprintf(
-            // TRANSLATORS: %s is an MD RAID name, like "md0". Keep the brackets around
-            // the words about the data loss.
+            // TRANSLATORS: %s is an MD RAID name, like "md0". Keep the brackets around the words
+            // about the data loss.
             _("Part of a RAID: [the whole RAID %s will be deleted and its data lost]."),
             formattedPath(baseName(raid.name)),
           )}

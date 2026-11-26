@@ -52,10 +52,7 @@ function summaryOf(entry: Entry): string {
   );
 }
 
-/**
- * A device the installation does not use yet: says what can be done with it
- * and offers the ways to start.
- */
+/** A device the installation does not use yet, with the ways to start using it. */
 export default function PartitionableNoContent({ entry, subject }: DeviceDetailsBodyProps) {
   const params = {
     collection: subject.collection,

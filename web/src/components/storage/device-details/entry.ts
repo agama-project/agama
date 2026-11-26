@@ -27,29 +27,21 @@ import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 import type { Storage } from "~/model/system";
 
-/** One entry of the configuration, and the machine's own view of it. */
+/** A storage configuration entry and its system device. */
 type Entry = {
-  /** What the configuration says: a partitionable device, or a volume group. */
+  /** The configuration of a partitionable device or a volume group. */
   config: Partitionable.Device | ConfigModel.VolumeGroup;
-  /** What the machine reports, where the machine has it at all. */
+  /** The system device, if it exists. */
   device: Storage.Device | null;
-  /** What the reader calls it: `sda`, or `system`. */
+  /** The name shown to the user, such as `sda` or `system`. */
   name: string;
   /** Whether it is defined here rather than found on the machine. */
   isVolumeGroup: boolean;
 };
 
 /**
- * The entry an address names, read once for whatever is showing it.
- *
- * The two kinds of entry are told apart here rather than by every reader of
- * one. Both are looked up on the machine by the same field, which for a volume
- * group is set only once the group exists; what a reader calls it is a
- * different field again, so the pair is worth resolving in one place.
- *
- * An address can name an entry the configuration no longer has, because it was
- * written down, shared, or reloaded after the plan moved on. That reads as
- * nothing rather than as an error.
+ * The entry the address names, with its system device. Null when the address
+ * names an entry the configuration no longer has.
  */
 function useEntry(selection: DetailsSubject | null): Entry | null {
   const config = useConfigModel();
