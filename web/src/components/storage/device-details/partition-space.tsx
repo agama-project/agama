@@ -97,11 +97,9 @@ const DECISION_ICONS = {
 function meaning(decision: Decision, partition: System.Device): TranslatedString {
   switch (decision) {
     case "keep":
-      // TRANSLATORS: explains keeping one partition.
-      return _("All data is kept, not used by the new system.");
+      return _("Data is kept, not used by the new system.");
     case "delete":
-      // TRANSLATORS: explains deleting one partition, and how much room that
-      // gives. %s is a size, such as "45 GiB".
+      // TRANSLATORS: %s is a size, such as "45 GiB".
       return sprintf(
         _("Data is lost, %s is freed for new partitions."),
         deviceSize(partition.block?.size),
