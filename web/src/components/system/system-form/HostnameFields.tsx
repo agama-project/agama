@@ -26,7 +26,8 @@ import Icon from "~/components/layout/Icon";
 import Interpolate from "~/components/core/Interpolate";
 import Text from "~/components/core/Text";
 import { Fieldset } from "~/components/form/Fieldset";
-import { defaultOptions, HOSTNAME_MODE } from "./fields";
+import { sprintf } from "sprintf-js";
+import { defaultOptions, HOSTNAME_MAX_LENGTH, HOSTNAME_MODE } from "./fields";
 import { withForm } from "~/hooks/form";
 import { useSystem } from "~/hooks/model/system";
 import { useAnnounce } from "~/context/announcer";
@@ -161,6 +162,12 @@ const HostnameFields = withForm({
                     <field.TextField
                       // TRANSLATORS: label for hostname input
                       label={_("Name")}
+                      helperText={sprintf(
+                        // TRANSLATORS: hint below the static hostname input, %d is replaced
+                        // with the maximum number of characters
+                        _("Use only letters, digits, hyphens and dots, up to %d characters."),
+                        HOSTNAME_MAX_LENGTH,
+                      )}
                     />
                   )}
                 </form.AppField>

@@ -75,6 +75,13 @@ describe("HostnameFields", () => {
       expect(strong).toHaveTextContent(/may change after a reboot or network update/);
     });
 
+    it("does not show the hint about valid hostnames", () => {
+      installerRender(<TestForm defaultValues={defaultValues} />);
+      expect(
+        screen.queryByText("Use only letters, digits, hyphens and dots, up to 64 characters."),
+      ).not.toBeInTheDocument();
+    });
+
     it("does not show static mode helper text", () => {
       installerRender(<TestForm defaultValues={defaultValues} />);
       expect(screen.queryByText(/will remain unchanged/)).not.toBeInTheDocument();
@@ -94,6 +101,11 @@ describe("HostnameFields", () => {
     it("shows static mode helper text", () => {
       installerRender(<TestForm defaultValues={defaultValues} />);
       screen.getByText(/will remain unchanged/);
+    });
+
+    it("tells which hostnames are valid", () => {
+      installerRender(<TestForm defaultValues={defaultValues} />);
+      screen.getByText("Use only letters, digits, hyphens and dots, up to 64 characters.");
     });
 
     it("does not show transient mode helper text", () => {

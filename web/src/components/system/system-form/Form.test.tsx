@@ -271,6 +271,50 @@ describe("SystemForm", () => {
       screen.getByText("Enter a hostname value.");
     });
 
+    describe("when the static hostname is not valid", () => {
+      it.each([
+        ["my_host", "The name has characters that are not allowed."],
+        [
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "The name cannot be longer than 64 characters.",
+        ],
+        ["host..local", "The name cannot begin or end with a dot, or have two dots in a row."],
+        ["-host.local", "Each part of the name must begin and end with a letter or a digit."],
+        [
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "Each part of the name between dots cannot be longer than 63 characters.",
+        ],
+      ])("refuses %s and keeps the hint visible", async (hostname, message) => {
+        const { user } = installerRender(<SystemForm />);
+
+        await user.click(screen.getByRole("button", { name: "Hostname Mode" }));
+        await user.click(screen.getByRole("option", { name: /Static/ }));
+
+        const hostnameInput = screen.getByRole("textbox", { name: "Name" });
+        await user.clear(hostnameInput);
+        await user.type(hostnameInput, hostname);
+        await user.click(screen.getByRole("button", { name: "Accept" }));
+
+        expect(mockPatchConfig).not.toHaveBeenCalled();
+        screen.getByText(message);
+        screen.getByText("Use only letters, digits, hyphens and dots, up to 64 characters.");
+      });
+
+      it("accepts a valid hostname", async () => {
+        const { user } = installerRender(<SystemForm />);
+
+        await user.click(screen.getByRole("button", { name: "Hostname Mode" }));
+        await user.click(screen.getByRole("option", { name: /Static/ }));
+
+        const hostnameInput = screen.getByRole("textbox", { name: "Name" });
+        await user.clear(hostnameInput);
+        await user.type(hostnameInput, "my-host.example.com");
+        await user.click(screen.getByRole("button", { name: "Accept" }));
+
+        expect(mockPatchConfig).toHaveBeenCalled();
+      });
+    });
+
     it("shows error when custom NTP mode has no servers", async () => {
       const { user } = installerRender(<SystemForm />);
 
