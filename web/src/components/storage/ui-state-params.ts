@@ -43,9 +43,6 @@
 /** Proposal page: sections currently expanded, as a set of tokens. */
 const EXPANDED = "expanded";
 
-/** Proposal page: selected tab of the settings section. */
-const SETTINGS_TAB = "settingsTab";
-
 /** Storage page: what the panel beside the page is showing. */
 const DEVICE_DETAILS = "device";
 
@@ -65,12 +62,4 @@ const ZFCP_SORT = "sortBy";
 /** iSCSI page: sorted column and direction. */
 const ISCSI_SORT = "sortBy";
 
-export {
-  EXPANDED,
-  SETTINGS_TAB,
-  DEVICE_DETAILS,
-  CURRENT_CONTENT,
-  DASD_SORT,
-  ZFCP_SORT,
-  ISCSI_SORT,
-};
+export { EXPANDED, DEVICE_DETAILS, CURRENT_CONTENT, DASD_SORT, ZFCP_SORT, ISCSI_SORT };
