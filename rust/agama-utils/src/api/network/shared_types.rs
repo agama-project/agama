@@ -153,25 +153,6 @@ impl Default for WirelessSettings {
     }
 }
 
-/// Accepts the IEEE 802.1X settings under both the "ieee8021x" and the "ieee-8021x" keys, as
-/// serde does.
-///
-/// Schemars ignores the serde aliases, so it copies the settings of the key the struct uses to
-/// the other one.
-fn ieee_8021x_alias(schema: &mut schemars::Schema) {
-    let Some(properties) = schema
-        .get_mut("properties")
-        .and_then(|properties| properties.as_object_mut())
-    else {
-        return;
-    };
-    for (key, alias) in [("ieee8021x", "ieee-8021x"), ("ieee-8021x", "ieee8021x")] {
-        if let Some(settings) = properties.get(key).cloned() {
-            properties.entry(alias).or_insert(settings);
-        }
-    }
-}
-
 fn default_wireless_security() -> String {
     "none".to_string()
 }
@@ -415,7 +396,6 @@ pub struct NetworkDevice {
 /// these settings and add their own sections.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[schemars(transform = ieee_8021x_alias)]
 pub struct ConnectionCommon {
     /// Unique identifier for the network connection
     pub id: String,
@@ -536,7 +516,6 @@ impl IpSettings {
 /// as unknown.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[schemars(transform = ieee_8021x_alias)]
 pub struct PortCommon {
     /// Unique identifier for the network connection
     ///
