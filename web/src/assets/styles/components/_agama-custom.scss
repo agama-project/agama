@@ -654,21 +654,6 @@ nav.agm-breadcrumb > ol > li > a {
   padding-inline-start: calc(var(--edge) + var(--agm-table-group--indent));
 }
 
-// Color lands on the mark, and never alone: every mark has a word beside it
-// saying the same thing. A shrink keeps its data, so its line is not colored
-// like a deletion, which is a different kind of news.
-.agm-entries-table__cost--destroys {
-  color: var(--pf-t--global--text--color--status--danger--default);
-}
-
-.agm-entries-table__cost--destroys svg {
-  color: var(--pf-t--global--icon--color--status--danger--default);
-}
-
-.agm-entries-table__cost--shrinks svg {
-  color: var(--pf-t--global--icon--color--status--warning--default);
-}
-
 // The two settings of the page's own line, side by side and no wider than
 // they need, each a mark and the phrase that changes it.
 .agm-top-line__settings {

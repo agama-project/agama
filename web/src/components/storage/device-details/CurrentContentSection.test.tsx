@@ -407,13 +407,14 @@ describe("CurrentContentSection", () => {
       const [, , action] = cellsOf("vdd2");
       within(action).getByText("Shrink if needed");
       within(action).getByText("Up to 17.5 GiB may be freed");
+      expect(within(action).queryByRole("strong")).toBeNull();
     });
 
     it("says a deleted partition is deleted, without repeating its size", async () => {
       await renderShown(<CurrentContentSection entry={entry("delete")} subject={subject} />);
 
       const [content, , action] = cellsOf("vdd1");
-      within(action).getByText("Delete");
+      expect(within(action).getByRole("strong")).toHaveTextContent("Delete");
       expect(within(action).queryByText(/will be freed/)).toBeNull();
       within(content).getByText("Windows 11");
     });
@@ -429,7 +430,7 @@ describe("CurrentContentSection", () => {
       );
 
       const [content, , action] = cellsOf("vdd3");
-      within(action).getByText('Format for "/docs"');
+      expect(within(action).getByRole("strong")).toHaveTextContent('Format for "/docs"');
       expect(within(content).queryByText("xfs")).toBeNull();
     });
 

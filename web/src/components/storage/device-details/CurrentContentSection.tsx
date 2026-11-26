@@ -27,6 +27,7 @@ import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacin
 import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
+import DataLoss from "~/components/storage/shared/DataLoss";
 import SpaceDecision from "~/components/storage/device-details/SpaceDecision";
 import { buildCurrentContentSummary } from "~/components/storage/device-details/current-content-summary";
 import Interpolate, { markerText } from "~/components/core/Interpolate";
@@ -192,10 +193,6 @@ const COLUMNS = {
   action: { hasBorderBefore: true },
 } satisfies Record<string, ColumnLook>;
 
-/* Losses are shown in the danger color of the entries table, with no extra
-   icon. */
-const DESTROYS_CLASS = "agm-entries-table__cost--destroys";
-
 /**
  * What becomes of one partition, whether that loses data, and an optional
  * note shown under it.
@@ -207,7 +204,7 @@ type Status = { text: string; destroys: boolean; note?: string };
  * - reused by the new system: mounted as is, or formatted, at its mount point;
  * - otherwise: what its space decision allows (keep, shrink if needed, delete).
  *
- * Formatting and deleting lose data, so they are flagged to be colored. Based
+ * Formatting and deleting lose data, so they are flagged to be set apart. Based
  * on the request, not on what the installer made of it.
  */
 function statusFor(
@@ -343,7 +340,7 @@ function PartitionRow({
       <Td {...columnProps(COLUMNS.action)}>
         {status && (
           <>
-            <div className={status.destroys ? DESTROYS_CLASS : undefined}>{status.text}</div>
+            {status.destroys ? <DataLoss>{status.text}</DataLoss> : status.text}
             {status.note && <div className="agm-row-note">{status.note}</div>}
           </>
         )}

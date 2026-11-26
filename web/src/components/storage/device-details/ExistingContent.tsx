@@ -22,6 +22,8 @@
 
 import React from "react";
 import { sprintf } from "sprintf-js";
+import Interpolate from "~/components/core/Interpolate";
+import DataLoss from "~/components/storage/shared/DataLoss";
 import { baseName, formattedPath, filesystemLabel } from "~/components/storage/utils";
 import { useFlattenDevices as useSystemDevices } from "~/hooks/model/system/storage";
 import { _ } from "~/i18n";
@@ -32,6 +34,15 @@ export type ExistingContentProps = {
   /** Whether the installation deletes what is on the device. */
   isDeleted?: boolean;
 };
+
+/** A sentence whose part in brackets, the loss, is set apart. */
+function Deleted({ sentence }: { sentence: string }) {
+  return (
+    <p>
+      <Interpolate sentence={sentence}>{(loss) => <DataLoss>{loss}</DataLoss>}</Interpolate>
+    </p>
+  );
+}
 
 /**
  * Says what is on a device today and whether the installation deletes it.
@@ -45,13 +56,14 @@ export default function ExistingContent({ entry, isDeleted = false }: ExistingCo
 
     if (isDeleted) {
       return (
-        <p>
-          {sprintf(
-            // TRANSLATORS: %s is a filesystem type like "Ext4" or "Btrfs"
-            _("%s file system: it will be deleted and its data lost."),
+        <Deleted
+          sentence={sprintf(
+            // TRANSLATORS: %s is a filesystem type like "Ext4". Keep the brackets
+            // around the words about the data loss.
+            _("%s file system: [it will be deleted and its data lost]."),
             type,
           )}
-        </p>
+        />
       );
     }
 
@@ -70,13 +82,16 @@ export default function ExistingContent({ entry, isDeleted = false }: ExistingCo
   if (group) {
     if (isDeleted) {
       return (
-        <p>
-          {sprintf(
-            // TRANSLATORS: %s is the name of an LVM volume group, like "system"
-            _("LVM physical volume: the whole volume group %s will be deleted and its data lost."),
+        <Deleted
+          sentence={sprintf(
+            // TRANSLATORS: %s is an LVM volume group name, like "system". Keep the
+            // brackets around the words about the data loss.
+            _(
+              "LVM physical volume: [the whole volume group %s will be deleted and its data lost].",
+            ),
             formattedPath(baseName(group.name)),
           )}
-        </p>
+        />
       );
     }
 
@@ -95,13 +110,14 @@ export default function ExistingContent({ entry, isDeleted = false }: ExistingCo
   if (raid) {
     if (isDeleted) {
       return (
-        <p>
-          {sprintf(
-            // TRANSLATORS: %s is the name of an MD RAID, like "md0".
-            _("Part of a RAID: the whole RAID %s will be deleted and its data lost."),
+        <Deleted
+          sentence={sprintf(
+            // TRANSLATORS: %s is an MD RAID name, like "md0". Keep the brackets around
+            // the words about the data loss.
+            _("Part of a RAID: [the whole RAID %s will be deleted and its data lost]."),
             formattedPath(baseName(raid.name)),
           )}
-        </p>
+        />
       );
     }
 
