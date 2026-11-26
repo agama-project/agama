@@ -45,7 +45,7 @@ const openItems = async (user) => {
   await user.click(toggle());
   return screen
     .getAllByRole("menuitem")
-    .map((item) => within(item).getByText(/^(Keep|Shrink|Delete)/).textContent);
+    .map((item) => within(item).getByText(/^(Do not modify|Shrink|Delete)/).textContent);
 };
 
 const item = (name: RegExp) => screen.getByRole("menuitem", { name });
