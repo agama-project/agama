@@ -36,7 +36,6 @@ import Article from "@icons/article.svg?component";
 import ArrowDropDown from "@icons/arrow_drop_down.svg?component";
 import Backspace from "@icons/backspace.svg?component";
 import Block from "@icons/block.svg?component";
-import ChangeCircle from "@icons/change_circle.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
 import ChevronLeft from "@icons/chevron_left.svg?component";
 import ChevronRight from "@icons/chevron_right.svg?component";
@@ -49,8 +48,6 @@ import DeleteSweep from "@icons/delete_sweep.svg?component";
 import DoNotTouch from "@icons/do_not_touch.svg?component";
 import DeployedCodeAlert from "@icons/deployed_code_alert.svg?component";
 import DeployedCodeUpdate from "@icons/deployed_code_update.svg?component";
-import DeviceHub from "@icons/device_hub.svg?component";
-import Dns from "@icons/dns.svg?component";
 import DoNotDisturbOn from "@icons/do_not_disturb_on.svg?component";
 import DoneAll from "@icons/done_all.svg?component";
 import Download from "@icons/download.svg?component";
@@ -68,11 +65,9 @@ import HomeStorage from "@icons/home_storage.svg?component";
 import HomeStorageGear from "@icons/home_storage_gear.svg?component";
 import HourglassDisabled from "@icons/hourglass_disabled.svg?component";
 import Info from "@icons/info.svg?component";
-import Inventory2 from "@icons/inventory_2.svg?component";
 import Keyboard from "@icons/keyboard.svg?component";
 import KeyboardArrowDown from "@icons/keyboard_arrow_down.svg?component";
 import Language from "@icons/language.svg?component";
-import LastPage from "@icons/last_page.svg?component";
 import LibraryAdd from "@icons/library_add.svg?component";
 import LinkOff from "@icons/link_off.svg?component";
 import ListAlt from "@icons/list_alt.svg?component";
@@ -87,24 +82,19 @@ import MoreHoriz from "@bolderIcons/more_horiz.svg?component";
 import MoreTime from "@icons/more_time.svg?component";
 import MoreVert from "@bolderIcons/more_vert.svg?component";
 import MoveDown from "@icons/move_down.svg?component";
-import NetworkNode from "@icons/network_node.svg?component";
 import NetworkWifi from "@icons/network_wifi.svg?component";
 import NetworkWifi1Bar from "@icons/network_wifi_1_bar.svg?component";
 import NetworkWifi3Bar from "@icons/network_wifi_3_bar.svg?component";
 import NotificationsActive from "@icons/notifications_active.svg?component";
 import Pending from "@icons/pending.svg?component";
-import PendingActions from "@icons/pending_actions.svg?component";
 import Report from "@icons/report.svg?component";
 import RestartAlt from "@icons/restart_alt.svg?component";
-import RightPanelOpen from "@icons/right_panel_open.svg?component";
 import RotateAuto from "@icons/rotate_auto.svg?component";
 import Routine from "@icons/routine.svg?component";
-import Schema from "@icons/schema.svg?component";
 import SearchOff from "@icons/search_off.svg?component";
 import SelectWindow from "@icons/select_window.svg?component";
 import SettingsBackupRestore from "@icons/settings_backup_restore.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
-import Stacks from "@icons/stacks.svg?component";
 import TaskAlt from "@icons/task_alt.svg?component";
 import Terminal from "@icons/terminal.svg?component";
 import TextDecrease from "@icons/text_decrease.svg?component";
@@ -130,27 +120,19 @@ const icons = {
   arrow_drop_down: ArrowDropDown,
   backspace: Backspace,
   block: Block,
-  change_circle: ChangeCircle,
   create_new_folder: CreateNewFolder,
   delete_sweep: DeleteSweep,
-  device_hub: DeviceHub,
   do_not_touch: DoNotTouch,
   check_circle: CheckCircle,
   do_not_disturb_on: DoNotDisturbOn,
   home_storage: HomeStorage,
   home_storage_gear: HomeStorageGear,
-  last_page: LastPage,
   library_add: LibraryAdd,
   link_off: LinkOff,
   lock_open: LockOpen,
-  network_node: NetworkNode,
-  pending_actions: PendingActions,
-  right_panel_open: RightPanelOpen,
-  schema: Schema,
   rotate_auto: RotateAuto,
   settings_backup_restore: SettingsBackupRestore,
   move_down: MoveDown,
-  stacks: Stacks,
   chevron_left: ChevronLeft,
   chevron_right: ChevronRight,
   clear_all: ClearAll,
@@ -169,14 +151,12 @@ const icons = {
   emergency: Emergency,
   error: Error,
   error_fill: ErrorFill,
-  dns: Dns,
   expand_circle_down: ExpandCircleDown,
   file_json: FileJson,
   fingerprint: Fingerprint,
   globe: Globe,
   hard_drive: HardDrive,
   info: Info,
-  inventory_2: Inventory2,
   keyboard: Keyboard,
   keyboard_arrow_down: KeyboardArrowDown,
   language: Language,
