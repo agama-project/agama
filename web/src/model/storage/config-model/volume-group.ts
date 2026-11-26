@@ -73,6 +73,13 @@ function filterTargetDevices(
   return candidateTargetDevices(config).filter((d) => targets.includes(d.name));
 }
 
+function filterReusedLogicalVolumes(
+  volumeGroupConfig: ConfigModel.VolumeGroup,
+): ConfigModel.LogicalVolume[] {
+  const logicalVolumes = volumeGroupConfig.logicalVolumes || [];
+  return logicalVolumes.filter(configModel.volume.isReused);
+}
+
 function add(
   config: ConfigModel.Config,
   data: Data.VolumeGroup,
@@ -242,6 +249,7 @@ export default {
   findIndex,
   findByName,
   filterTargetDevices,
+  filterReusedLogicalVolumes,
   add,
   edit,
   remove,
