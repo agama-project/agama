@@ -339,6 +339,7 @@ label.pf-m-disabled + .pf-v6-c-check__description {
 // tints any item holding focus like a hovered one, so after a click the first
 // item looks pointed at while the pointer is elsewhere. Keep the tint for the
 // keyboard, the pointer, and the item whose fly-out is open.
+// See https://github.com/patternfly/patternfly/issues/8433
 .pf-v6-c-menu__list-item:focus-within:not(
     .pf-m-focus,
     :has(:focus-visible),
