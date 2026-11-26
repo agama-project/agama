@@ -36,83 +36,70 @@ import Icon from "~/components/layout/Icon";
 import { _ } from "~/i18n";
 
 export type SidePanelProps = {
-  /** Whether the panel is showing. */
+  /** Whether the panel is open. */
   isOpen: boolean;
-  /** Closes the panel: its own control, and the Escape key. */
+  /** Called when the user closes the panel. */
   onClose: () => void;
-  /** What the panel is about, read as its heading and as the region's name. */
+  /** The panel heading, which also names the panel for assistive technologies. */
   title: React.ReactNode;
-  /** A line under the title, where the title alone leaves something to say. */
+  /** An optional line under the title. */
   description?: React.ReactNode;
-  /** Offered beside the way out, where the panel as a whole can be acted on. */
+  /** Controls shown next to the close button, such as a menu of actions. */
   actions?: React.ReactNode;
-  /** What the panel is opened over. */
+  /** The content the panel opens over. */
   page: React.ReactNode;
-  /** What the panel holds. */
+  /** The panel content. */
   children?: React.ReactNode;
   /**
-   * How many pixels below the top of the scrolling area the panel stays as the
-   * page scrolls, to leave room for something the page keeps in sight there.
-   * 0 if not given.
+   * Distance in pixels between the top of the scrolling area and the panel as
+   * the page scrolls, to keep the panel below content that stays in view.
+   * Defaults to 0.
    */
   pinnedOffset?: number;
   /**
-   * Lets a control that opens this panel point at it with `aria-controls`.
-   *
-   * It names an element that is always in the page, shut or open, so the
-   * reference never points at nothing.
+   * Id of the panel, for the `aria-controls` of the controls opening it. The
+   * element is rendered whether the panel is open or not.
    */
   id?: string;
   /**
-   * Where focus goes when the panel closes, looked up at that moment. Without
-   * it, or where it finds nothing, focus goes back to what had it when the
-   * panel opened.
+   * Returns the element to focus when the panel closes. Without it, or when it
+   * returns null, focus goes back to the element focused before opening.
    */
   returnFocusTo?: () => HTMLElement | null;
   /**
-   * What the panel is showing, such as a device name. A change while it is
-   * open moves the reader into it, as opening it does, so focus does not go
-   * with content that was replaced.
+   * Identifies what the panel shows, such as a device name. Changing it while
+   * the panel is open moves focus into the panel again.
    */
   subjectKey?: string;
 };
 
+/** The nearest ancestor that scrolls, where the page scrolls as a whole. */
+function scrollerOf(node: HTMLElement | null): HTMLElement | null {
+  for (let at = node?.parentElement; at; at = at.parentElement) {
+    if (/(auto|scroll)/.test(getComputedStyle(at).overflowY)) return at;
+  }
+  return null;
+}
+
 /**
- * A panel that opens over the page it belongs to, at every width.
+ * A panel with the details of an item, opened over the page it belongs to.
  *
- * What that means for a reader who is not looking at the screen is decided
- * here, once:
+ * It takes care of the accessibility of the pattern:
  *
- * - Opening it moves the reader into it, so what they asked for is what they
- *   are reading, and closing it puts them back on the control they left, or
- *   wherever the caller says the panel's subject lives on the page.
- * - The page underneath is out of reach. A panel
- *   drawn on top of a page does not remove that page from the tab order on its
- *   own, so a reader tabbing out of the panel lands on controls they cannot
- *   see, and a screen reader reads the whole covered page as though it were
- *   available.
- * - Only what it covers is out of reach. Whatever lies outside it, such as the
- *   installer's header or a report placed above it, stays visible and so stays
- *   usable, and Shift+Tab from the panel reaches it. That is on purpose: the
- *   panel is part of the page, not a dialog, so it does not hold the reader
- *   in it. Taking away controls they can still see would only leave them
- *   wondering why those do not answer.
- * - Escape closes it, wherever the focus is inside it.
- * - A click on the backdrop closes it too, for
- *   readers using a mouse or touch. The backdrop stays a decoration, not
- *   a control: whoever uses a keyboard has Escape and the close button, and
- *   one more stop with no clear name would only be noise. A click counts only
- *   where both the press and the release land on the backdrop, so neither
- *   a click in a dialog opened from the panel nor a selection dragged out of
- *   it closes the panel.
- * - It is a named region, so it is one stop on a screen reader's list of
- *   landmarks rather than an unlabelled block of the page.
+ * - Opening it moves focus into it, and closing it returns focus to the
+ *   element that opened it, or to the one given by `returnFocusTo`.
+ * - The page it covers is inert: out of the tab order and hidden from screen
+ *   readers. Content outside it, such as the header or a sticky section above
+ *   it, stays usable, since the panel is part of the page and not a dialog.
+ * - Escape closes it from anywhere inside.
+ * - A click on the backdrop closes it, but only when both the press and the
+ *   release land there, so neither a text selection dragged out of the panel
+ *   nor a click in a dialog opened from it closes the panel. The backdrop is
+ *   not a Tab stop: keyboard users have Escape and the close button.
+ * - It is a landmark named after its title.
  *
- * These are correctness rather than convenience, which is why they are built in
- * rather than offered: whoever forgets them does not see what they cost.
- *
- * Motion needs nothing here. The stylesheet's reset already stops every
- * animation and transition where the reader asked for reduced motion.
+ * It stays in view while the page scrolls, `pinnedOffset` pixels below the top,
+ * and scrolls its own content.
  *
  * @example
  * <SidePanel
@@ -125,14 +112,6 @@ export type SidePanelProps = {
  *   <DeviceDetails device={device} />
  * </SidePanel>
  */
-/** The nearest ancestor that scrolls, where the page scrolls as a whole. */
-function scrollerOf(node: HTMLElement | null): HTMLElement | null {
-  for (let at = node?.parentElement; at; at = at.parentElement) {
-    if (/(auto|scroll)/.test(getComputedStyle(at).overflowY)) return at;
-  }
-  return null;
-}
-
 export default function SidePanel({
   isOpen,
   onClose,
@@ -152,12 +131,9 @@ export default function SidePanel({
   const frameId = useId();
   const [pinnedHeight, setPinnedHeight] = useState<number>();
 
-  /* The panel fits what is in view: from where it starts, under what
-     the page keeps in sight or lower while the page above has not scrolled
-     away yet, down to the bottom of the scrolling area or the end of the page
-     beside it, whichever comes first. It is worked out again as the page
-     scrolls, so the panel never sticks out of view and never makes the page
-     longer, and nothing moves the page on the reader's behalf. */
+  /* Sizes the panel to what is in view, from its top down to the bottom of
+     the scrolling area or the end of the page, whichever comes first, and
+     again on every scroll and resize. */
   useEffect(() => {
     const frame = document.getElementById(frameId);
     const scroller = scrollerOf(frame);
@@ -191,13 +167,10 @@ export default function SidePanel({
     };
   }, [isOpen, frameId, pinnedOffset]);
 
-  /* Where the reader was when they opened it, so closing it can put them back.
-     Without this a reader who closes a panel is dropped at the top of the
-     document with nothing to say what they just left. */
+  /* Where focus goes on close, read while the panel is open: by the time it
+     closes, the element it points at may be gone. */
   const returnTarget = useRef(returnFocusTo);
 
-  /* Kept from while the panel is open: by the time it closes, the caller may
-     have nothing left to point at, such as the subject it was showing. */
   useEffect(() => {
     if (isOpen) returnTarget.current = returnFocusTo;
   });
@@ -213,15 +186,9 @@ export default function SidePanel({
     };
   }, [isOpen]);
 
-  /* Once it exists, not when it is asked for: the panel is focused through the
-     node itself, so this waits for the render that creates it.
-
-     Without scrolling, which is the whole trick. A drawer lays its panel out
-     past the edge of the page and brings it into view by moving it, so the
-     panel's real position is still outside what can be seen. Focusing it the
-     ordinary way makes the browser scroll that box into view, and it scrolls to
-     where the panel is laid out rather than to where it was moved: the page
-     slides out to one side and takes the panel with it. */
+  /* Without scrolling: the drawer lays its panel out off screen and slides it
+     into view, so a regular focus would scroll the page sideways to the
+     panel's layout position. */
   useEffect(() => {
     if (isOpen && panel) panel.focus({ preventScroll: true });
   }, [isOpen, panel, subjectKey]);
@@ -259,8 +226,7 @@ export default function SidePanel({
             <FlexItem>
               <Button
                 variant="plain"
-                // TRANSLATORS: names the button that shuts the panel opened
-                // beside the page and returns the reader to it.
+                // TRANSLATORS: closes the panel opened beside the page
                 aria-label={_("Close")}
                 onClick={onClose}
               >
@@ -274,10 +240,9 @@ export default function SidePanel({
     </section>
   );
 
-  /* The backdrop is drawn over the drawer's only child, so that is what
-     a click on it lands on. Anything else is something on top of it: the
-     panel, or a dialog or menu opened from it, whose events reach here too
-     because React passes them up through portals. */
+  /* The backdrop covers the drawer's only child, so a click on it targets
+     that child. Events from the panel, or from dialogs and menus opened from
+     it, reach here too through React portals. */
   const isBackdrop = (event: React.SyntheticEvent<HTMLElement>) =>
     event.target === event.currentTarget.firstElementChild;
 
@@ -296,8 +261,7 @@ export default function SidePanel({
       onPointerDown={(event) => {
         isPressOnBackdrop.current = isOpen && isBackdrop(event);
       }}
-      /* A click lands on whatever holds both the press and the release, which
-         for a selection dragged out of the panel is the backdrop. */
+      /* A drag ending outside the panel fires its click on the backdrop. */
       onClick={(event) => {
         if (isPressOnBackdrop.current && isBackdrop(event)) onClose();
         isPressOnBackdrop.current = false;
@@ -306,13 +270,10 @@ export default function SidePanel({
       <DrawerContent
         panelContent={
           <DrawerPanelContent
-            /* On the drawer's panel rather than on the region inside it: the
-               panel is always rendered, merely hidden while shut, whereas the
-               region exists only while something is open. */
+            /* On the drawer panel, which is always rendered, so the id never
+               points at nothing. */
             id={id}
-            /* Set as a size rather than through the widths prop, whose steps
-               jump from three quarters to the whole width. The panel is what
-               the reader is in, so it takes most of the room. */
+            /* PatternFly widths jump from 75% to 100%. */
             defaultSize="75%"
             className="agm-side-panel-frame__side"
           >
