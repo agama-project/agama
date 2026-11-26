@@ -43,7 +43,7 @@ use crate::types::{
 use agama_utils::dbus::get_optional_property;
 use semver::Version;
 use uuid::Uuid;
-use zbus::zvariant::{ObjectPath, OwnedObjectPath};
+use zbus::zvariant::{ObjectPath, OwnedObjectPath, OwnedValue};
 
 /// Simplified NetworkManager D-Bus client.
 ///
@@ -524,35 +524,40 @@ impl<'a> NetworkManagerClient<'a> {
     ) -> Result<(), NmError> {
         if let ConnectionConfig::Wireless(ref mut wireless) = connection.config {
             if wireless.security == SecurityProtocol::WPA2 {
-                wireless.password =
-                    Self::get_secret(proxy, "802-11-wireless-security", "psk").await?;
+                if let Some(secrets) =
+                    Self::get_setting_secrets(proxy, "802-11-wireless-security").await
+                {
+                    wireless.password = get_optional_property(&secrets, "psk")?;
+                }
             }
         }
 
         if let Some(ref mut ieee_8021x) = connection.ieee_8021x_config {
-            ieee_8021x.password = Self::get_secret(proxy, "802-1x", "password").await?;
+            if let Some(secrets) = Self::get_setting_secrets(proxy, "802-1x").await {
+                ieee_8021x.password = get_optional_property(&secrets, "password")?;
+                ieee_8021x.ca_cert_password = get_optional_property(&secrets, "ca-cert-password")?;
+                ieee_8021x.client_cert_password =
+                    get_optional_property(&secrets, "client-cert-password")?;
+                ieee_8021x.private_key_password =
+                    get_optional_property(&secrets, "private-key-password")?;
+            }
         }
         Ok(())
     }
 
-    /// Reads a secret from the given setting of a connection.
+    /// Reads the secrets of the given setting of a connection.
     ///
     /// * `proxy`: connection proxy.
-    /// * `setting`: name of the setting holding the secret.
-    /// * `key`: name of the secret.
-    async fn get_secret(
+    /// * `setting`: name of the setting holding the secrets.
+    async fn get_setting_secrets(
         proxy: &ConnectionProxy<'_>,
         setting: &str,
-        key: &str,
-    ) -> Result<Option<String>, NmError> {
+    ) -> Option<HashMap<String, OwnedValue>> {
         match proxy.get_secrets(setting).await {
-            Ok(secrets) => match secrets.get(setting) {
-                Some(secret) => Ok(get_optional_property(secret, key)?),
-                None => Ok(None),
-            },
+            Ok(mut secrets) => secrets.remove(setting),
             Err(_) => {
                 tracing::error!("Could not read connection secrets");
-                Ok(None)
+                None
             }
         }
     }
