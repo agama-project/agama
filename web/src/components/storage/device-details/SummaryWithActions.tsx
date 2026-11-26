@@ -22,7 +22,6 @@
 
 import React from "react";
 import { Flex, FlexItem } from "@patternfly/react-core";
-import Text from "~/components/core/Text";
 
 export type SummaryWithActionsProps = {
   /** What the section has to say, in one line. */
@@ -57,9 +56,7 @@ export default function SummaryWithActions({ summary, detail, actions }: Summary
   return (
     <Flex direction={{ default: "column" }} gap={{ default: "gapMd" }}>
       <FlexItem>
-        <p>
-          <Text>{summary}</Text>
-        </p>
+        <p>{summary}</p>
         {detail && <p>{detail}</p>}
       </FlexItem>
       {actions && (

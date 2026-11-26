@@ -164,7 +164,7 @@ export default function TopLine(): React.ReactNode {
 
   /* On the same line as the settings, which it introduces. */
   const description = (
-    <FlexItem>
+    <FlexItem component="p">
       <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
         {/* TRANSLATORS: says what the storage page is for, next to the
             settings that apply to the whole installation. */}

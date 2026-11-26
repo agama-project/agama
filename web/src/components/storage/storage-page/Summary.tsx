@@ -117,8 +117,8 @@ export default function Summary(): React.ReactNode {
   useAnnounceChanges(isLossy, hasUnseenChanges, markerText(title));
 
   return (
-    <div>
+    <p>
       <Marked sentence={title} /> <Consequences />
-    </div>
+    </p>
   );
 }
