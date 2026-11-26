@@ -29,9 +29,16 @@ type RenderFunction = (text: string) => React.ReactNode;
    put the second value first, and says so by numbering the placeholders.
 
    Both are read with matchAll, which works on a copy and so never moves the
-   lastIndex of the expression it is given. */
-const PRINTF_PLACEHOLDER = /%(?:(\d+)\$)?[sdfi]/g;
+   lastIndex of the expression it is given.
+
+   The escaped percent, %%, is matched too, so that the "%s" in "%%s" is not
+   taken for a placeholder; such matches are then left out. */
+const PRINTF_PLACEHOLDER = /%(?:%|(?:(\d+)\$)?[sdfi])/g;
+const ESCAPED_PERCENT = /%%/g;
 const MARKER_PLACEHOLDER = /\[([^[\]]*)\]/g;
+
+/* Reduces each escaped percent, %%, to a single %, as printf does. */
+const unescape = (text: string) => text.replace(ESCAPED_PERCENT, "%");
 
 export type InterpolateProps = {
   /**
@@ -42,11 +49,14 @@ export type InterpolateProps = {
   /**
    * Render prop(s) called with the text extracted from the placeholder(s).
    *
-   * For printf placeholders (`%s`, `%d`, `%f`, `%i`) the render function
-   * always receives an empty string.
+   * For printf placeholders (`%s`, `%d`, `%f`, `%i`) the render function always
+   * receives an empty string.
    *
    * For `[marker]` placeholders the extracted marker text is passed to the
    * render function.
+   *
+   * A literal percent sign is written `%%`, as in C printf(), and rendered as
+   * `%`.
    *
    * Pass a single function for one placeholder, or an array of functions for
    * several. Placeholders take the functions in the order they appear, unless
@@ -79,6 +89,10 @@ export type InterpolateProps = {
  *    extracted and passed to the render function.
  *
  * Unnumbered placeholders take the render functions in the order they appear.
+ *
+ * As in C printf(), `%%` stands for a literal `%` and is rendered as one, so
+ * "100%% of %s" is a sentence with a single placeholder. It is reduced in the
+ * plain text, and in the text of a `[marker]`, whichever style is used.
  *
  * Malformed or unmatched bracket placeholders are treated as plain text. A
  * sentence with no placeholder is rendered unchanged. A broken translation,
@@ -131,7 +145,10 @@ export default function Interpolate({ sentence, children }: InterpolateProps) {
   // copy the array, it might be extended with dummy renderers below
   const renderers = Array.isArray(children) ? [...children] : [children];
 
-  const printfMatches = [...sentence.matchAll(PRINTF_PLACEHOLDER)];
+  // %% is an escaped percent, not a placeholder
+  const printfMatches = [...sentence.matchAll(PRINTF_PLACEHOLDER)].filter(
+    (match) => match[0] !== "%%",
+  );
   const markerMatches = [...sentence.matchAll(MARKER_PLACEHOLDER)];
 
   let useMarkers = markerMatches.length > 0;
@@ -148,7 +165,7 @@ export default function Interpolate({ sentence, children }: InterpolateProps) {
   const matches = useMarkers ? markerMatches : printfMatches;
 
   if (matches.length === 0) {
-    return <>{sentence}</>;
+    return <>{unescape(sentence)}</>;
   }
 
   /* A numbered placeholder names the render function that fills it, which is
@@ -197,10 +214,10 @@ export default function Interpolate({ sentence, children }: InterpolateProps) {
     const matchIndex = match.index ?? 0;
 
     // Text before placeholder
-    result.push(sentence.slice(lastIndex, matchIndex));
+    result.push(unescape(sentence.slice(lastIndex, matchIndex)));
 
     // Marker text for [text], empty string for printf
-    const content = useMarkers ? (match[1] ?? "") : "";
+    const content = useMarkers ? unescape(match[1] ?? "") : "";
     // The number says which render function fills it; %0$s names none
     const at = isNumbered ? Number(match[1]) - 1 : index;
     const render =
@@ -212,7 +229,7 @@ export default function Interpolate({ sentence, children }: InterpolateProps) {
   });
 
   // Trailing text
-  result.push(sentence.slice(lastIndex));
+  result.push(unescape(sentence.slice(lastIndex)));
 
   return <>{result}</>;
 }

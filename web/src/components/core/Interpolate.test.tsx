@@ -218,6 +218,112 @@ describe("Interpolate", () => {
     });
   });
 
+  describe("with an escaped percent", () => {
+    it("renders %% as a single % in a sentence without placeholders", () => {
+      const { container } = plainRender(
+        <Interpolate sentence="100%% done">{() => <strong>X</strong>}</Interpolate>,
+      );
+
+      expect(container.textContent).toBe("100% done");
+      expect(container.querySelector("strong")).toBeNull();
+    });
+
+    it("renders %% next to a printf placeholder", () => {
+      const { container } = plainRender(
+        <Interpolate sentence="%s is 100%% sure">{() => <strong>It</strong>}</Interpolate>,
+      );
+
+      expect(container.textContent).toBe("It is 100% sure");
+      expect(container.querySelectorAll("strong")).toHaveLength(1);
+    });
+
+    it("does not take the specifier after %% for a placeholder", () => {
+      const errorSpy = jest.spyOn(console, "error").mockImplementation();
+      const { container } = plainRender(
+        <Interpolate sentence="Write %%s for a string, %s here">
+          {() => <strong>this</strong>}
+        </Interpolate>,
+      );
+
+      expect(container.textContent).toBe("Write %s for a string, this here");
+      expect(errorSpy).not.toHaveBeenCalled();
+      errorSpy.mockRestore();
+    });
+
+    it("does not count %% as a placeholder for the render functions", () => {
+      const errorSpy = jest.spyOn(console, "error").mockImplementation();
+      const warnSpy = jest.spyOn(console, "warn").mockImplementation();
+      plainRender(<Interpolate sentence="50%% of %s">{() => <strong>x</strong>}</Interpolate>);
+
+      expect(errorSpy).not.toHaveBeenCalled();
+      expect(warnSpy).not.toHaveBeenCalled();
+      errorSpy.mockRestore();
+      warnSpy.mockRestore();
+    });
+
+    it("reads %%%s as an escaped percent followed by a placeholder", () => {
+      const { container } = plainRender(
+        <Interpolate sentence="%%%s">{() => <strong>5</strong>}</Interpolate>,
+      );
+
+      expect(container.textContent).toBe("%5");
+      expect(container.querySelector("strong")).toHaveTextContent("5");
+    });
+
+    it("reduces several %% in the same sentence", () => {
+      const { container } = plainRender(
+        <Interpolate sentence="%% and %% and %s">{() => <strong>%</strong>}</Interpolate>,
+      );
+
+      expect(container.textContent).toBe("% and % and %");
+    });
+
+    it("renders %% next to numbered placeholders", () => {
+      const { container } = plainRender(
+        <Interpolate sentence="%2$s is 100%% of %1$s">
+          {[() => <strong>system</strong>, () => <em>vdd</em>]}
+        </Interpolate>,
+      );
+
+      expect(container.textContent).toBe("vdd is 100% of system");
+    });
+
+    it("renders %% in the text around a [marker]", () => {
+      const { container } = plainRender(
+        <Interpolate sentence="100%% of [this]">{(text) => <strong>{text}</strong>}</Interpolate>,
+      );
+
+      expect(container.textContent).toBe("100% of this");
+      expect(container.querySelector("strong")).toHaveTextContent("this");
+    });
+
+    it("renders %% inside a [marker]", () => {
+      const { container } = plainRender(
+        <Interpolate sentence="Use [100%%] of it">{(text) => <strong>{text}</strong>}</Interpolate>,
+      );
+
+      expect(container.textContent).toBe("Use 100% of it");
+    });
+
+    it("does not report %% as mixed with a [marker]", () => {
+      const errorSpy = jest.spyOn(console, "error").mockImplementation();
+      plainRender(
+        <Interpolate sentence="100%% [done]">{(text) => <strong>{text}</strong>}</Interpolate>,
+      );
+
+      expect(errorSpy).not.toHaveBeenCalled();
+      errorSpy.mockRestore();
+    });
+
+    it("keeps a lone % as plain text", () => {
+      const { container } = plainRender(
+        <Interpolate sentence="50% of %s">{() => <strong>it</strong>}</Interpolate>,
+      );
+
+      expect(container.textContent).toBe("50% of it");
+    });
+  });
+
   describe("mixed placeholder styles", () => {
     let errorSpy: jest.SpyInstance;
 
