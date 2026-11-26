@@ -297,7 +297,7 @@ describe("SystemForm", () => {
 
         expect(mockPatchConfig).not.toHaveBeenCalled();
         screen.getByText(message);
-        screen.getByText("Use only letters, digits, hyphens and dots, up to 64 characters.");
+        screen.getByText("Use only letters, digits, hyphens and dots.");
       });
 
       it("accepts a valid hostname", async () => {

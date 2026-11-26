@@ -106,7 +106,7 @@ const HOSTNAME_RE =
 const HOSTNAME_CHARS_RE = /^[a-zA-Z0-9.-]+$/;
 
 /** Longest static hostname the system accepts (the kernel limit, see hostname(5)). */
-export const HOSTNAME_MAX_LENGTH = 64;
+const HOSTNAME_MAX_LENGTH = 64;
 
 /** Longest part between dots (a DNS label). */
 const HOSTNAME_PART_MAX_LENGTH = 63;

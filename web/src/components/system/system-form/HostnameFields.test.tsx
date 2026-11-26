@@ -78,7 +78,7 @@ describe("HostnameFields", () => {
     it("does not show the hint about valid hostnames", () => {
       installerRender(<TestForm defaultValues={defaultValues} />);
       expect(
-        screen.queryByText("Use only letters, digits, hyphens and dots, up to 64 characters."),
+        screen.queryByText("Use only letters, digits, hyphens and dots."),
       ).not.toBeInTheDocument();
     });
 
@@ -105,7 +105,7 @@ describe("HostnameFields", () => {
 
     it("tells which hostnames are valid", () => {
       installerRender(<TestForm defaultValues={defaultValues} />);
-      screen.getByText("Use only letters, digits, hyphens and dots, up to 64 characters.");
+      screen.getByText("Use only letters, digits, hyphens and dots.");
     });
 
     it("does not show transient mode helper text", () => {
