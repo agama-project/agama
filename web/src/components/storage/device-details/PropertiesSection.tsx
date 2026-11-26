@@ -24,7 +24,7 @@ import React from "react";
 import { Flex, FlexItem } from "@patternfly/react-core";
 import Interpolate from "~/components/core/Interpolate";
 import Link from "~/components/core/Link";
-import RelatedNames from "~/components/storage/shared/RelatedNames";
+import LinkedNameList from "~/components/storage/shared/LinkedNameList";
 import { baseName } from "~/components/storage/utils";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
@@ -67,7 +67,7 @@ export default function PropertiesSection({ entry, subject }: PropertiesSectionP
             // TRANSLATORS: %s is a list of disks, such as "vdb, vdc and vdd"
             sentence={_("LVM physical volumes will be added as partitions on %s.")}
           >
-            {() => <RelatedNames items={sources} />}
+            {() => <LinkedNameList items={sources} />}
           </Interpolate>
         ) : (
           _("No device chosen yet for its physical volumes.")

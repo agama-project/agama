@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import RelatedNames from "~/components/storage/shared/RelatedNames";
+import LinkedNameList from "~/components/storage/shared/LinkedNameList";
 import Interpolate from "~/components/core/Interpolate";
 import { usersOf } from "~/components/storage/shared/users";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
@@ -53,7 +53,7 @@ export default function UsedByStatement({ entry }: UsedByStatementProps): React.
         // TRANSLATORS: %s is one or more LVM volume group names, like "system"
         sentence={_("New partitions may be added as LVM physical volumes for %s.")}
       >
-        {() => <RelatedNames items={users} />}
+        {() => <LinkedNameList items={users} />}
       </Interpolate>
     </p>
   );

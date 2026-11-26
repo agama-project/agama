@@ -25,7 +25,7 @@ import DetailsOpener from "~/components/storage/shared/DetailsOpener";
 import { formatListToParts } from "~/i18n";
 import type { Related } from "~/components/storage/shared/users";
 
-export type RelatedNamesProps = {
+export type LinkedNameListProps = {
   /** The entries to name, in order. */
   items: Related[];
 };
@@ -41,13 +41,13 @@ export type RelatedNamesProps = {
  * // with "vdb" linking to its panel and "vdc" plain text.
  * <Interpolate sentence={_("LVM physical volumes will be added as partitions on %s.")}>
  *   {() => (
- *     <RelatedNames
+ *     <LinkedNameList
  *       items={[{ name: "vdb", subject: { collection: "drives", index: 0 } }, { name: "vdc" }]}
  *     />
  *   )}
  * </Interpolate>
  */
-export default function RelatedNames({ items }: RelatedNamesProps): React.ReactNode {
+export default function LinkedNameList({ items }: LinkedNameListProps): React.ReactNode {
   const parts = formatListToParts(items.map((item) => item.name));
   /* Matched by position rather than by name, since two entries may share one. */
   let next = 0;
