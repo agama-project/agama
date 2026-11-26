@@ -192,7 +192,7 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
       <MenuButton
         menuProps={{
           "aria-label": label,
-          popperProps: { position: "end", minWidth: "25rem" },
+          popperProps: { position: "end", minWidth: "26rem" },
           hasFlyouts: withFlyouts,
         }}
         customToggle={<RowMenuToggle label={label} />}
