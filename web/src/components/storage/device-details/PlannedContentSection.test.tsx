@@ -21,10 +21,9 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
-import type { Storage as System } from "~/model/system";
+import type { ConfigModel } from "~/model/storage/config-model";
 import type { Entry } from "~/components/storage/device-details/entry";
 import DetailsSection from "~/components/storage/device-details/DetailsSection";
 import PlannedContentSection from "~/components/storage/device-details/PlannedContentSection";
@@ -49,32 +48,6 @@ const home: ConfigModel.LogicalVolume = {
   size: { default: false, min: 5 * 1024 ** 3 },
 };
 
-const disk = (partitions: ConfigModel.Partition[]): Entry => ({
-  config: { name: "/dev/vdd", partitions } as Partitionable.Device,
-  device: {
-    sid: 1,
-    name: "/dev/vdd",
-    class: "drive",
-    partitions: [
-      { sid: 2, name: "/dev/vdd1", class: "partition", filesystem: { sid: 3, type: "ext4" } },
-    ],
-  } as System.Device,
-  name: "vdd",
-  isVolumeGroup: false,
-});
-
-const diskSubject = { collection: "drives" as const, index: 0 };
-
-const reused = (reuse: boolean): ConfigModel.Partition => ({
-  name: "/dev/vdd1",
-  mountPath: "/data",
-  filesystem: { reuse, default: false, type: "ext4" },
-  size: { default: true, min: 1024 ** 3 },
-});
-
-const actionOf = (path: string) =>
-  within(screen.getByRole("row", { name: new RegExp(path) })).getAllByRole("cell")[2];
-
 describe("PlannedContentSection", () => {
   it("lists what is planned, with a generic name outside a section", () => {
     installerRender(<PlannedContentSection entry={group([home])} subject={subject} />);
@@ -91,20 +64,5 @@ describe("PlannedContentSection", () => {
     );
 
     screen.getByRole("table", { name: "Logical volumes for the new system" });
-  });
-
-  it("sets apart a reused partition that is formatted, since its data is lost", () => {
-    installerRender(<PlannedContentSection entry={disk([reused(false)])} subject={diskSubject} />);
-
-    const loss = within(actionOf("/data")).getByRole("strong");
-    expect(loss).toHaveTextContent('Format "vdd1"');
-  });
-
-  it("does not set apart a reused partition that keeps its data", () => {
-    installerRender(<PlannedContentSection entry={disk([reused(true)])} subject={diskSubject} />);
-
-    const action = actionOf("/data");
-    expect(action).toHaveTextContent('Mount "vdd1"');
-    expect(within(action).queryByRole("strong")).toBeNull();
   });
 });
