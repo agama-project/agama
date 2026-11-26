@@ -25,54 +25,40 @@ import { Alert, AlertProps, Button, ModalProps } from "@patternfly/react-core";
 import Popup from "~/components/core/Popup";
 
 export type AlertWithDetailsPopupProps = {
-  /** How it is presented, from a neutral report to something needing care. */
+  /** The alert status. */
   variant: AlertProps["variant"];
-  /** The one sentence the reader needs first. */
+  /** The alert sentence, written without a final period. */
   title: React.ReactNode;
-  /** What the action that opens the details says, worded for this alert. */
+  /** The label of the button opening the popup. */
   actionLabel: React.ReactNode;
   /**
-   * The action's name for assistive technologies, where the visible words are
-   * too short to stand on their own. It must start with those visible words,
-   * so that someone using speech input can say what they see.
+   * A longer name for the button, for assistive technologies. It must start
+   * with the visible label, so speech input users can say what they see.
    */
   actionAriaLabel?: string;
-  /** The title of the popup, which is also its name. */
+  /** The popup title, which also names it. */
   popupTitle: React.ReactNode;
-  /** A line under the popup title, where the title alone leaves something to say. */
+  /** An optional line under the popup title. */
   popupDescription?: React.ReactNode;
-  /** How wide the popup is. Without it, the popup takes the width its details need. */
+  /** The popup width. Without it, the popup fits its content. */
   popupVariant?: ModalProps["variant"];
-  /** Actions offered in the popup besides closing it, such as a way to start over. */
+  /** Popup actions besides closing it, such as a way to start over. */
   popupActions?: React.ReactNode;
-  /** The details, shown in the popup. */
+  /** The details shown in the popup. */
   children: React.ReactNode;
 };
 
 /**
- * An alert that fits in one line: a sentence followed by an action that opens
- * the details in a popup.
+ * An inline alert of one sentence, followed by a button opening the details in
+ * a popup.
  *
- * It keeps a page's report short, so the report can stay at the top of the
- * page without pushing down what it is about. Whoever needs more asks for it,
- * and gets it in a popup, which blocks the page until it is closed. The name
- * says so on purpose: the reader is taken out of the page for a moment, which
- * is different from an alert that expands in place.
+ * It keeps the alert short enough to stay at the top of a page. The action is
+ * a button rather than a link, since the popup has no address of its own. The
+ * popup closes with its Close button or Escape, and focus goes back to the
+ * button.
  *
- * The action is a button, and looks like one: small and bordered, right after
- * the sentence. A link goes to an address, which can be copied, reloaded or
- * opened in another tab. The popup has no address of its own, so the action
- * only does something on this page, which is what a button is for.
- *
- * The title is written without a period at its end, as titles are, so the
- * button after it does not follow a sentence that has already finished.
- *
- * The popup is a dismissible one: it closes with its Close button and with
- * Escape, and closing it puts the reader back on the action that opened it.
- * It is not kept open when the alert goes away.
- *
- * See https://www.patternfly.org/components/alert and
- * https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/
+ * @see https://www.patternfly.org/components/alert
+ * @see https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/
  *
  * @example <caption>A report with the full list a click away</caption>
  *   <AlertWithDetailsPopup

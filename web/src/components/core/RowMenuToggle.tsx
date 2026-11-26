@@ -27,34 +27,27 @@ import VisualTooltip from "~/components/core/VisualTooltip";
 import type { IconProps } from "~/components/layout/Icon";
 
 export type RowMenuToggleProps = Omit<MenuToggleProps, "ref"> & {
-  /** Says which entry the menu is about, since three dots say nothing. */
+  /** The toggle name, saying which item the menu is about. */
   label: string;
   /**
-   * The mark drawn, three dots in a line by default. A toggle sitting at the
-   * end of a sentence takes another mark instead, so it is not read as the
-   * sentence trailing off.
+   * The toggle icon. Defaults to three dots in a line. A toggle ending a
+   * sentence takes another icon, so it does not read as the sentence trailing
+   * off.
    */
   icon?: Extract<IconProps["name"], "more_horiz" | "home_storage_gear">;
   /**
-   * Shows the label on hover and focus too, for a toggle whose mark alone does
-   * not say what it opens. Screen readers keep hearing only the label.
+   * Whether the label also shows in a tooltip on hover and focus, for an icon
+   * that does not say what it opens.
    */
   hasTooltip?: boolean;
 };
 
 /**
- * The way into a menu of more options: three dots, in a line.
+ * The toggle of an item menu, such as the one of a table row: three dots in a
+ * line, the same mark wherever a menu of actions opens.
  *
- * In a line rather than stacked, which is the disagreement this settles. One
- * gesture wears one mark: a reader who learns the dots on the page's own line
- * should meet the same dots on a row, in a table inside the panel, and at the
- * head of the panel itself. Telling a column of dots from a row of them is a
- * distinction the reader has to be taught before it says anything, and it says
- * nothing they cannot see from where the control sits.
- *
- * The label is required rather than defaulted. A list of eight devices carries
- * eight of these, and eight controls all called "Actions" tell a reader who
- * meets them one at a time nothing about which device they are on.
+ * The label is required, since a page with several of these needs each one
+ * named after its item.
  */
 const RowMenuToggle = React.forwardRef<HTMLButtonElement, RowMenuToggleProps>(
   ({ label, icon = "more_horiz", hasTooltip = false, ...props }, ref) => {

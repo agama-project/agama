@@ -25,34 +25,30 @@ import { Tbody, Td, Tr } from "@patternfly/react-table";
 import type { TitleProps } from "@patternfly/react-core";
 
 export type TableGroupProps = React.PropsWithChildren<{
-  /** What the group is called: the heading over its rows and its accessible name. */
+  /** The group title, which also names the group. */
   title: React.ReactNode;
-  /** How many columns the table has, all spanned by the title row. */
+  /** The number of table columns, all spanned by the title row. */
   columnCount: number;
-  /** The level of the title's heading, which the table's place in the page decides. */
+  /** The heading level of the title. Defaults to h2. */
   headingLevel?: TitleProps["headingLevel"];
   /**
-   * Whether the title row is shown. Show it only when the table holds more
-   * than one group: a single one needs no name over it.
+   * Whether the title row is rendered. Render it only when the table has more
+   * than one group.
    */
   isTitleShown?: boolean;
 }>;
 
 /**
- * A group of rows inside a table, under a title row naming it. One per group,
- * in place of PatternFly's `Tbody`, so the table keeps its own header and every
- * group lines up under the same columns.
+ * A group of table rows under an optional title row. Use one per group in
+ * place of PatternFly's `Tbody`, so all groups share the table header and
+ * columns.
  *
- * The title is a heading in a plain cell, not a header cell spanning the row:
+ * The title is a heading in a regular cell, labelling the group: screen reader
+ * users can jump between groups by heading, and header cells spanning several
+ * columns are announced inconsistently.
  *
- * - Screen readers jump from group to group with heading navigation.
- * - Header cells spanning several columns are announced inconsistently across
- *   screen readers and browsers.
- *
- * The group itself is labelled by that heading.
- *
- * Without its title, the group is still there, so its rows keep their place,
- * and focus, when the title comes and goes.
+ * Without its title, the group is still rendered, so its rows keep their place
+ * and focus when the title comes and goes.
  */
 export default function TableGroup({
   title,
