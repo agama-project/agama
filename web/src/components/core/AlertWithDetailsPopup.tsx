@@ -47,11 +47,6 @@ export type AlertWithDetailsPopupProps = {
   popupActions?: React.ReactNode;
   /** The details, shown in the popup. */
   children: React.ReactNode;
-  /**
-   * Drawn as a line of text with a status mark rather than as an
-   * alert box, to sit among other content.
-   */
-  isPlain?: boolean;
 };
 
 /**
