@@ -285,6 +285,28 @@ describe("PartitionForm", () => {
       screen.getByRole("option", { name: /vdd2/ });
     });
 
+    it("does not list partitions already reused by the configuration", async () => {
+      mockPartitionable.partitions = [
+        { name: "vdd1", mountPath: "/data", filesystem: { reuse: true } },
+      ];
+      const { user } = installerRender(<PartitionForm />);
+      await user.click(screen.getByLabelText("Partition"));
+      expect(screen.queryByRole("option", { name: /vdd1/ })).not.toBeInTheDocument();
+      screen.getByRole("option", { name: /vdd2/ });
+    });
+
+    it.each([
+      ["deleted", { delete: true }],
+      ["deleted if needed", { deleteIfNeeded: true }],
+      ["resized if needed", { resizeIfNeeded: true }],
+    ])("lists partitions configured to be %s but not reused yet", async (_, config) => {
+      mockPartitionable.partitions = [{ name: "vdd1", ...config }];
+      const { user } = installerRender(<PartitionForm />);
+      await user.click(screen.getByLabelText("Partition"));
+      screen.getByRole("option", { name: /vdd1/ });
+      screen.getByRole("option", { name: /vdd2/ });
+    });
+
     it("switches filesystem to reuse when selecting existing partition with filesystem", async () => {
       const { user } = installerRender(<PartitionForm />);
       await user.click(screen.getByLabelText("Partition"));
