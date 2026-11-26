@@ -23,11 +23,15 @@
 import React from "react";
 import { MenuButtonItem } from "~/components/core/MenuButton";
 import { useSetSpacePolicy } from "~/hooks/model/storage/config-model";
+import { useEntry } from "~/components/storage/device-details/entry";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
+import { useFlattenDevices as useSystemDevices } from "~/hooks/model/system/storage";
+import configModel from "~/model/storage/config-model";
 import { _, TranslatedString } from "~/i18n";
 import Icon from "~/components/layout/Icon";
-import type { ConfigModel, DeviceCollection } from "~/model/storage/config-model";
+import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
+import type { ConfigModel } from "~/model/storage/config-model";
 
-/** Safest first, so the one that loses data comes last. */
 const POLICIES: ConfigModel.SpacePolicy[] = ["delete", "resize"];
 
 /** The title of each item. */
@@ -43,24 +47,78 @@ function meaning(policy: ConfigModel.SpacePolicy, isVg: boolean): TranslatedStri
     : _("Some partitions may be reduced if needed");
 }
 
+function disabledDescription(config, systemDevices, entry): TranslatedString | undefined {
+  const device = entry.device;
+
+  if (entry.isVolumeGroup) {
+    if (!device.logicalVolumes.length) {
+      // TRANSLATORS: reason to disable de menu entry "Actions on current content"
+      return _("No content detected");
+    }
+
+    const group = entry.config;
+    if (configModel.volumeGroup.isReusingLogicalVolumes(group)) {
+      // TRANSLATORS: reason to disable de menu entry "Actions on current content"
+      return _("Already using existing logical volumes");
+    }
+
+    if (!configModel.volumeGroup.isAddingLogicalVolumes(group)) {
+      // TRANSLATORS: reason to disable de menu entry "Actions on current content"
+      return _("No usage defined yet");
+    }
+  } else {
+    const partitionable = entry.config;
+
+    if (partitionable.filesystem?.reuse) {
+      // TRANSLATORS: reason to disable de menu entry "Actions on current content"
+      return _("The current data will be kept");
+    }
+
+    if (
+      !device.partitionTable &&
+      !device.filesystem &&
+      !systemDevices.some((d) => d.volumeGroup?.physicalVolumes.includes(device.sid)) &&
+      !systemDevices.some((d) => d.md?.devices.includes(device.sid))
+    ) {
+      // TRANSLATORS: reason to disable de menu entry "Actions on current content"
+      return _("No content detected");
+    }
+
+    if (
+      !configModel.partitionable.isUsed(config, partitionable.name) &&
+      !configModel.boot.hasDevice(config, partitionable.name)
+    ) {
+      // TRANSLATORS: reason to disable de menu entry "Actions on current content"
+      return _("No usage defined yet");
+    }
+
+    if (!device.partitionTable || partitionable.filesystem) {
+      // TRANSLATORS: reason to disable de menu entry "Actions on current content"
+      return _("All disk content will be deleted");
+    }
+
+    if (configModel.partitionable.isReusingPartitions(partitionable)) {
+      // TRANSLATORS: reason to disable de menu entry "Actions on current content"
+      return _("Already using existing partitions");
+    }
+  }
+}
+
 export type SpacePolicyMenuItemProps = {
-  collection: DeviceCollection;
-  index: number;
-  /** What the device allows its partitions today. */
-  policy: ConfigModel.SpacePolicy;
+  subject: DetailsSubject;
 };
 
-export default function SpacePolicyMenuItem({
-  collection,
-  index,
-  policy,
-}: SpacePolicyMenuItemProps) {
+export default function SpacePolicyMenuItem({ subject }: SpacePolicyMenuItemProps) {
+  const config = useConfigModel();
+  const systemDevices = useSystemDevices();
   const setSpacePolicy = useSetSpacePolicy();
-  const isVolumeGroup = collection === "volumeGroups";
+  const entry = useEntry(subject);
+  const isVolumeGroup = entry.isVolumeGroup;
 
   /* Choosing the current policy changes nothing. */
   const choose = (next: ConfigModel.SpacePolicy) => {
-    if (next !== policy) setSpacePolicy(collection, index, { type: next });
+    if (next !== entry.config.spacePolicy)
+      setSpacePolicy(subject.collection, subject.index, { type: next });
   };
 
   const choices = POLICIES.map((value) => (
@@ -75,7 +133,8 @@ export default function SpacePolicyMenuItem({
   ));
 
   const title = _("Actions on current content");
-  const description = isVolumeGroup
+  const disabledDesc = disabledDescription(config, systemDevices, entry);
+  const enabledDesc = isVolumeGroup
     ? _("Configure whether to delete or shrink logical volumes")
     : _("Configure whether to delete or shrink partitions");
 
@@ -83,7 +142,8 @@ export default function SpacePolicyMenuItem({
     <MenuButtonItem
       key="space-policy"
       icon={<Icon size="md" name="home_storage" />}
-      description={description}
+      description={disabledDesc || enabledDesc}
+      isDisabled={!!disabledDesc}
       flyoutItems={choices}
     >
       {title}
