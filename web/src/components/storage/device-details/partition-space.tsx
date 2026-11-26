@@ -41,7 +41,7 @@ type Decision = "keep" | "resizeIfNeeded" | "delete";
  * configuration can hold, and they are still read elsewhere; neither is offered
  * here, because neither is a decision the reader can make anywhere else either.
  */
-const DECISIONS: Decision[] = ["keep", "resizeIfNeeded", "delete"];
+const DECISIONS: Decision[] = ["delete", "resizeIfNeeded", "keep"];
 
 /**
  * What a device's own rule allows each of its partitions, where the rule is one
