@@ -122,10 +122,9 @@ export default function ChangeDeviceMenuItem({
 
   return (
     <MenuButtonItem
-      aria-label={_("Change device menu")}
       icon={<Icon size="md" name="move_down" />}
       description={<Description modelDevice={modelDevice} actionDescription={actionTitle} />}
-      isDisabled={isDisabled}
+      isAriaDisabled={isDisabled}
       key="retarget"
       {...props}
       onClick={isDisabled ? undefined : openFn}
