@@ -340,7 +340,7 @@ function PartitionRow({
       <Td {...columnProps(COLUMNS.action)}>
         {status && (
           <>
-            <div>{status.destroys ? <DataLoss>{status.text}</DataLoss> : status.text}</div>
+            {status.destroys ? <DataLoss>{status.text}</DataLoss> : status.text}
             {status.note && <div className="agm-row-note">{status.note}</div>}
           </>
         )}
