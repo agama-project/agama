@@ -93,11 +93,22 @@ const DECISION_ICONS = {
   delete: "delete_sweep",
 } as const;
 
-function meaning(decision: Decision, partition: System.Device): TranslatedString {
+/** What the decisions are about: a partition of a disk or a logical volume of a volume group. */
+type Kind = "partition" | "logicalVolume";
+
+function meaning(decision: Decision, partition: System.Device, kind: Kind): TranslatedString {
   switch (decision) {
     case "keep":
       return _("Data will be kept, not used by the new system.");
     case "delete":
+      if (kind === "logicalVolume") {
+        // TRANSLATORS: %s is a size, such as "45 GiB".
+        return sprintf(
+          _("Data will be lost, %s will be freed for new logical volumes."),
+          deviceSize(partition.block?.size),
+        );
+      }
+
       // TRANSLATORS: %s is a size, such as "45 GiB".
       return sprintf(
         _("Data will be lost, %s will be freed for new partitions."),
@@ -155,12 +166,25 @@ function shrinkReason(partition: System.Device): string | undefined {
  * gives none, a sentence of our own says so rather than leaving the reader
  * with no answer.
  */
-function ShrinkRefusal({ partition }: { partition: System.Device }): React.ReactNode {
+function ShrinkRefusal({
+  partition,
+  kind = "partition",
+}: {
+  partition: System.Device;
+  kind?: Kind;
+}): React.ReactNode {
   const reasons = partition.block?.shrinking?.reasons || [];
+  if (reasons[0]) return reasons[0];
+
+  if (kind === "logicalVolume") {
+    // TRANSLATORS: why a logical volume cannot be allowed to shrink, where the
+    // machine says nothing more.
+    return _("This logical volume cannot be made smaller.");
+  }
 
   // TRANSLATORS: why a partition cannot be allowed to shrink, where the
   // machine says nothing more.
-  return reasons[0] || _("This partition cannot be made smaller.");
+  return _("This partition cannot be made smaller.");
 }
 
 /** The decision a partition carries today, read from its configuration entry. */
@@ -176,8 +200,9 @@ function descriptionOf(
   partition: System.Device,
   refused: boolean,
   booting: boolean,
+  kind: Kind,
 ): React.ReactNode {
-  if (refused) return <ShrinkRefusal partition={partition} />;
+  if (refused) return <ShrinkRefusal partition={partition} kind={kind} />;
 
   if (decision === "keep" && booting && isExistingBootPartition(partition)) {
     // TRANSLATORS: explains keeping one partition that the new system may
@@ -187,6 +212,15 @@ function descriptionOf(
 
   const recoverable = decision === "resizeIfNeeded" && recoverableBy(partition);
   if (recoverable) {
+    if (kind === "logicalVolume") {
+      // TRANSLATORS: explains allowing one logical volume to be made smaller, and
+      // how much room that can give at most. %s is a size, such as "45 GiB".
+      return sprintf(
+        _("Data will be kept, up to %s may be freed for new logical volumes."),
+        deviceSize(recoverable),
+      );
+    }
+
     // TRANSLATORS: explains allowing one partition to be made smaller, and
     // how much room that can give at most. %s is a size, such as "45 GiB".
     return sprintf(
@@ -195,7 +229,7 @@ function descriptionOf(
     );
   }
 
-  return meaning(decision, partition);
+  return meaning(decision, partition, kind);
 }
 
 export type PartitionSpaceItemsProps = {
@@ -247,6 +281,7 @@ function usePartitionSpaceItems({
   const setSpacePolicy = useSetSpacePolicy();
   const config = useConfigModel();
   const booting = isBootDevice(config, collection, index);
+  const kind: Kind = collection === "volumeGroups" ? "logicalVolume" : "partition";
 
   const entryFor = (device: System.Device) => entries.find((entry) => entry.name === device.name);
   const decisionFor = (device: System.Device) => rule || decisionOf(entryFor(device));
@@ -279,7 +314,7 @@ function usePartitionSpaceItems({
         key={decision}
         icon={<Icon size="md" name={DECISION_ICONS[decision]} />}
         isAriaDisabled={refused}
-        description={descriptionOf(decision, partition, refused, booting)}
+        description={descriptionOf(decision, partition, refused, booting, kind)}
         onClick={refused ? undefined : () => choose(decision)}
       >
         {decisionLabel(decision)}
