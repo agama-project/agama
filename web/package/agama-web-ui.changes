@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 26 08:28:30 UTC 2026 - David Díaz <dgonzalez@suse.com>
+
+- Stop highlighting the first option of a menu opened with a click
+  (gh#agama-project/agama#4307).
+
+-------------------------------------------------------------------
 Tue Nov 25 11:47:08 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Improve the questions presentation (gh#agama-project/agama#2028,
