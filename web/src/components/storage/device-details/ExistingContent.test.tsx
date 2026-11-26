@@ -61,12 +61,16 @@ describe("ExistingContent", () => {
       plainRender(<ExistingContent entry={entry(device)} />);
 
       screen.getByText("Ext4 file system.");
+      expect(screen.queryByRole("strong")).toBeNull();
     });
 
     it("says it is deleted when the installation deletes it", () => {
       plainRender(<ExistingContent entry={entry(device)} isDeleted />);
 
-      screen.getByText("Ext4 file system: it will be deleted and its data lost.");
+      expect(screen.getByRole("paragraph")).toHaveTextContent(
+        "Ext4 file system: it will be deleted and its data lost.",
+      );
+      expect(screen.getByRole("strong")).toHaveTextContent("it will be deleted and its data lost");
     });
   });
 
@@ -86,7 +90,9 @@ describe("ExistingContent", () => {
     it("says the group goes when the installation deletes it", () => {
       plainRender(<ExistingContent entry={entry(disk())} isDeleted />);
 
-      screen.getByText(/the whole volume group .*system.* will be deleted/);
+      expect(screen.getByRole("strong")).toHaveTextContent(
+        /^the whole volume group .*system.* will be deleted and its data lost$/,
+      );
     });
   });
 
@@ -106,7 +112,9 @@ describe("ExistingContent", () => {
     it("says the RAID goes when the installation deletes it", () => {
       plainRender(<ExistingContent entry={entry(disk())} isDeleted />);
 
-      screen.getByText(/the whole RAID .*md0.* will be deleted/);
+      expect(screen.getByRole("strong")).toHaveTextContent(
+        /^the whole RAID .*md0.* will be deleted and its data lost$/,
+      );
     });
   });
 

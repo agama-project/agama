@@ -42,6 +42,7 @@ import { columnProps, tableProps } from "~/components/storage/shared/table-colum
 import { useDeleteLogicalVolume, useDeletePartition } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
 import Icon from "~/components/layout/Icon";
+import DataLoss from "~/components/storage/shared/DataLoss";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { Entry } from "~/components/storage/device-details/entry";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
@@ -84,7 +85,7 @@ function sourceFor(vol: Planned, entry: Entry): Storage.Device | undefined {
   return undefined;
 }
 
-/** What the installation does with a planned item. */
+/** What the installation does with a planned item. A format, losing data, is set apart. */
 function action(vol: Planned, entry: Entry) {
   const source = sourceFor(vol, entry);
   const keepsData = Boolean(vol.name) && vol.filesystem?.reuse === true;
@@ -96,7 +97,7 @@ function action(vol: Planned, entry: Entry) {
     if (keepsData) return sprintf(_("Mount %s"), name);
 
     // TRANSLATORS: %s is the short-name of a partition, like sda3
-    return sprintf(_("Format %s"), name);
+    return <DataLoss>{sprintf(_("Format %s"), name)}</DataLoss>;
   }
 
   if (entry.isVolumeGroup) {
