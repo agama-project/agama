@@ -1468,7 +1468,7 @@ export default {
     "Si no ho teniu clar, cancel·leu-ho i reviseu la configuració de l'[emmagatzematge]."
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
-    "Si voleu desactivar aquesta comprovació, especifiqueu \"inst.ay_check=0\" a la línia d'ordres del nucli."
+    "Si voleu desactivar aquesta comprovació, especifiqueu «inst.ay_check=0» a la línia d'ordres del nucli."
   ],
   "Includes %1$d additional pattern. Requires %2$s": [
     "Inclou %1$d patró addicional. Requereix %2$s",
@@ -1978,7 +1978,7 @@ export default {
     "Cap connexió coincideix amb els filtres"
   ],
   "No content found": [
-    "No s'ha trobat contingut."
+    "No s'ha trobat el contingut."
   ],
   "No controllers available": [
     "No hi ha controladors disponibles"
@@ -2633,7 +2633,7 @@ export default {
     "Establiu-ne el mínim i el màxim"
   ],
   "Set minimum; use more space if available": [
-    "Establiment d'un mínim; usa més espai si està disponible."
+    "Estableix el mínim. Usa més espai si està disponible."
   ],
   "Sets up a main login account. It can run administrator commands using [sudo] but is separate from the root account.": [
     "Estableix un compte d'inici de sessió principal. Pot executar ordres d'administrador amb [sudo] però és independent del compte d'arrel."
@@ -3024,7 +3024,7 @@ export default {
     "El sistema arrencarà des d'una interfície de línia d'ordres."
   ],
   "The terminal requires a larger screen size": [
-    "El terminal requereix una mida de pantalla més gran."
+    "El terminal requereix una mida de pantalla més grossa."
   ],
   "The whole device will be used for %s": [
     "S'usarà el dispositiu sencer per a %s"

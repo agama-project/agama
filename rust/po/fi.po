@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-12 20:22+0000\n"
+"POT-Creation-Date: 2026-11-18 08:12+0000\n"
 "PO-Revision-Date: 2026-03-11 07:04+0000\n"
 "Last-Translator: Timo Jyrinki <tjyrinki@suse.com>\n"
 "Language-Team: Finnish <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -948,11 +948,11 @@ msgstr "Rekisteröidään järjestelmää"
 msgid "Could not remove the repository %s"
 msgstr "Ohjelmalähdettä %s ei voi poistaa"
 
-#: agama-software/src/zypp_server.rs:471
+#: agama-software/src/zypp_server.rs:472
 msgid "Could not read the repositories"
 msgstr "Ohjelmalähteitä ei voi lukea"
 
-#: agama-software/src/zypp_server.rs:507
+#: agama-software/src/zypp_server.rs:508
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
@@ -960,21 +960,21 @@ msgstr ""
 "Tuotetta ei löydy ohjelmalähteistä. Järjestelmä tulee mahdollisesti "
 "rekisteröidä."
 
-#: agama-software/src/zypp_server.rs:510
+#: agama-software/src/zypp_server.rs:511
 msgid "Failed to find the product in the repositories."
 msgstr "Tuotetta ei löydy ohjelmalähteistä."
 
-#: agama-software/src/zypp_server.rs:573
+#: agama-software/src/zypp_server.rs:574
 msgid "There are conflicts in the software selection"
 msgstr "Ohjelmistoasetuksissa on ristiriitoja"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:600
+#: agama-software/src/zypp_server.rs:601
 msgid "Could not select %s '%s' for installation"
 msgstr "Asennukseen ei voi valita: %s ”%s”"
 
-#: agama-software/src/zypp_server.rs:1018
+#: agama-software/src/zypp_server.rs:1019
 msgid "Failed to register the system"
 msgstr "Järjestelmä rekisteröinti ei onnistu"
 

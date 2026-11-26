@@ -58,6 +58,8 @@ is activated via the kernel command-line:
     elapses (default 60s). Avoids repeated polling overhead.
 8.  `get_logs(log_type?, lines?)`: Retrieves scoped system logs directly
     from `journalctl` (defaulting to the last 100 lines, max 1000).
+    Sensitive parameters (such as `live.password`, `inst.mcp.token`) and
+    passwords in URLs are filtered (`<FILTERED>`).
     Supported scopes: `installer` (default, queries `agama*` units),
     `system` (system-wide journal), `zypp` (package manager entries), or
     any specific systemd unit name.

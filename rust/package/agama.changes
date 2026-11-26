@@ -7,6 +7,19 @@ Thu Nov 26 10:00:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
   (gh#agama/agama-project#4277)
 
 -------------------------------------------------------------------
+Wed Nov 25 15:36:17 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Export deprecated aliases for question answers and IEEE 802.1X
+  in OpenAPI schema (gh#agama-project/agama#4235, bsc#1290384).
+  
+-------------------------------------------------------------------
+Wed Nov 25 15:36:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Filter out `live.password`, `inst.mcp.token`, sensitive boot
+  parameters, and basic auth passwords in URLs from MCP server logs,
+  replacing secrets with `<FILTERED>` to prevent credential exposure.
+
+-------------------------------------------------------------------
 Wed Nov 25 15:34:30 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Make the wireless "mode" and "security" settings of a network
@@ -19,7 +32,7 @@ Wed Nov 25 15:34:30 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
   did.
 
 -------------------------------------------------------------------
-Tue Nov 25 11:42:38 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Wed Nov 25 11:42:38 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Improve the questions API (gh#agama-project/agama#2028,
   gh#agama-project/agama#4278):

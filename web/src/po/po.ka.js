@@ -1174,7 +1174,7 @@ export default {
     "დაშიფვრის პარამეტრები"
   ],
   "Enter": [
-    ""
+    "Enter"
   ],
   "Enter a hostname value.": [
     "შეიყვანეთ ჰოსტის სახელის მნიშვნელობა."
@@ -1704,6 +1704,9 @@ export default {
   ],
   "Loading data...": [
     "მონაცემების ჩატვირთვა..."
+  ],
+  "Loading terminal": [
+    "მიმდინარეობს ტერმინალის ჩატვირთვა"
   ],
   "Loading the installation repositories...": [
     "დაყენების რეპოზიტორიების ჩატვირთვა..."
@@ -2754,7 +2757,7 @@ export default {
     "რაღაც არასწორია"
   ],
   "Space": [
-    ""
+    "Space"
   ],
   "Spanning Tree Protocol (STP)": [
     "პროტოკოლი Spanning Tree (STP)"
@@ -2838,7 +2841,7 @@ export default {
     "TPM-ის დაბეჭდვას ახალი სისტემის პირდაპირ ჩატვირთვა სჭირდება."
   ],
   "Tab": [
-    ""
+    "Tab"
   ],
   "Take a moment to review the installation settings below and adjust them as needed.": [
     ""
