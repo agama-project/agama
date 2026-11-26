@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 26 10:06:56 UTC 2026 - David Díaz <dgonzalez@suse.com>
+
+- Let translations reorder the values of a sentence with numbered
+  placeholders (gh#agama-project/agama#4212).
+
+-------------------------------------------------------------------
 Thu Nov 26 08:28:30 UTC 2026 - David Díaz <dgonzalez@suse.com>
 
 - Stop highlighting the first option of a menu opened with a click
