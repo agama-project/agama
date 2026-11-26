@@ -20,6 +20,11 @@
 
 //! This module implements Agama's HTTP API.
 
+#![allow(
+    clippy::result_large_err,
+    reason = "Returning Axum Response on error is standard practice (see tokio-rs/axum#3824)."
+)]
+
 use crate::profile::profile_service;
 use crate::profile::web::ProfileError;
 use crate::server::config_schema;
@@ -31,7 +36,7 @@ use agama_manager::users::PasswordCheckResult;
 use agama_manager::{self as manager, message, users};
 use agama_utils::api::ProblemDetails;
 use agama_utils::{
-    actor::Handler,
+    actor::{Handler, Message, MessageHandler},
     api::{
         event,
         manager::LicenseContent,
@@ -110,6 +115,23 @@ impl ServerState {
     pub fn new(manager: Handler<manager::Service>, questions: Handler<question::Service>) -> Self {
         Self { manager, questions }
     }
+
+    async fn call_manager<M: Message>(&self, message: M) -> Result<M::Reply, Response>
+    where
+        manager::Service: MessageHandler<M>,
+    {
+        self.manager
+            .call(message)
+            .await
+            .map_err(|e| Error::from(e).internal_server_error())
+    }
+
+    async fn query<M: Message>(&self, message: M) -> Result<Json<M::Reply>, Response>
+    where
+        manager::Service: MessageHandler<M>,
+    {
+        Ok(Json(self.call_manager(message).await?))
+    }
 }
 
 // Handlers return Response directly for errors so they can choose the appropriate status code
@@ -174,18 +196,8 @@ pub fn server_with_state(
         .with_state(state))
 }
 
-#[allow(
-    clippy::result_large_err,
-    reason = "Response is used to short-circuit with a pre-built HTTP response; the extra \
-              bytes are negligible per-request cost (see tokio-rs/axum#3824)"
-)]
 async fn get_status(State(state): State<ServerState>) -> Result<Json<Status>, Response> {
-    let status = state
-        .manager
-        .call(progress::message::GetStatus)
-        .await
-        .map_err(|e| Error::from(e).internal_server_error())?;
-    Ok(Json(status))
+    state.query(progress::message::GetStatus).await
 }
 
 fn get_status_docs(op: TransformOperation) -> TransformOperation {
@@ -206,18 +218,8 @@ fn get_status_docs(op: TransformOperation) -> TransformOperation {
 }
 
 /// Returns the information about the system.
-#[allow(
-    clippy::result_large_err,
-    reason = "Response is used to short-circuit with a pre-built HTTP response; the extra \
-              bytes are negligible per-request cost (see tokio-rs/axum#3824)"
-)]
 async fn get_system(State(state): State<ServerState>) -> Result<Json<SystemInfo>, Response> {
-    let system = state
-        .manager
-        .call(message::GetSystem)
-        .await
-        .map_err(|e| Error::from(e).internal_server_error())?;
-    Ok(Json(system))
+    state.query(message::GetSystem).await
 }
 
 fn get_system_docs(op: TransformOperation) -> TransformOperation {
@@ -240,18 +242,8 @@ fn get_system_docs(op: TransformOperation) -> TransformOperation {
 }
 
 /// Returns the extended configuration.
-#[allow(
-    clippy::result_large_err,
-    reason = "Response is used to short-circuit with a pre-built HTTP response; the extra \
-              bytes are negligible per-request cost (see tokio-rs/axum#3824)"
-)]
 async fn get_extended_config(State(state): State<ServerState>) -> Result<Json<Config>, Response> {
-    let config = state
-        .manager
-        .call(message::GetExtendedConfig)
-        .await
-        .map_err(|e| Error::from(e).internal_server_error())?;
-    Ok(Json(config))
+    state.query(message::GetExtendedConfig).await
 }
 
 fn get_extended_config_docs(op: TransformOperation) -> TransformOperation {
@@ -272,18 +264,8 @@ fn get_extended_config_docs(op: TransformOperation) -> TransformOperation {
 }
 
 /// Returns the configuration.
-#[allow(
-    clippy::result_large_err,
-    reason = "Response is used to short-circuit with a pre-built HTTP response; the extra \
-              bytes are negligible per-request cost (see tokio-rs/axum#3824)"
-)]
 async fn get_config(State(state): State<ServerState>) -> Result<Json<Config>, Response> {
-    let config = state
-        .manager
-        .call(message::GetConfig)
-        .await
-        .map_err(|e| Error::from(e).internal_server_error())?;
-    Ok(Json(config))
+    state.query(message::GetConfig).await
 }
 
 fn get_config_docs(op: TransformOperation) -> TransformOperation {
@@ -302,11 +284,6 @@ fn get_config_docs(op: TransformOperation) -> TransformOperation {
 /// Updates the configuration.
 ///
 /// Replaces the whole configuration. If some value is missing, it will be removed.
-#[allow(
-    clippy::result_large_err,
-    reason = "Response is used to short-circuit with a pre-built HTTP response; the extra \
-              bytes are negligible per-request cost (see tokio-rs/axum#3824)"
-)]
 async fn put_config(
     State(state): State<ServerState>,
     Json(json): Json<Value>,
@@ -345,11 +322,6 @@ fn put_config_docs(op: TransformOperation) -> TransformOperation {
 /// Patches the configuration.
 ///
 /// It only changes the specified values, keeping the rest as they are.
-#[allow(
-    clippy::result_large_err,
-    reason = "Response is used to short-circuit with a pre-built HTTP response; the extra \
-              bytes are negligible per-request cost (see tokio-rs/axum#3824)"
-)]
 async fn patch_config(
     State(state): State<ServerState>,
     Json(patch): Json<Patch>,
@@ -387,17 +359,8 @@ fn patch_config_docs(op: TransformOperation) -> TransformOperation {
 }
 
 /// Returns how the target system is configured (proposal).
-#[allow(
-    clippy::result_large_err,
-    reason = "Response is used to short-circuit with a pre-built HTTP response; the extra \
-              bytes are negligible per-request cost (see tokio-rs/axum#3824)"
-)]
 async fn get_proposal(State(state): State<ServerState>) -> Result<Response, Response> {
-    let proposal = state
-        .manager
-        .call(message::GetProposal)
-        .await
-        .map_err(|e| Error::from(e).internal_server_error())?;
+    let proposal = state.call_manager(message::GetProposal).await?;
     Ok(to_option_response(proposal))
 }
 
@@ -422,19 +385,10 @@ fn get_proposal_docs(op: TransformOperation) -> TransformOperation {
 }
 
 /// Returns the list of issues.
-#[allow(
-    clippy::result_large_err,
-    reason = "Response is used to short-circuit with a pre-built HTTP response; the extra \
-              bytes are negligible per-request cost (see tokio-rs/axum#3824)"
-)]
 async fn get_issues(
     State(state): State<ServerState>,
 ) -> Result<Json<Vec<IssueWithScope>>, Response> {
-    let issue_groups = state
-        .manager
-        .call(message::GetIssues)
-        .await
-        .map_err(|e| Error::from(e).internal_server_error())?;
+    let issue_groups = state.call_manager(message::GetIssues).await?;
 
     let issues = issue_groups
         .into_iter()
@@ -469,11 +423,6 @@ fn get_issues_docs(op: TransformOperation) -> TransformOperation {
 }
 
 /// Returns the issues for each scope.
-#[allow(
-    clippy::result_large_err,
-    reason = "Response is used to short-circuit with a pre-built HTTP response; the extra \
-              bytes are negligible per-request cost (see tokio-rs/axum#3824)"
-)]
 async fn get_questions(State(state): State<ServerState>) -> Result<Json<Vec<Question>>, Response> {
     let questions = state
         .questions
@@ -503,11 +452,6 @@ fn get_questions_docs(op: TransformOperation) -> TransformOperation {
 }
 
 /// Registers a new question.
-#[allow(
-    clippy::result_large_err,
-    reason = "Response is used to short-circuit with a pre-built HTTP response; the extra \
-              bytes are negligible per-request cost (see tokio-rs/axum#3824)"
-)]
 async fn ask_question(
     State(state): State<ServerState>,
     Json(question): Json<QuestionSpec>,
@@ -538,11 +482,6 @@ fn ask_question_docs(op: TransformOperation) -> TransformOperation {
 }
 
 /// Updates the question collection by answering or removing a question.
-#[allow(
-    clippy::result_large_err,
-    reason = "Response is used to short-circuit with a pre-built HTTP response; the extra \
-              bytes are negligible per-request cost (see tokio-rs/axum#3824)"
-)]
 async fn update_question(
     State(state): State<ServerState>,
     Json(operation): Json<UpdateQuestion>,
@@ -593,20 +532,13 @@ struct LicenseParams {
 ///
 /// The license is always returned in the current system language (see the ConfigureL10n
 /// action).
-#[allow(
-    clippy::result_large_err,
-    reason = "Response is used to short-circuit with a pre-built HTTP response; the extra \
-              bytes are negligible per-request cost (see tokio-rs/axum#3824)"
-)]
 async fn get_license(
     State(state): State<ServerState>,
     Path(license): Path<LicenseParams>,
 ) -> Result<Response, Response> {
     let license = state
-        .manager
-        .call(message::GetLicense::new(license.id.to_string()))
-        .await
-        .map_err(|e| Error::from(e).internal_server_error())?;
+        .call_manager(message::GetLicense::new(license.id.to_string()))
+        .await?;
     if let Some(license) = license {
         Ok(Json(license).into_response())
     } else {
@@ -633,11 +565,6 @@ fn get_license_docs(op: TransformOperation) -> TransformOperation {
         })
 }
 
-#[allow(
-    clippy::result_large_err,
-    reason = "Response is used to short-circuit with a pre-built HTTP response; the extra \
-              bytes are negligible per-request cost (see tokio-rs/axum#3824)"
-)]
 async fn run_action(
     State(state): State<ServerState>,
     Json(action): Json<Action>,
@@ -674,56 +601,30 @@ fn run_action_docs(op: TransformOperation) -> TransformOperation {
         })
 }
 
-/// Returns how the target system is configured (proposal).
-#[allow(
-    clippy::result_large_err,
-    reason = "Response is used to short-circuit with a pre-built HTTP response; the extra \
-              bytes are negligible per-request cost (see tokio-rs/axum#3824)"
-)]
+/// Returns the storage model.
 async fn get_storage_model(
     State(state): State<ServerState>,
 ) -> Result<Json<Option<Value>>, Response> {
-    let model = state
-        .manager
-        .call(message::GetStorageModel)
-        .await
-        .map_err(|e| Error::from(e).internal_server_error())?;
-    Ok(Json(model))
+    state.query(message::GetStorageModel).await
 }
 
-#[allow(
-    clippy::result_large_err,
-    reason = "Response is used to short-circuit with a pre-built HTTP response; the extra \
-              bytes are negligible per-request cost (see tokio-rs/axum#3824)"
-)]
 async fn set_storage_model(
     State(state): State<ServerState>,
     Json(model): Json<Value>,
 ) -> Result<(), Response> {
     state
-        .manager
-        .call(message::SetStorageModel::new(model))
+        .call_manager(message::SetStorageModel::new(model))
         .await
-        .map_err(|e| Error::from(e).internal_server_error())?;
-    Ok(())
 }
 
 /// Solves a storage config model.
-#[allow(
-    clippy::result_large_err,
-    reason = "Response is used to short-circuit with a pre-built HTTP response; the extra \
-              bytes are negligible per-request cost (see tokio-rs/axum#3824)"
-)]
 async fn solve_storage_model(
     State(state): State<ServerState>,
     Query(params): Query<query::SolveStorageModel>,
 ) -> Result<Json<Option<Value>>, Response> {
-    let solved_model = state
-        .manager
-        .call(message::SolveStorageModel::new(params.model))
+    state
+        .query(message::SolveStorageModel::new(params.model))
         .await
-        .map_err(|e| Error::from(e).internal_server_error())?;
-    Ok(Json(solved_model))
 }
 
 fn to_option_response<T: Serialize>(value: Option<T>) -> Response {
@@ -784,19 +685,11 @@ pub struct PasswordParams {
     password: String,
 }
 
-#[allow(
-    clippy::result_large_err,
-    reason = "Response is used to short-circuit with a pre-built HTTP response; the extra \
-              bytes are negligible per-request cost (see tokio-rs/axum#3824)"
-)]
 async fn check_password(
     State(state): State<ServerState>,
     Json(password): Json<PasswordParams>,
 ) -> Result<Json<PasswordCheckResult>, Response> {
-    let result = state
-        .manager
-        .call(users::message::CheckPassword::new(password.password))
+    state
+        .query(users::message::CheckPassword::new(password.password))
         .await
-        .map_err(|e| Error::from(e).internal_server_error())?;
-    Ok(Json(result))
 }
