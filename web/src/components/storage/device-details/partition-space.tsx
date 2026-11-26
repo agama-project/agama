@@ -75,9 +75,8 @@ function decisionUnder(policy: ConfigModel.SpacePolicy): Decision | undefined {
 function decisionLabel(decision: Decision): TranslatedString {
   switch (decision) {
     case "keep":
-      // TRANSLATORS: offered on one partition already on a device: do nothing
-      // to it.
-      return _("Keep");
+      // TRANSLATORS: offered on one partition already on a device: do nothing to it.
+      return _("Do not modify");
     case "resizeIfNeeded":
       // TRANSLATORS: offered on one partition already on a device: allow it to
       // be made smaller, should the installation run short of room.
@@ -97,11 +96,11 @@ const DECISION_ICONS = {
 function meaning(decision: Decision, partition: System.Device): TranslatedString {
   switch (decision) {
     case "keep":
-      return _("Data is kept, not used by the new system.");
+      return _("Data will be kept, not used by the new system.");
     case "delete":
       // TRANSLATORS: %s is a size, such as "45 GiB".
       return sprintf(
-        _("Data is lost, %s is freed for new partitions."),
+        _("Data will be lost, %s will be freed for new partitions."),
         deviceSize(partition.block?.size),
       );
   }
@@ -191,7 +190,7 @@ function descriptionOf(
     // TRANSLATORS: explains allowing one partition to be made smaller, and
     // how much room that can give at most. %s is a size, such as "45 GiB".
     return sprintf(
-      _("Data is kept, up to %s may be freed for new partitions."),
+      _("Data will be kept, up to %s may be freed for new partitions."),
       deviceSize(recoverable),
     );
   }
