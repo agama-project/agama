@@ -22,27 +22,18 @@
 
 import { useEffect, useState } from "react";
 
-/** How big an element is, or nothing while there is nothing to measure. */
+/** The rendered size of an element, unset until it is measured. */
 type ElementSize = { width?: number; height?: number };
 
 /**
  * Tracks the rendered size of an element.
  *
- * What a component can afford is often a question about the room it has rather
- * than about the window: a page beside an open panel is a narrow strip on a
- * wide screen, and a media query still reports a wide screen. This answers the
- * first question, which CSS container queries also answer but only in CSS.
+ * Takes the element, from a callback ref, rather than a ref object: a ref
+ * object does not change when the element is replaced, and the observer would
+ * keep watching a node that left the document.
  *
- * Takes the element itself rather than a ref object, and that is deliberate.
- * Moving a component between parents builds it a new element, and a ref object
- * does not change when that happens: an observer set up from `ref.current`
- * keeps watching a node that has left the document, and reports the size it had
- * when it left. Held in state through a callback ref, the observer follows the
- * element that exists.
- *
- * Both values are undefined until the first measurement, rather than zero:
- * "is there room for this" and "is it too tight for that" want opposite answers
- * before anything is known, and only the caller knows which it is asking.
+ * Both values are undefined until the first measurement, so the caller picks
+ * the fallback that suits its question.
  *
  * @example
  * const [node, setNode] = useState<HTMLDivElement | null>(null);
@@ -54,8 +45,7 @@ const useElementSize = (node: HTMLElement | null): ElementSize => {
   const [size, setSize] = useState<ElementSize>({});
 
   useEffect(() => {
-    /* Nothing to measure is not "as big as it last was": whatever the caller
-       renders next starts unmeasured. */
+    /* Without an element, the size is unknown again. */
     if (!node) {
       setSize({});
       return;

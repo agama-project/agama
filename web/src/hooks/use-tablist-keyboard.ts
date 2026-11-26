@@ -23,27 +23,23 @@
 import React from "react";
 
 type Tablist = {
-  /** Goes on the element wrapping the strip. */
+  /** Props for the element wrapping the tabs. */
   containerProps: {
     ref: React.RefObject<HTMLDivElement>;
     onKeyDown: (event: React.KeyboardEvent) => void;
   };
-  /** Goes on each tab, so that the strip is one stop rather than several. */
+  /** Props for each tab, making the tabs a single Tab stop. */
   tabProps: (key: string) => { tabIndex: number };
 };
 
 /**
- * The keyboard a strip of tabs is expected to have, which PatternFly does not
- * provide.
+ * The keyboard support of the ARIA tabs pattern, which PatternFly tabs lack:
+ * the tabs are a single Tab stop, the arrow keys move between them (wrapping
+ * around), and Home and End go to the first and last.
  *
- * Its tabs are each a tab stop and no arrow key does anything, so a reader
- * walking a page with a four-tab strip on it presses Tab four times to get past
- * it. What the pattern asks for is the opposite: the strip is one stop, and the
- * arrows move within it.
+ * Moving also selects the tab, which suits panels that are cheap to show.
  *
- * Moving also selects, which suits a strip whose panels are already rendered
- * and cost nothing to show. A reader arrowing along it reads each panel as they
- * arrive rather than having to press again to see it.
+ * @see https://www.w3.org/WAI/ARIA/apg/patterns/tabs/
  *
  * @example
  * const { containerProps, tabProps } = useTablistKeyboard(["a", "b"], tab, setTab);
@@ -61,9 +57,7 @@ function useTablistKeyboard(
 ): Tablist {
   const ref = React.useRef<HTMLDivElement>(null);
 
-  /* Focused through the document rather than through a ref per tab: the tabs
-     are drawn by PatternFly, and asking it for the nth of them is steadier than
-     threading a ref into each. */
+  /* PatternFly renders the tabs, so they are found in the DOM. */
   const focusAt = (index: number) => {
     const tabs = ref.current?.querySelectorAll<HTMLElement>('[role="tab"]');
     tabs?.[index]?.focus();
@@ -82,8 +76,6 @@ function useTablistKeyboard(
 
     switch (event.key) {
       case "ArrowRight":
-        /* Round, because a strip has no end to fall off: the pattern asks for
-           the first tab after the last. */
         moveTo((at + 1) % keys.length);
         break;
       case "ArrowLeft":
