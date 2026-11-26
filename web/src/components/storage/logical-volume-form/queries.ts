@@ -40,20 +40,6 @@ import { compact } from "~/utils";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
 
-/** Logical volumes already configured (reused or kept by the space policy). */
-function configuredLogicalVolumes(
-  volumeGroupConfig: ConfigModel.VolumeGroup,
-): ConfigModel.LogicalVolume[] {
-  if (volumeGroupConfig.spacePolicy === "custom")
-    return volumeGroupConfig.logicalVolumes.filter(
-      (l) =>
-        !configModel.volume.isNew(l) &&
-        (configModel.volume.isUsed(l) || configModel.volume.isUsedBySpacePolicy(l)),
-    );
-
-  return volumeGroupConfig.logicalVolumes.filter(configModel.volume.isReused);
-}
-
 /** Volume group config resolved from the `id` route param, or null. */
 export function useVolumeGroupConfig(): ConfigModel.VolumeGroup | null {
   const { id: index } = useParams();
@@ -95,7 +81,8 @@ export function useUnusedLogicalVolumes(): System.Device[] {
   if (!volumeGroup || !volumeGroupConfig) return [];
 
   const allLogicalVolumes = volumeGroup.logicalVolumes || [];
-  const configuredNames = configuredLogicalVolumes(volumeGroupConfig)
+  const configuredNames = configModel.volumeGroup
+    .filterReusedLogicalVolumes(volumeGroupConfig)
     .filter((l) => l.name !== initialLogicalVolumeConfig?.name)
     .map((l) => l.name);
 

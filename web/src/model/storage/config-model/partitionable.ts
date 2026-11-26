@@ -82,18 +82,10 @@ function filterVolumeGroups(config: ConfigModel.Config, device: Device): ConfigM
   );
 }
 
-function filterConfiguredExistingPartitions(device: Device): ConfigModel.Partition[] {
+function filterReusedPartitions(device: Device): ConfigModel.Partition[] {
   /* Optional in the model, and absent on a device the configuration says
      nothing about the insides of. */
   const partitions = device.partitions || [];
-
-  if (device.spacePolicy === "custom")
-    return partitions.filter(
-      (p) =>
-        !configModel.volume.isNew(p) &&
-        (configModel.volume.isUsed(p) || configModel.volume.isUsedBySpacePolicy(p)),
-    );
-
   return partitions.filter(configModel.volume.isReused);
 }
 
@@ -291,7 +283,7 @@ export default {
   findLocation,
   findPartition,
   filterVolumeGroups,
-  filterConfiguredExistingPartitions,
+  filterReusedPartitions,
   usedMountPaths,
   isUsed,
   isAddingPartitions,

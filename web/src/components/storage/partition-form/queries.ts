@@ -86,7 +86,7 @@ export function useUnusedPartitions(): System.Device[] {
 
   const allPartitions = systemDevice.partitions || [];
   const configuredPartitionConfigs = configModel.partitionable
-    .filterConfiguredExistingPartitions(deviceModel)
+    .filterReusedPartitions(deviceModel)
     .filter((p) => p.name !== initialPartitionConfig?.name)
     .map((p) => p.name);
 
