@@ -46,9 +46,7 @@ import type { DetailsSubject } from "~/components/storage/shared/use-device-deta
 import type { ColumnLook } from "~/components/storage/shared/table-columns";
 import type { Planned } from "~/components/storage/device-details/planned";
 
-/* How each column of the table looks, for its header and every cell under it.
-   Sizes on the same edge, so a column of them is compared by looking down
-   rather than by reading each one. */
+/* Sizes are end-aligned, so they compare at a glance. */
 const COLUMNS = {
   path: {},
   filesystem: {},
@@ -133,18 +131,10 @@ export default function PlannedContentSection({
       isStriped={isStriped}
       {...tableProps({ hasVerticallyCenteredRows: true })}
       aria-labelledby={titleId}
-      // TRANSLATORS: names the list of what the installation will put on
-      // one of its entries.
+      // TRANSLATORS: name of a table of partitions or logical volumes for the new system
       aria-label={titleId ? undefined : _("Planned content")}
     >
-      {/* Read rather than hidden from sight: a column of sizes and a
-          column of file systems are told apart by what they are called,
-          and a reader who has to work that out from the values is being
-          asked to do the heading's job.
-
-          Each heading kept whole. PatternFly cuts one down to whatever
-          its column came out as, which shortens the one thing on the
-          row whose whole job is to be read. */}
+      {/* nowrap keeps headings whole: PatternFly would truncate them. */}
       <Thead>
         <Tr>
           <Th {...columnProps(COLUMNS.path)} modifier="nowrap">
@@ -160,18 +150,14 @@ export default function PlannedContentSection({
             {_("Size")}
           </Th>
           <Th>
-            {/* The column of menus has nothing to head: a heading over
-                it names a column the reader can already see the point
-                of, and takes the width the sizes beside it need. */}
+            {/* Hidden from sight, to leave its width to the sizes. */}
             <Text srOnly>{_("Options")}</Text>
           </Th>
         </Tr>
       </Thead>
       <Tbody>
         {planned.map((part) => {
-          /* A partition already there brings its own file system and
-         size, so they are read from the machine rather than from a
-         request the installer never has to satisfy. */
+          /* A reused partition shows its current file system and size. */
           const source = part.name
             ? entry.device?.partitions?.find((p) => p.name === part.name)
             : undefined;
@@ -204,16 +190,12 @@ export default function PlannedContentSection({
               </Td>
               <Td {...columnProps(COLUMNS.size)}>{sizeDescription(part.size)}</Td>
               <Td isActionCell>
-                {/* Both acts name the thing by where it is mounted, so
-                    one asked for by id alone has neither until the form
-                    and the model calls learn to take an id. */}
+                {/* Edit and delete need a mount point: items requested by id get no menu. */}
                 {part.mountPath && (
                   <MenuButton
                     menuProps={{
                       "aria-label": sprintf(
-                        // TRANSLATORS: names the menu of things that can
-                        // be done to one thing the installation creates.
-                        // %s is where the new system mounts it.
+                        // TRANSLATORS: %s is a mount point, like /home
                         _("Actions for %s"),
                         label(part),
                       ),
@@ -228,10 +210,7 @@ export default function PlannedContentSection({
                       </MenuButtonItem>,
                       <MenuButtonItem
                         key="delete"
-                        /* Dropping the plan for a partition that is
-                       already there removes the plan, not the
-                       partition, so it is not offered as a danger
-                       and is not called a deletion. */
+                        /* For a reused partition, only the plan goes away. */
                         isDanger={!source}
                         onClick={() => remove(part.mountPath)}
                       >

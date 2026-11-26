@@ -39,27 +39,27 @@ export default function PartitionableMountContent({ entry, subject }: DeviceDeta
   const config = entry.config as Partitionable.Device;
   const path = formattedPath(config.mountPath);
   const reuses = config.filesystem?.reuse === true;
-  /* The one there now when it is kept, the one asked for otherwise. Left out
-     where the installer is left to choose. */
+  /* Undefined when the installer chooses the type. */
   const type = reuses ? entry.device?.filesystem?.type : config.filesystem?.type;
   const label = type && filesystemLabel(type);
 
-  /* The type first and in bold, as where the file system is reported today. */
   let value: React.ReactNode;
   if (reuses) {
     value = label
-      ? // TRANSLATORS: %1$s is a file system type ext4, %2$s is an escaped label name like "home"
-        // and %3$s is an escaped mount path like "/home"
+      ? // TRANSLATORS: %1$s is a file system type, like Ext4, %2$s a mount point, like "/home"
         sprintf(_("The existing %1$s file system will be mounted at %2$s."), label, path)
-      : // TRANSLATORS: %s is an escaped mount path like "/home"
+      : // TRANSLATORS: %s is a mount point, like "/home"
         sprintf(_("The existing file system will be mounted at %s."), path);
   } else {
-    value = sprintf(
-      // TRANSLATORS: %1$s is a file system type ext4, %2$s is an escaped mount path like "/home"
-      _("The device will be formatted as %1$s and mounted at %2$s."),
-      label,
-      path,
-    );
+    value = label
+      ? sprintf(
+          // TRANSLATORS: %1$s is a file system type, like Ext4, %2$s a mount point, like "/home"
+          _("The device will be formatted as %1$s and mounted at %2$s."),
+          label,
+          path,
+        )
+      : // TRANSLATORS: %s is a mount point, like "/home"
+        sprintf(_("The device will be formatted and mounted at %s."), path);
   }
 
   const editPath = generateEncodedPath(PATHS.formatDevice, {
@@ -71,11 +71,10 @@ export default function PartitionableMountContent({ entry, subject }: DeviceDeta
     <DetailsItem value={value}>
       <Flex gap={{ default: "gapMd" }} flexWrap={{ default: "wrap" }}>
         <Link to={editPath} keepQuery variant="link" isInline>
-          {/* TRANSLATORS: changes how a file system on a whole device is used. */}
+          {/* TRANSLATORS: verb, changes how the file system is used. */}
           {_("Edit")}
         </Link>
-        {/* A button, since it acts in place, drawn like the link beside it so
-            the two read as one set of actions. */}
+        {/* A button, since it acts in place, styled like the link beside it. */}
         <Button
           variant="link"
           isInline
@@ -84,8 +83,7 @@ export default function PartitionableMountContent({ entry, subject }: DeviceDeta
               setFilesystem(subject.collection, subject.index, {});
           }}
         >
-          {/* TRANSLATORS: stops using a whole device for a file system, leaving
-              nothing planned on it. */}
+          {/* TRANSLATORS: stops using the whole device for this file system. */}
           {_("Stop using")}
         </Button>
       </Flex>

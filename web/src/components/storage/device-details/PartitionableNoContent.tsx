@@ -34,8 +34,8 @@ import { _ } from "~/i18n";
 import type { DeviceDetailsBodyProps } from "~/components/storage/device-details/DeviceDetailsBody";
 
 /**
- * A device the installation does not use yet: it says so, and offers severak
- * ways to start, depending on the context.
+ * A device the installation does not use yet: says what can be done with it
+ * and offers the ways to start.
  */
 export default function PartitionableNoContent({ entry, subject }: DeviceDetailsBodyProps) {
   const params = {

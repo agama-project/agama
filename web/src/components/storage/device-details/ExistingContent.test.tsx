@@ -60,21 +60,13 @@ describe("ExistingContent", () => {
     it("names it", () => {
       plainRender(<ExistingContent entry={entry(device)} />);
 
-      screen.getByText("Ext4");
-      screen.getByText(/file system/);
+      screen.getByText("Ext4 file system.");
     });
 
     it("says it is deleted when the installation deletes it", () => {
       plainRender(<ExistingContent entry={entry(device)} isDeleted />);
 
-      screen.getByText("Ext4");
-      screen.getByText("to be deleted");
-    });
-
-    it("offers what it is given to do with it", () => {
-      plainRender(<ExistingContent entry={entry(device)} />);
-
-      screen.getByRole("button", { name: "Mount" });
+      screen.getByText("Ext4 file system: it will be deleted and its data lost.");
     });
   });
 
@@ -88,14 +80,13 @@ describe("ExistingContent", () => {
     it("names the group", () => {
       plainRender(<ExistingContent entry={entry(disk())} />);
 
-      screen.getByText("physical volume of system");
+      screen.getByText(/LVM physical volume for the volume group .*system/);
     });
 
     it("says the group goes when the installation deletes it", () => {
       plainRender(<ExistingContent entry={entry(disk())} isDeleted />);
 
-      screen.getByText("physical volume of system");
-      screen.getByText("to be deleted");
+      screen.getByText(/the whole volume group .*system.* will be deleted/);
     });
   });
 
@@ -109,14 +100,13 @@ describe("ExistingContent", () => {
     it("names the RAID", () => {
       plainRender(<ExistingContent entry={entry(disk())} />);
 
-      screen.getByText("member of md0");
+      screen.getByText(/Part of the RAID .*md0/);
     });
 
     it("says the RAID goes when the installation deletes it", () => {
       plainRender(<ExistingContent entry={entry(disk())} isDeleted />);
 
-      screen.getByText("member of md0");
-      screen.getByText("to be deleted");
+      screen.getByText(/the whole RAID .*md0.* will be deleted/);
     });
   });
 

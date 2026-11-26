@@ -32,10 +32,8 @@ export type BootStatementProps = {
 };
 
 /**
- * Says that the system boots from this device and which partitions that may
- * need: an existing boot partition when the device has one, or new ones.
- * Renders nothing when the system does not boot from it, and has no link to
- * the boot options.
+ * Says the system boots from this device, which may take new partitions and,
+ * if it has one, its existing boot partition. Renders nothing otherwise.
  */
 export default function BootStatement({ entry }: BootStatementProps): React.ReactNode {
   const config = useConfigModel();
@@ -45,9 +43,13 @@ export default function BootStatement({ entry }: BootStatementProps): React.Reac
 
   const potentialReuse = !!entry.device?.partitions?.some((p) => isExistingBootPartition(p));
 
-  return potentialReuse
-    ? _(
-        "To boot the system, some existing partition may be used if possible and additional new partitions may be created.",
-      )
-    : _("Additional partitions to boot the system may be created if needed.");
+  return (
+    <p>
+      {potentialReuse
+        ? _(
+            "To boot the system, some existing partition may be used if possible and additional new partitions may be created.",
+          )
+        : _("Additional partitions to boot the system may be created if needed.")}
+    </p>
+  );
 }

@@ -56,7 +56,9 @@ describe("BootStatement", () => {
     mockConfig.mockReturnValue(bootsFromDisk);
     installerRender(<BootStatement entry={entry()} />);
 
-    screen.getByText("Additional partitions to boot the system may be created if needed.");
+    expect(screen.getByRole("paragraph")).toHaveTextContent(
+      "Additional partitions to boot the system may be created if needed.",
+    );
   });
 
   it("says an existing partition may be used when the disk has one fit for booting", () => {

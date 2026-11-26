@@ -46,8 +46,7 @@ export function plannedOn(entry: Entry): Planned[] {
     : (entry.config as Partitionable.Device).partitions || [];
 
   return parts.filter((part) => {
-    /* A partition asked for by id and nothing else, a BIOS boot or a PReP
-       partition, is planned content too: it takes room and was asked for. */
+    /* A new partition requested only by id (BIOS boot, PReP) counts too. */
     if (configModel.volume.isNew(part)) return Boolean(part.mountPath || partitionId(part));
     return Boolean(part.mountPath);
   });

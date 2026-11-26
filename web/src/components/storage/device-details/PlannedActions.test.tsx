@@ -26,10 +26,6 @@ import { installerRender } from "~/test-utils";
 import type { Entry } from "~/components/storage/device-details/entry";
 import PlannedActions from "~/components/storage/device-details/PlannedActions";
 
-jest.mock("~/components/storage/device-details/MoveToOtherDevice", () => () => (
-  <button type="button">Move to other device</button>
-));
-
 const disk = (partitions = []): Entry => ({
   config: { name: "/dev/vda", partitions },
   device: null,
@@ -48,13 +44,5 @@ describe("PlannedActions", () => {
     const add = screen.getByRole("link", { name: "Add partition" });
     const more = screen.getByRole("link", { name: "More" });
     expect(add.compareDocumentPosition(more)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
-  });
-
-  it("offers moving the plan only when there is something planned", () => {
-    const { rerender } = installerRender(<PlannedActions entry={disk()} subject={subject} />);
-    expect(screen.queryByRole("button", { name: "Move to other device" })).toBeNull();
-
-    rerender(<PlannedActions entry={disk([{ mountPath: "/home" }])} subject={subject} />);
-    screen.getByRole("button", { name: "Move to other device" });
   });
 });

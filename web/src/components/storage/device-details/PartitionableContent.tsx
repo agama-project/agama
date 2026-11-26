@@ -39,10 +39,8 @@ import type { Partitionable } from "~/model/storage/config-model";
 import type { DeviceDetailsBodyProps } from "~/components/storage/device-details/DeviceDetailsBody";
 
 /**
- * Explains how the new system uses a disk on which it creates or reuses
- * partitions: the requested partitions first, then a paragraph for each other
- * role (LVM, booting), followed by one line of actions. Paragraphs rather than
- * a list, since the roles are different kinds of information.
+ * How the new system uses a disk it partitions: the requested partitions, a
+ * paragraph for each other role (LVM, booting), and the actions.
  */
 export default function PartitionableContent({
   entry,
@@ -57,7 +55,6 @@ export default function PartitionableContent({
 
   const changeBoot = isBoot && (
     <Link to={PATHS.editBootDevice} keepQuery variant="link" isInline>
-      {/* TRANSLATORS: link to the settings of how the new system boots. */}
       {_("Change boot options")}
     </Link>
   );
@@ -73,19 +70,14 @@ export default function PartitionableContent({
       )}
       {isLvmSource && (
         <DetailsSectionPart>
-          <p>
-            <UsedByStatement entry={entry} />
-          </p>
+          <UsedByStatement entry={entry} />
         </DetailsSectionPart>
       )}
       {isBoot && (
         <DetailsSectionPart>
-          <p>
-            <BootStatement entry={entry} />
-          </p>
+          <BootStatement entry={entry} />
         </DetailsSectionPart>
       )}
-      {/* Said in a line, not as a table of headings over no rows. */}
       {hasNothingToSay && (
         <DetailsSectionPart>
           <p>{_("No new partitions planned yet.")}</p>

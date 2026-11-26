@@ -33,6 +33,9 @@ export type ExistingContentProps = {
   isDeleted?: boolean;
 };
 
+/**
+ * Says what is on a device today and whether the installation deletes it.
+ */
 export default function ExistingContent({ entry, isDeleted = false }: ExistingContentProps) {
   const systemDevices = useSystemDevices();
   const device = entry.device;
@@ -81,7 +84,7 @@ export default function ExistingContent({ entry, isDeleted = false }: ExistingCo
       <p>
         {sprintf(
           // TRANSLATORS: %s is the name of an LVM volume group, like "system"
-          _("LVM physical volume for the volume group."),
+          _("LVM physical volume for the volume group %s."),
           formattedPath(baseName(group.name)),
         )}
       </p>
@@ -113,7 +116,5 @@ export default function ExistingContent({ entry, isDeleted = false }: ExistingCo
     );
   }
 
-  // TRANSLATORS: said of a device where nothing was found: no partitions, no
-  // file system, no volume group or RAID.
   return <p>{_("No content detected.")}</p>;
 }

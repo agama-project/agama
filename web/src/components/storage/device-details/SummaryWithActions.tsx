@@ -25,7 +25,7 @@ import { Flex, FlexItem } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
 
 export type SummaryWithActionsProps = {
-  /** What the section has to say, in one line. Shown in bold. */
+  /** What the section has to say, in one line. */
   summary: React.ReactNode;
   /** An optional second line, explaining the summary or what can be done next. */
   detail?: React.ReactNode;
@@ -34,34 +34,19 @@ export type SummaryWithActionsProps = {
 };
 
 /**
- * A short statement in a section of the device panel, followed by the ways to
- * act on it.
- *
- * Meant for a section with little or nothing to list yet: a device the
- * installation does not use, a disk used only for booting, or a disk whose
- * partitions a volume group needs. It says where things stand in a bold line,
- * optionally explains it in a regular line under it, and puts the actions
- * last, aligned with the text.
- *
- * Not an empty state on purpose. A centred empty state draws the eye and moves
- * its actions to the middle of the section, while here the actions stay where
- * they are in every other section, at the start of the line under the content,
- * so a reader finds them in the same place whatever the device holds.
- *
- * The bold line is not a heading: the section already has one, and a heading
- * inside it would add a level to the outline for a single sentence. It is a
- * paragraph, read as part of the section.
+ * A short statement for a section with little or nothing to list yet,
+ * followed by the ways to act on it. A paragraph rather than a centered empty
+ * state, so the actions stay where every other section has them.
  *
  * @example
  * <SummaryWithActions
- *   summary={_("Not used by the installation yet")}
- *   detail={_("Add partitions to it, or format it whole for a single file system.")}
+ *   summary={_("Define some partitions or format the whole device.")}
  *   actions={
  *     <>
- *       <Link to={addPartitionPath} keepQuery variant="secondary" size="sm">
+ *       <Link to={addPartitionPath} keepQuery variant="link" isInline>
  *         {_("Add partition")}
  *       </Link>
- *       <Link to={formatPath} keepQuery variant="secondary" size="sm">
+ *       <Link to={formatPath} keepQuery variant="link" isInline>
  *         {_("Format device")}
  *       </Link>
  *     </>

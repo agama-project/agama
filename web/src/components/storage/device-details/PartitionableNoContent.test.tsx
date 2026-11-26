@@ -35,15 +35,13 @@ const entry: Entry = {
 };
 
 describe("PartitionableNoContent", () => {
-  it("says nothing is planned and offers both ways to start", () => {
+  it("says what can be done and offers both ways to start", () => {
     installerRender(
       <PartitionableNoContent entry={entry} subject={{ collection: "drives", index: 0 }} />,
     );
 
-    const [summary, detail] = screen.getAllByRole("paragraph");
-    expect(summary).toHaveTextContent("Not used by the installation yet");
-    expect(detail).toHaveTextContent(
-      "Add partitions to it, or format it whole for a single file system.",
+    expect(screen.getByRole("paragraph")).toHaveTextContent(
+      "Define some partitions or format the whole device.",
     );
     expect(screen.queryByRole("heading")).toBeNull();
     screen.getByRole("link", { name: "Add partition" });

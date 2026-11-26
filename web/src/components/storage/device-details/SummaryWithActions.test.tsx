@@ -26,10 +26,9 @@ import { plainRender } from "~/test-utils";
 import SummaryWithActions from "~/components/storage/device-details/SummaryWithActions";
 
 describe("SummaryWithActions", () => {
-  it("says its summary in bold, as a paragraph rather than a heading", () => {
+  it("says its summary as a paragraph rather than a heading", () => {
     plainRender(<SummaryWithActions summary="Not used yet" />);
 
-    expect(screen.getByText("Not used yet")).toHaveClass("pf-v6-u-font-weight-bold");
     expect(screen.queryByRole("heading")).toBeNull();
     screen.getByRole("paragraph");
   });

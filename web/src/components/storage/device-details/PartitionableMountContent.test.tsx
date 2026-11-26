@@ -60,8 +60,18 @@ describe("PartitionableMountContent", () => {
       />,
     );
 
-    screen.getByText("Ext4");
-    screen.getByText(/file system for "\/home"/);
+    screen.getByText(/The device will be formatted as Ext4 and mounted at .*\/home/);
+  });
+
+  it("leaves the type out when the installer chooses it", () => {
+    installerRender(
+      <PartitionableMountContent
+        entry={entry({ mountPath: "/home", filesystem: { default: true } })}
+        subject={subject}
+      />,
+    );
+
+    screen.getByText(/The device will be formatted and mounted at .*\/home/);
   });
 
   it("names the file system there now when it is used as it is", () => {
@@ -72,8 +82,7 @@ describe("PartitionableMountContent", () => {
       />,
     );
 
-    screen.getByText("XFS");
-    screen.getByText(/file system, used for "\/srv"/);
+    screen.getByText(/The existing XFS file system will be mounted at .*\/srv/);
   });
 
   it("offers to change how it is used", () => {
@@ -98,17 +107,5 @@ describe("PartitionableMountContent", () => {
     await user.click(screen.getByRole("button", { name: "Stop using" }));
 
     expect(mockSetFilesystem).toHaveBeenCalledWith("drives", 0, {});
-  });
-
-  it("leaves its name out where a heading already says it", () => {
-    installerRender(
-      <PartitionableMountContent
-        entry={entry({ mountPath: "/home", filesystem: { default: false, type: "ext4" } })}
-        subject={subject}
-      />,
-    );
-
-    screen.getByText("Ext4");
-    expect(screen.queryByText(/file system/)).toBeNull();
   });
 });

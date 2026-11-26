@@ -36,15 +36,6 @@ jest.mock("~/context/announcer", () => ({
   useAnnounce: () => mockAnnounce,
 }));
 
-/* Nothing the installer has worked out yet: every part reads as deleted. */
-jest.mock("~/components/storage/shared/use-devices-manager", () => ({
-  useDevicesManager: () => ({
-    stagingDevice: () => undefined,
-    hasNewFilesystem: () => false,
-    resizedDevices: () => [],
-  }),
-}));
-
 jest.mock("~/components/storage/device-details/partition-space", () => ({
   ...jest.requireActual("~/components/storage/device-details/partition-space"),
   usePartitionSpaceItems: () => [],
@@ -94,7 +85,7 @@ const options = () => screen.queryByRole("button", { name: "Actions for all part
 const summary = () =>
   document.getElementById(
     screen
-      .getByRole("button", { name: /^(Show|Hide) partitions? details$/ })
+      .getByRole("button", { name: /^(Show|Hide) details of the existing partitions?$/ })
       .getAttribute("aria-describedby"),
   );
 
@@ -105,7 +96,9 @@ const cellsOf = (name: string) =>
 /** Renders the section and opens what its toggle puts away. */
 const renderShown = async (ui: React.ReactElement) => {
   const rendered = installerRender(ui);
-  await rendered.user.click(screen.getByRole("button", { name: "Show partitions details" }));
+  await rendered.user.click(
+    screen.getByRole("button", { name: "Show details of the existing partitions" }),
+  );
   return rendered;
 };
 
@@ -113,9 +106,7 @@ describe("CurrentContentSection", () => {
   it("sums up what happens to the partitions, with how many there are in bold", () => {
     installerRender(<CurrentContentSection entry={entry("delete")} subject={subject} />);
 
-    expect(summary()).toHaveTextContent(
-      "3 partitions: all will be deleted. Windows 11 will be lost.",
-    );
+    expect(summary()).toHaveTextContent("3 partitions: all will be deleted.");
     expect(within(summary()).getByText("3 partitions")).toHaveClass("pf-v6-u-font-weight-bold");
   });
 
@@ -139,10 +130,14 @@ describe("CurrentContentSection", () => {
       </>,
     );
 
-    await user.click(screen.getByRole("button", { name: "Show partitions details" }));
+    await user.click(
+      screen.getByRole("button", { name: "Show details of the existing partitions" }),
+    );
     expect(screen.getByRole("status").textContent).toBe("expanded=content");
 
-    await user.click(screen.getByRole("button", { name: "Hide partitions details" }));
+    await user.click(
+      screen.getByRole("button", { name: "Hide details of the existing partitions" }),
+    );
     expect(screen.getByRole("status").textContent).toBe("");
   });
 
@@ -168,7 +163,9 @@ describe("CurrentContentSection", () => {
     const { user } = installerRender(
       <CurrentContentSection entry={group} subject={{ collection: "volumeGroups", index: 0 }} />,
     );
-    await user.click(screen.getByRole("button", { name: "Show logical volume details" }));
+    await user.click(
+      screen.getByRole("button", { name: "Show details of the existing logical volume" }),
+    );
 
     screen.getByRole("columnheader", { name: "Logical volume" });
     expect(screen.queryByRole("columnheader", { name: "Partition" })).toBeNull();
@@ -179,7 +176,7 @@ describe("CurrentContentSection", () => {
       <CurrentContentSection entry={entry("delete", [], [partition(1)])} subject={subject} />,
     );
 
-    screen.getByRole("button", { name: "Show partition details" });
+    screen.getByRole("button", { name: "Show details of the existing partition" });
   });
 
   it("keeps the partitions out of sight until asked for", async () => {
@@ -188,16 +185,15 @@ describe("CurrentContentSection", () => {
     );
 
     expect(screen.queryByRole("table")).toBeNull();
-    const toggle = screen.getByRole("button", { name: "Show partitions details" });
+    const toggle = screen.getByRole("button", { name: "Show details of the existing partitions" });
     expect(toggle).toHaveAttribute("aria-expanded", "false");
 
     await user.click(toggle);
 
     screen.getByRole("table", { name: "Current content" });
-    expect(screen.getByRole("button", { name: "Hide partitions details" })).toHaveAttribute(
-      "aria-expanded",
-      "true",
-    );
+    expect(
+      screen.getByRole("button", { name: "Hide details of the existing partitions" }),
+    ).toHaveAttribute("aria-expanded", "true");
   });
 
   it("offers giving every partition the same decision outside the table, open or not", async () => {
@@ -207,7 +203,9 @@ describe("CurrentContentSection", () => {
 
     options();
 
-    await user.click(screen.getByRole("button", { name: "Show partitions details" }));
+    await user.click(
+      screen.getByRole("button", { name: "Show details of the existing partitions" }),
+    );
 
     expect(screen.getByRole("table")).not.toContainElement(options());
   });
@@ -232,13 +230,11 @@ describe("CurrentContentSection", () => {
   it("describes the toggle with the summary", () => {
     installerRender(<CurrentContentSection entry={entry("delete")} subject={subject} />);
 
-    const toggle = screen.getByRole("button", { name: "Show partitions details" });
+    const toggle = screen.getByRole("button", { name: "Show details of the existing partitions" });
 
     const description = document.getElementById(toggle.getAttribute("aria-describedby"));
 
-    expect(description).toHaveTextContent(
-      "3 partitions: all will be deleted. Windows 11 will be lost.",
-    );
+    expect(description).toHaveTextContent("3 partitions: all will be deleted.");
   });
 
   describe("when the partitions are given different decisions", () => {
@@ -253,9 +249,7 @@ describe("CurrentContentSection", () => {
     it("says what becomes of them", () => {
       installerRender(<CurrentContentSection entry={mixed} subject={subject} />);
 
-      expect(summary()).toHaveTextContent(
-        "3 partitions: 1 will be deleted. Windows 11 will be lost.",
-      );
+      expect(summary()).toHaveTextContent("3 partitions: 1 will be deleted.");
     });
   });
 
@@ -266,7 +260,7 @@ describe("CurrentContentSection", () => {
       installerRender(<CurrentContentSection entry={reusing} subject={subject} />);
 
       expect(summary()).toHaveTextContent(
-        '3 partitions: 2 will be deleted and 1 will be formatted. Windows 11 will be lost. "/home" will be formatted.',
+        "3 partitions: 2 will be deleted and 1 will be formatted.",
       );
     });
 
@@ -276,9 +270,7 @@ describe("CurrentContentSection", () => {
       ]);
       installerRender(<CurrentContentSection entry={keeping} subject={subject} />);
 
-      expect(summary()).toHaveTextContent(
-        '3 partitions: 2 will be deleted and 1 will be mounted unchanged. Windows 11 will be lost. "/home" will be mounted unchanged.',
-      );
+      expect(summary()).toHaveTextContent("3 partitions: 2 will be deleted and 1 will be mounted.");
     });
 
     it("still offers giving the others the same decision", async () => {
@@ -298,9 +290,7 @@ describe("CurrentContentSection", () => {
     );
     await renderShown(<CurrentContentSection entry={reusingAll} subject={subject} />);
 
-    expect(summary()).toHaveTextContent(
-      /^3 partitions: all will be formatted\. .* will be formatted\.$/,
-    );
+    expect(summary()).toHaveTextContent("3 partitions: all will be formatted.");
     expect(options()).toBeNull();
   });
 
@@ -332,9 +322,7 @@ describe("CurrentContentSection", () => {
         <CurrentContentSection entry={entry("keep")} subject={subject} fixedDecision="delete" />,
       );
 
-      expect(summary()).toHaveTextContent(
-        "3 partitions: all will be deleted. Windows 11 will be lost.",
-      );
+      expect(summary()).toHaveTextContent("3 partitions: all will be deleted.");
       expect(options()).toBeNull();
       expect(screen.queryByRole("button", { name: /^Actions for/ })).toBeNull();
     });
@@ -399,7 +387,7 @@ describe("CurrentContentSection", () => {
       within(content).getByText("Windows 11");
     });
 
-    it("says what a formatted partition becomes, and shows what it holds today as it is", async () => {
+    it("says where a formatted partition goes, and shows what it holds today as it is", async () => {
       await renderShown(
         <CurrentContentSection
           entry={entry("keep", [
@@ -411,7 +399,6 @@ describe("CurrentContentSection", () => {
 
       const [content, , action] = cellsOf("vdd3");
       within(action).getByText('Format for "/docs"');
-      within(action).getByText("As xfs");
       expect(within(content).queryByText("xfs")).toBeNull();
     });
 

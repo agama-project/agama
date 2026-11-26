@@ -39,16 +39,12 @@ export type PlannedActionsProps = {
 };
 
 /**
- * The line of actions on what the user planned for a device: adding a
- * partition or logical volume and, for a disk with something planned, moving
- * the plan to another device. A divider above it marks where reading ends and
- * acting starts.
+ * The actions on what the user planned for a device: adding a partition or
+ * logical volume, plus any extra actions given.
  */
 export default function PlannedActions({ entry, subject, extraActions }: PlannedActionsProps) {
   const isVolumeGroup = entry.isVolumeGroup;
 
-  /* The forms address a volume group by its place in the configuration, as
-     they address a disk. */
   const addPath = isVolumeGroup
     ? generateEncodedPath(PATHS.volumeGroup.logicalVolume.add, { id: String(subject.index) })
     : generateEncodedPath(PATHS.addPartition, {
@@ -56,9 +52,6 @@ export default function PlannedActions({ entry, subject, extraActions }: Planned
         index: String(subject.index),
       });
 
-  /* TRANSLATORS: adds one more thing for the new system to an entry of the
-     installation. "Partition" rather than "volume": what this adds to a disk is
-     a partition, and volume is the word the logical ones own. */
   const addLabel = isVolumeGroup ? _("Add logical volume") : _("Add partition");
 
   return (
@@ -68,15 +61,12 @@ export default function PlannedActions({ entry, subject, extraActions }: Planned
       className={spacingStyles.mtSm}
     >
       <Divider />
-      {/* Moving the plan elsewhere sits at the far end: it acts on the whole
-          device, and keeps apart from adding to it. */}
       <Flex
         gap={{ default: "gapLg" }}
         flexWrap={{ default: "wrap" }}
         alignItems={{ default: "alignItemsCenter" }}
       >
         <FlexItem>
-          {/* A link, since it leads to a form. */}
           <Link to={addPath} keepQuery variant="link" isInline>
             {addLabel}
           </Link>

@@ -35,8 +35,6 @@ export default function VolumeGroupContent({
 }: DeviceDetailsBodyProps): React.ReactNode {
   const hasPlanned = plannedOn(entry).length > 0;
 
-  /* Nothing planned yet: said in a line, not as a table of headings over no
-     rows. */
   return (
     <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
       <DetailsSectionPart>

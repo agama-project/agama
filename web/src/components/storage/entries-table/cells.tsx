@@ -307,6 +307,8 @@ const existingDriveActions = (
   if (!device?.partitions?.length) {
     if (drive.filesystem?.reuse) return [_("The current data will be kept")];
 
+    if (!device) return [];
+
     const withFs = !!device.filesystem;
     const withLvm = systemDevices.some((d) => d.volumeGroup?.physicalVolumes.includes(device.sid));
     const withRaid = systemDevices.some((d) => d.md?.devices.includes(device.sid));

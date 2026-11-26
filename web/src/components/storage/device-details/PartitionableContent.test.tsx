@@ -40,8 +40,6 @@ jest.mock("~/hooks/model/system/storage", () => ({
   useFlattenDevices: () => [],
 }));
 
-jest.mock("~/components/storage/device-details/MoveToOtherDevice", () => () => null);
-
 const mockUsers = jest.fn().mockReturnValue([]);
 
 jest.mock("~/components/storage/shared/users", () => ({
