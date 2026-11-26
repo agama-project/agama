@@ -86,13 +86,14 @@ impl MatchSettings {
 }
 
 /// Wireless configuration
-#[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct WirelessSettings {
     /// Password of the wireless network
     #[serde(skip_serializing_if = "Option::is_none")]
     pub password: Option<String>,
     /// Security method/key management
+    #[serde(default = "default_wireless_security")]
     #[schemars(extend("enum" = [
         "none", "owe", "ieee8021x", "wpa-psk", "sae", "wpa-eap", "wpa-eap-suite-b-192"
     ]))]
@@ -100,6 +101,7 @@ pub struct WirelessSettings {
     /// SSID of the wireless network
     pub ssid: String,
     /// Wireless network mode
+    #[serde(default = "default_wireless_mode")]
     #[schemars(extend("enum" = ["infrastructure", "adhoc", "mesh", "ap"]))]
     pub mode: String,
     /// Frequency band of the wireless network
@@ -130,6 +132,52 @@ pub struct WirelessSettings {
     /// Indicates whether Protected Management Frames must be enabled for the connection
     #[serde(skip_serializing_if = "is_zero", default)]
     pub pmf: i32,
+}
+
+impl Default for WirelessSettings {
+    fn default() -> Self {
+        Self {
+            password: None,
+            security: default_wireless_security(),
+            ssid: String::new(),
+            mode: default_wireless_mode(),
+            band: None,
+            channel: 0,
+            bssid: None,
+            hidden: false,
+            group_algorithms: vec![],
+            pairwise_algorithms: vec![],
+            wpa_protocol_versions: vec![],
+            pmf: 0,
+        }
+    }
+}
+
+/// Accepts the IEEE 802.1X settings under both the "ieee8021x" and the "ieee-8021x" keys, as
+/// serde does.
+///
+/// Schemars ignores the serde aliases, so it copies the settings of the key the struct uses to
+/// the other one.
+fn ieee_8021x_alias(schema: &mut schemars::Schema) {
+    let Some(properties) = schema
+        .get_mut("properties")
+        .and_then(|properties| properties.as_object_mut())
+    else {
+        return;
+    };
+    for (key, alias) in [("ieee8021x", "ieee-8021x"), ("ieee-8021x", "ieee8021x")] {
+        if let Some(settings) = properties.get(key).cloned() {
+            properties.entry(alias).or_insert(settings);
+        }
+    }
+}
+
+fn default_wireless_security() -> String {
+    "none".to_string()
+}
+
+fn default_wireless_mode() -> String {
+    "infrastructure".to_string()
 }
 
 /// Bonding settings except the nested ports, which the configuration and the system information
@@ -367,6 +415,7 @@ pub struct NetworkDevice {
 /// these settings and add their own sections.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
+#[schemars(transform = ieee_8021x_alias)]
 pub struct ConnectionCommon {
     /// Unique identifier for the network connection
     pub id: String,
@@ -487,6 +536,7 @@ impl IpSettings {
 /// as unknown.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
+#[schemars(transform = ieee_8021x_alias)]
 pub struct PortCommon {
     /// Unique identifier for the network connection
     ///
@@ -606,4 +656,23 @@ pub(super) fn add_dns_searchlist_alias(schema: &mut schemars::Schema) {
 
 fn is_zero<T: PartialEq + From<u16>>(u: &T) -> bool {
     *u == T::from(0)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::WirelessSettings;
+
+    #[test]
+    fn test_wireless_settings_defaults() {
+        let settings: WirelessSettings = serde_json::from_str(r#"{ "ssid": "MyWiFi" }"#).unwrap();
+        assert_eq!(settings.mode, "infrastructure");
+        assert_eq!(settings.security, "none");
+        assert_eq!(
+            settings,
+            WirelessSettings {
+                ssid: "MyWiFi".to_string(),
+                ..Default::default()
+            }
+        );
+    }
 }
