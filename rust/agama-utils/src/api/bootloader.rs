@@ -24,7 +24,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 /// Bootloader configuration.
-#[derive(Clone, Debug, Serialize, Deserialize, Default, Merge, JsonSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, Default, PartialEq, Merge, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[merge(strategy = merge::option::overwrite_none)]
 #[schemars(rename = "bootloader.Config", title = "Bootloader settings")]
@@ -44,15 +44,27 @@ pub struct Config {
 }
 
 impl Config {
+    pub fn is_empty(&self) -> bool {
+        self == &Self::default()
+    }
+
     pub fn to_option(self) -> Option<Self> {
-        if self.stop_on_boot_menu.is_none()
-            && self.timeout.is_none()
-            && self.extra_kernel_params.is_none()
-            && self.update_nvram.is_none()
-        {
-            None
-        } else {
-            Some(self)
-        }
+        (!self.is_empty()).then_some(self)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_to_option() {
+        assert_eq!(Config::default().to_option(), None);
+
+        let config = Config {
+            timeout: Some(5),
+            ..Default::default()
+        };
+        assert_eq!(config.clone().to_option(), Some(config));
     }
 }
