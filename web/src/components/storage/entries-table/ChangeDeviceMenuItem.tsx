@@ -31,7 +31,8 @@ import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
 import type { MenuItemProps } from "@patternfly/react-core";
 
-const useOnlyOneOption = (
+/** Whether the device is the only one its configuration can be on. */
+const isOnlyOption = (
   config: ConfigModel.Config,
   device: ConfigModel.Drive | ConfigModel.MdRaid,
 ): boolean => {
@@ -67,12 +68,10 @@ const Description = ({ modelDevice, actionDescription }: DescriptionProps) => {
     return _("This uses the existing file system at the disk");
 
   if (isReusingPartitions) {
-    // The current device will be the only option to choose from
     return _("This uses existing partitions at the disk");
   }
 
   if (!hasMountPaths) {
-    // The current device will be the only option to choose from
     if (hasPv) {
       if (volumeGroups.length > 1) {
         if (isExplicitBoot) {
@@ -92,7 +91,6 @@ const Description = ({ modelDevice, actionDescription }: DescriptionProps) => {
       return sprintf(_("It is chosen for the LVM group '%s'"), vgName);
     }
 
-    // The current device will be the only option to choose from
     if (isExplicitBoot) {
       return _("It is chosen for booting");
     }
@@ -105,7 +103,6 @@ export type ChangeDeviceMenuItemProps = {
   modelDevice: ConfigModel.Drive | ConfigModel.MdRaid;
   device: Storage.Device;
   actionTitle?: React.ReactNode;
-  actionDescription?: React.ReactNode;
   openFn: () => void;
 } & MenuItemProps;
 
@@ -118,7 +115,7 @@ export default function ChangeDeviceMenuItem({
   ...props
 }: ChangeDeviceMenuItemProps): React.ReactNode {
   const config = useConfigModel();
-  const isDisabled = useOnlyOneOption(config, modelDevice);
+  const isDisabled = isOnlyOption(config, modelDevice);
 
   return (
     <MenuButtonItem
