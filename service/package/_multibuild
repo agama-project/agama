@@ -3,4 +3,5 @@
   <flavor>rubygem-agama-yast</flavor>
   -->
   <flavor>agama-yast</flavor>
+  <flavor>agama-autoyast-schema</flavor>
 </multibuild>
