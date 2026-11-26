@@ -23,11 +23,6 @@
 import React, { createContext, useContext, useId } from "react";
 import { Flex, Title } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import {
-  useSectionBand,
-  useSectionIndent,
-  useSectionTitle,
-} from "~/components/storage/storage-page/playground-switches";
 
 const TitleIdContext = createContext<string | undefined>(undefined);
 
@@ -60,19 +55,12 @@ export type DetailsSectionProps = {
  */
 export default function DetailsSection({ title, children }: DetailsSectionProps) {
   const titleId = useId();
-  // PLAYGROUND: how the title stands apart from what it holds, from the console.
-  const titleStyle = useSectionTitle();
-  const band = useSectionBand();
-  const indent = useSectionIndent();
-
-  /* The content indented under its title, so it reads as held by the
-     section. */
   return (
     <Flex
       component="section"
       direction={{ default: "column" }}
       gap={{ default: "gapMd" }}
-      className={`agm-details-section agm-details-section--${titleStyle} agm-details-section--band-${band} agm-details-section--indent-${indent}`}
+      className="agm-details-section"
     >
       <Title
         id={titleId}

@@ -26,8 +26,6 @@ import IssuesAlert from "~/components/core/IssuesAlert";
 import ConnectedDevicesMenu from "~/components/storage/ConnectedDevicesMenu";
 import StoragePageContent from "~/components/storage/storage-page/StoragePageContent";
 import { useIssues } from "~/hooks/model/issue";
-// PLAYGROUND: every console switch in an overlay, once enabled from the console.
-import PlaygroundOverlay from "~/components/storage/storage-page/PlaygroundOverlay";
 import { STORAGE_MODEL_QUERY_KEY } from "~/hooks/model/storage/config-model";
 import { PROPOSAL_QUERY_KEY } from "~/hooks/model/proposal";
 import { _ } from "~/i18n";
@@ -48,7 +46,6 @@ export default function StoragePage(): React.ReactNode {
         awaitQueriesRefetch: [PROPOSAL_QUERY_KEY, STORAGE_MODEL_QUERY_KEY],
       }}
     >
-      <PlaygroundOverlay />
       <Page.Content>
         <IssuesAlert issues={zfcpIssues} />
         <StoragePageContent />

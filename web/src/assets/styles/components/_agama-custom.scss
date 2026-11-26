@@ -720,7 +720,7 @@ nav.agm-breadcrumb > ol > li > a {
   border-block-start: 1px dashed var(--pf-t--global--border--color--default);
 }
 
-// PLAYGROUND: a dot on the corner of a button, in the blue that marks
+// A dot on the corner of a button, in the blue that marks
 // something new or informative rather than in the brand colour, saying there is something new
 // behind it since it was last opened. It sits outside the button, so the
 // button keeps its size and its padding cannot clip it, and it is only a
@@ -751,7 +751,7 @@ nav.agm-breadcrumb > ol > li > a {
   }
 }
 
-// PLAYGROUND: the button opening the planned storage changes, set in the
+// The button opening the planned storage changes, set in the
 // sentence it follows: no extra height over the text line, and sitting on its
 // baseline, while keeping a target of at least 24 by 24 pixels (WCAG 2.5.8).
 .agm-summary__details.pf-v6-c-button {
@@ -822,26 +822,6 @@ nav.agm-breadcrumb > ol > li > a {
   max-block-size: none;
 }
 
-// PLAYGROUND: the overlay with every console switch, at the bottom right, over
-// everything, out of the way of the page's own content.
-.agm-playground-overlay {
-  position: fixed;
-  inset-block-end: var(--pf-t--global--spacer--md);
-  inset-inline-end: var(--pf-t--global--spacer--md);
-  z-index: 10000;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: var(--pf-t--global--spacer--sm);
-}
-
-.agm-playground-overlay__card {
-  max-block-size: 70vh;
-  overflow-y: auto;
-  inline-size: 22rem;
-  box-shadow: var(--pf-t--global--box-shadow--lg);
-}
-
 // The popup with the planned changes keeps one size: PatternFly's large width,
 // and the height PatternFly allows a dialog at most, so it does not grow and
 // shrink with the tab shown. Its content scrolls inside it.
@@ -867,92 +847,7 @@ nav.agm-breadcrumb > ol > li > a {
 }
 
 // A device panel's section: its content indented under the title, so it reads
-// as held by the section. PLAYGROUND: by how much, from the console.
-.agm-details-section--indent-none {
-  --agm-details-section--indent: 0px;
-}
-
-.agm-details-section--indent-small {
-  --agm-details-section--indent: var(--pf-t--global--spacer--sm);
-}
-
-.agm-details-section--indent-medium {
-  --agm-details-section--indent: var(--pf-t--global--spacer--md);
-}
-
-.pf-v6-l-flex > .agm-details-section > .agm-details-section__content.pf-v6-l-flex {
-  margin-inline-start: calc(
-    var(--agm-details-section--indent) + var(--agm-details-section--band-inset, 0px)
-  );
-}
-
-// PLAYGROUND: how the title stands apart from what it holds.
-.agm-details-section--spaced > .agm-details-section__title,
-.agm-details-section--both > .agm-details-section__title {
-  margin-block-end: var(--pf-t--global--spacer--sm);
-}
-
-.agm-details-section--rule > .agm-details-section__title,
-.agm-details-section--both > .agm-details-section__title {
-  padding-block-end: var(--pf-t--global--spacer--xs);
-  border-block-end: var(--pf-t--global--border--width--divider--default) solid
-    var(--pf-t--global--border--color--default);
-}
-
-// PLAYGROUND: titles set apart by spacing, a line between sections, or set as
-// the devices table's group titles; how much their content is indented is a
-// switch of its own. A title sits close to what it holds, and
-// further from the section before it, which is what groups them.
-.pf-v6-l-flex:is(
-  .agm-details-section--grouped,
-  .agm-details-section--separated,
-  .agm-details-section--smallcaps
-) {
-  --pf-v6-l-flex--RowGap: var(--pf-t--global--spacer--sm);
-  row-gap: var(--pf-t--global--spacer--sm);
-}
-
-.pf-v6-l-flex
-  > :is(.agm-details-section--grouped, .agm-details-section--smallcaps):not(:first-child) {
-  margin-block-start: var(--pf-t--global--spacer--lg);
-}
-
-.pf-v6-l-flex > .agm-details-section--separated:not(:first-child) {
-  padding-block-start: var(--pf-t--global--spacer--lg);
-  border-block-start: var(--pf-t--global--border--width--divider--default) solid
-    var(--pf-t--global--border--color--default);
-}
-
-.agm-details-section--smallcaps > .agm-details-section__title.pf-v6-c-title {
-  font-size: var(--pf-t--global--font--size--body--sm);
-  font-weight: var(--pf-t--global--font--weight--body--bold);
-  color: var(--pf-t--global--text--color--subtle);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-// PLAYGROUND: a band behind the title, with any of the styles above: fading
-// down, as behind the devices table's group titles, or flat. The title's
-// words get a little room inside it, and the content moves with them.
-:is(.agm-details-section--band-fading, .agm-details-section--band-flat) {
-  --agm-details-section--band: color-mix(
-    in srgb,
-    var(--pf-t--global--background--color--secondary--default) 30%,
-    transparent
-  );
-  --agm-details-section--band-inset: var(--pf-t--global--spacer--sm);
-}
-
-:is(.agm-details-section--band-fading, .agm-details-section--band-flat)
-  > .agm-details-section__title.pf-v6-c-title {
-  padding-block: var(--pf-t--global--spacer--xs);
-  padding-inline: var(--agm-details-section--band-inset);
-}
-
-.agm-details-section--band-fading > .agm-details-section__title.pf-v6-c-title {
-  background: linear-gradient(var(--agm-details-section--band), transparent);
-}
-
-.agm-details-section--band-flat > .agm-details-section__title.pf-v6-c-title {
-  background: var(--agm-details-section--band);
+// as held by the section.
+.agm-details-section__content {
+  padding-inline-start: var(--pf-t--global--spacer--md);
 }

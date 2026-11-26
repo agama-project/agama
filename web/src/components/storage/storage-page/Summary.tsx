@@ -76,7 +76,6 @@ function sentence(count: number, isLossy: boolean): string {
  *
  * The count alone is not announced: it changes with almost every setting,
  * and announcing it each time would talk over whatever the reader is doing.
- * PLAYGROUND: to be re-evaluated, see PLAYGROUND.md.
  */
 function useAnnounceChanges(isLossy: boolean, hasUnseenChanges: boolean, summary: string) {
   const announce = useAnnounce();
