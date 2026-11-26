@@ -1,29 +1,34 @@
-// Side panel styles.
+// Side panel styles: everything core/SidePanel needs.
 //
-// Everything core/SidePanel needs: the drawer framing the page it opens over,
-// and the panel itself.
+// How it scrolls:
+//
+//   +-- page (scrolls as a whole) ------------------+
+//   | content kept in view, such as a sticky result |
+//   +----------------------+------------------------+
+//   | page content,        | panel: sticks below    |
+//   | scrolls with the     | the content kept in    |
+//   | page                 | view; only its body    |
+//   |                      | scrolls                |
+//   +----------------------+------------------------+
+//
+// - The page scrolls as a whole, like every other page.
+// - The panel is sticky: it stays right below the content kept in view
+//   (`pinnedOffset`), as tall as the visible area. SidePanel measures both.
+// - Sticky only works when no box between the panel and the page scrolls on
+//   its own, so those boxes clip their overflow instead of scrolling it.
+// - Inside the panel, the heading stays and only the body scrolls.
 
-// With a panel the page still fills the window when it is short, down to the
-// footer, but grows past it instead of shrinking, so it scrolls as a whole once
-// it is longer.
+// With a panel, the page fills the window when short and scrolls as a whole
+// when long.
 .pf-v6-c-page__main-group:has(.agm-side-panel-frame),
 .pf-v6-c-page__main-section:has(.agm-side-panel-frame) {
   flex: 1 0 auto;
 }
 
-// The panel and whatever lies over the page reach the edges of the rounded box
-// holding the page, which clips them to its corners. The section's room around
-// the page moves inside the drawer, so the page itself stays where it was.
-// Except above the drawer where something comes before it in the section,
-// which keeps the room between the two.
-//
-// PatternFly makes a drawer as tall as what holds it, which here would add the
-// whole section's height to whatever comes before the drawer. Instead, it takes
-// its content's height and grows only into the room left.
-//
-// The panel sticks while the page scrolls only where every box between the
-// two leaves overflow alone: clipping without scrolling keeps the panel's slide
-// hidden all the same.
+// The drawer reaches the edges of the page box, with the page padding moved
+// inside it, so the page stays in place. It takes its content height rather
+// than the full section height, and clips rather than scrolls, so the panel
+// can be sticky.
 .agm-side-panel-frame {
   --agm-side-panel-frame--inset-block-start: var(--pf-v6-c-page__main-section--PaddingBlockStart);
   --agm-side-panel-frame--inset-block-end: var(--pf-v6-c-page__main-section--PaddingBlockEnd);
@@ -51,17 +56,14 @@
   overflow: clip;
 }
 
-// The page narrows with the window rather than growing to its widest content.
-// As a flex item the drawer's content would otherwise be as wide as whatever
-// it holds, and the drawer clips what spills over: a table meant to scroll in
-// its own box gets cut at the window's edge instead, with nothing to scroll.
+// Lets the page narrow with the window, so wide content scrolls in its own box
+// instead of being clipped.
 .agm-side-panel-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__content {
   min-width: 0;
 }
 
-// The panel starts right under what the page keeps in sight above it: the
-// frame takes over the room between the two, and the page inside it keeps as
-// much room at its top as at its sides.
+// Below content kept in view, such as a sticky section, the drawer starts
+// right under it.
 .agm-side-panel-frame:not(:first-child) {
   --agm-side-panel-frame--inset-block-start: 0px;
 
@@ -82,10 +84,8 @@
     var(--agm-side-panel-frame--inset-inline-end);
 }
 
-// The drawer scrolls its panel as a whole, heading included. The scroll moves
-// one level in, to the side panel's body, so the heading stays while the rest moves.
-// The room around the side panel's content is its own, so the drawer adds
-// none above or below it.
+// The panel body scrolls its own content, not the whole panel, so the panel
+// heading stays in view.
 .agm-side-panel-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__panel {
   --pf-v6-c-drawer__panel--PaddingBlockStart: 0;
   --pf-v6-c-drawer__panel--PaddingBlockEnd: 0;
@@ -93,7 +93,7 @@
   overflow: hidden;
 }
 
-// The one plain block PatternFly leaves between the drawer and the side panel.
+// The block PatternFly puts between the drawer and the panel.
 .agm-side-panel-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__panel > .pf-v6-c-drawer__body {
   display: flex;
   flex: 1 1 auto;
@@ -101,17 +101,9 @@
   min-height: 0;
 }
 
-// The page under a panel laid over it is out of reach, and visibly so: being
-// out of the tab order and the accessibility tree says nothing to a reader who
-// is looking at it. Behind the same backdrop as the rest of the installer, it
-// reads as the page behind the thing they are in. A light tint and no blur,
-// far from the backdrop that blocks the whole page while the installer works:
-// this page is still there to be glanced at and read, and a dark or blurred
-// one weighs on the screen while the reader works in the panel.
-//
-// Laid over the drawer rather than the page, which scrolls: a layer inside it
-// would cover the first screen of it and scroll away with it. The drawer keeps
-// its panel above its page, so the layer sits between the two.
+// A light tint over the covered page, which is inert, so it visibly reads as
+// out of reach while staying readable. On the drawer rather than the page, so
+// it does not scroll away.
 .agm-side-panel-frame--covered > .pf-v6-c-drawer__main {
   position: relative;
 }
@@ -136,11 +128,8 @@
   }
 }
 
-// The panel stays in view as the page scrolls: right under whatever the page
-// keeps in sight at its top, fitting what is in view (worked out as the page
-// scrolls), and scrolling its own content. Only while it shows: a shut panel
-// stays in the layout, merely hidden, and would otherwise keep the page as long
-// as an open one.
+// The sticky panel. Only while open: a closed panel stays in the layout,
+// hidden, and would otherwise keep the page as long as an open one.
 .agm-side-panel-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__content {
   overflow: visible;
 }
@@ -153,9 +142,7 @@
   max-block-size: none;
 }
 
-// A panel opened beside or over the page it belongs to. It fills the height it
-// is given and scrolls its own content, so the heading saying what the reader
-// is looking at stays put while the panel is read.
+// The panel fills the height it gets; its body scrolls its own content.
 .agm-side-panel {
   display: flex;
   flex: 1 1 auto;
@@ -167,9 +154,7 @@
   background: var(--pf-t--global--background--color--primary--default);
 }
 
-// Opening the panel moves the reader into it, and a panel that takes focus
-// without showing where it went leaves a keyboard reader guessing. Same ring
-// as every other focused element, drawn inside: the frame clips the outside.
+// Focus ring drawn inside, since the frame clips the outside.
 .agm-side-panel:focus-visible {
   outline: 3px solid var(--agm-t--focus--color, var(--agm-t--color--waterhole--50));
   outline-offset: -3px;
@@ -182,9 +167,8 @@
   border-block-end: 1px solid var(--pf-t--global--border--color--default);
 }
 
-// Named rather than sized as a heading: the panel's title says which thing is
-// being read, and a page whose panel shouts louder than its own sentence has
-// its ranking the wrong way round.
+// Sized as body text rather than a heading, so the panel does not outrank the
+// page.
 .agm-side-panel__title {
   margin: 0;
   font-size: var(--pf-t--global--font--size--body--lg);
@@ -192,8 +176,7 @@
   line-height: var(--pf-t--global--font--line-height--heading);
 }
 
-// Where its content cannot have the room it wants, the content scrolls rather
-// than the panel growing to fit it.
+// The body scrolls when its content does not fit.
 .agm-side-panel__body {
   flex: 1 1 auto;
   min-width: 0;
@@ -201,7 +184,7 @@
   overflow: auto;
 }
 
-// The panel keeps an edge against the page it covers.
+// An edge against the covered page.
 .agm-side-panel-frame__side {
   border-inline-start: 1px solid var(--pf-t--global--border--color--default);
 }

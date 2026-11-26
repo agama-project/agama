@@ -272,14 +272,9 @@ nav.agm-breadcrumb > ol > li > a {
   }
 }
 
-// A name and a size are a value set into a sentence, and the sentence is often
-// a heading: at the heading's own size and weight the monospace reads as
-// something to press. Smaller and at body weight it reads as what it is, a
-// value quoted inside the words about it, and the face is what tells it apart
-// rather than a border or a colour.
-//
-// Kept whole, since a name and its size are one value and a line break between
-// them makes two.
+// A device name inside a sentence, often a heading: smaller and at body weight,
+// so it reads as a quoted value rather than something to press. Kept on one
+// line with its size.
 .agm-device-name {
   font-family: var(--pf-t--global--font--family--mono);
   font-size: 0.85em;
@@ -287,97 +282,76 @@ nav.agm-breadcrumb > ol > li > a {
   white-space: nowrap;
 }
 
-// The size is a fact about the name rather than part of it, so it is not set as
-// a name: the brackets hold it apart, and the weight of the heading around it
-// is not what the reader needs on a number.
+// The size, in brackets, at body weight and not monospaced.
 .agm-device-name__size {
   font-size: 0.85em;
   font-weight: var(--pf-t--global--font--weight--body--default);
   white-space: nowrap;
 }
 
-// A device details section's tables run edge to edge, so their columns line up
-// with the text above them instead of adding an indent of their own.
-// Their header row drops its top padding too, so a table starts as close to
-// what precedes it as any other content does.
+// Device details tables run edge to edge, lining up with the text above, and
+// start without top padding.
 .agm-details-section__content .pf-v6-c-table {
   --pf-v6-c-table--cell--first-last-child--PaddingInline: 0;
   --pf-v6-c-table--m-compact__th--PaddingBlockStart: 0;
 }
 
-// A table asked to center its rows' cells vertically, rather than place them at
-// the top, as PatternFly does. A row where one cell carries a note under its
-// value then reads as one row, its single-line cells beside the whole of that
-// cell rather than beside its first line only.
+// Vertically centered row cells, for rows where some cells span several lines.
 .agm-table--vertically-centered-rows > .pf-v6-c-table__tbody {
   vertical-align: middle;
 }
 
-// A storage table ends without a rule under its last row: whatever follows it,
-// a heading or a line of actions, sets it apart already, and a rule there
-// reads as one more row about to start.
+// Storage tables have no rule under their last row: what follows already sets
+// them apart.
 .agm-storage-table > .pf-v6-c-table__tbody > .pf-v6-c-table__tr:last-child {
   --pf-v6-c-table__tr--BorderBlockEndWidth: 0;
 }
 
-// And can rule its header row off from its rows. PatternFly draws no rule
-// there, so the row draws it with the same width and colour as the others.
+// An optional rule under the header row, matching the row rules.
 .agm-storage-table--header-rule > .pf-v6-c-table__thead > .pf-v6-c-table__tr {
   border-block-end: var(--pf-v6-c-table__tr--BorderBlockEndWidth) solid
     var(--pf-v6-c-table__tr--BorderBlockEndColor);
 }
 
-// The control showing what is on a device: its caret sits right against the
-// words, so the two read as one control. The icon's own padding is gap enough.
+// The current content toggle: its caret right against the words.
 .pf-v6-c-button.agm-details-disclosure {
   --pf-v6-c-button--Gap: 0;
 }
 
-// The icon draws its caret inside a square with room on every side, so pull it
-// back by that room: the caret, not its box, lines up with the text above.
+// Pulls the caret back by its icon padding, so it lines up with the text above.
 .pf-v6-c-button.agm-details-disclosure .pf-v6-c-button__icon {
   margin-inline-start: -0.25em;
 }
 
-// A menu toggle inside a line of text, right after its last word. Its middle
-// sits at the middle of the lowercase letters, where the words are, rather
-// than at the middle of the line, and a small gap keeps it off the last word.
+// A menu toggle at the end of a line of text, centered on its words.
 .agm-inline-menu-toggle {
   margin-inline-start: var(--pf-t--global--spacer--xs);
   vertical-align: middle;
 }
 
-// What the configuration is made of, under the summary of what it does. Where
-// the table cannot have the width its columns need, it keeps that width and
-// this scrolls: anything else crushes the alignment the table exists for.
+// The entries table scrolls sideways rather than crushing its columns.
 .agm-entries-table {
   overflow-x: auto;
 }
 
-// While it scrolls, the box is a Tab stop of its own (EntriesTable), and a
-// stop that does not show it has been reached leaves the reader guessing why
-// the arrow keys now move the table. Same ring as the side panel's, drawn
-// inside for the same reason.
+// Focus ring for the scroll box, which is a Tab stop while it scrolls. Drawn
+// inside, like the side panel one.
 .agm-entries-table:focus-visible {
   outline: 3px solid var(--agm-t--focus--color, var(--agm-t--color--waterhole--50));
   outline-offset: -3px;
 }
 
-// One table, so its columns line up across categories by themselves and take
-// the width their content needs. The minimum width is where it stops narrowing
-// and the box scrolls. Inside the page box, its first and last columns take the
-// regular cell padding rather than the wider one meant for a table against the
-// page edge.
+// Regular padding for the first and last columns, since the table sits inside
+// the page box, and a minimum width past which the box scrolls.
 .agm-entries-table .pf-v6-c-table {
   --pf-v6-c-table--cell--first-last-child--PaddingInline: var(--pf-t--global--spacer--md);
 
   min-width: 40rem;
 }
 
-// A group of rows inside a table, under a title row naming it
-// (core/TableGroup). The title reads as a label over its rows rather than as a
-// row of its own: smaller and set apart by weight, no rule under it, and more
-// room above it than under it.
+// A group of table rows under a title row (core/TableGroup). The title reads as
+// a label over its rows: smaller, bold, no rule under it, and more room above
+// than under it.
 .pf-v6-c-table {
   --agm-table-group--indent: var(--pf-t--global--spacer--sm);
 }
@@ -400,16 +374,13 @@ nav.agm-breadcrumb > ol > li > a {
   --pf-v6-c-table--cell--PaddingBlockStart: var(--pf-t--global--spacer--lg);
 }
 
-// A heading for navigation, it still reads in the cell's type rather than a
-// heading's own.
+// A heading for navigation, in the cell type rather than a heading one.
 .agm-table-group__title {
   font-family: inherit;
   font-weight: inherit;
 }
 
-// The rows under a title start their first column a bit further in, so they
-// read as held by it. The column's header moves with them, so it heads the
-// rows rather than the titles.
+// Rows under a title, and the first column header, are indented a bit.
 .pf-v6-c-table
   .agm-table-group:has(> .agm-table-group__title-row)
   > tr:not(.agm-table-group__title-row)
@@ -420,69 +391,52 @@ nav.agm-breadcrumb > ol > li > a {
   padding-inline-start: calc(var(--edge) + var(--agm-table-group--indent));
 }
 
-// The two settings of the page's own line, side by side and no wider than
-// they need, each a mark and the phrase that changes it.
+// The boot and encryption settings, side by side.
 .agm-top-line__settings {
   display: flex;
   flex-wrap: wrap;
   gap: var(--pf-t--global--spacer--md) var(--pf-t--global--spacer--lg);
 }
 
-// Each item on the baseline of its phrase, so the list lines up with the
-// sentence beside it: an icon on that baseline would give its own bottom edge
-// as the line instead.
+// Each setting on the baseline of its phrase, lining up with the sentence next
+// to it.
 .agm-top-line__settings > li {
   display: flex;
   align-items: baseline;
   gap: var(--pf-t--global--spacer--xs);
 }
 
-// The mark centred on its phrase on its own, then nudged down to the visual
-// middle of words without descenders, such as "Boot disk: auto".
+// The icon centered on its phrase, nudged down to the middle of letters without
+// descenders.
 .agm-top-line__settings > li > svg {
   align-self: center;
   translate: 0 0.1em;
 }
 
-// An entry the installation leaves out reads quieter, every cell of it, in the
-// subtle text colour. Not the disabled one: the row changes background on
-// hover, focus and selection, and disabled text drops below AA contrast (4.5:1)
-// on those. PatternFly colours each cell itself, so the row sets the colour its
-// cells read.
+// An entry with nothing planned reads quieter, in the subtle text color. Not
+// the disabled one, which drops below AA contrast (4.5:1) on hovered and
+// selected rows.
 .agm-entries-table__row--idle {
   --pf-v6-c-table--cell--Color: var(--pf-t--global--text--color--subtle);
 }
 
-// A second line under a cell, saying what the installer does to what the cell
-// names. In words rather than as a colored mark: a reader should not have to
-// work out what a mark on a row means, and the words are what a screen reader
-// gets either way. Subtle rather than colored by what it reports, so a row that
-// says something is not louder than the row it is being compared with.
-//
-// Smaller than the value it sits under and in the face the page gives to values
-// read off the machine, so the line reads as an aside about the cell above it
-// rather than as a second cell.
+// A note under a cell value, such as what the installer does to it. Smaller,
+// subtle and monospaced, like the values it annotates.
 .agm-row-note {
   font-family: var(--pf-t--global--font--family--mono);
   font-size: var(--agm-t--font--size--xxs);
   color: var(--pf-t--global--text--color--subtle);
 }
 
-// A dashed line between consecutive parts of a device sheet section, lighter
-// than the solid one before its actions. The layout gap sets the space above
-// the line; the padding repeats it below.
+// A dashed line between consecutive parts of a device details section.
 .agm-details-section__part + .agm-details-section__part {
   padding-block-start: var(--pf-t--global--spacer--sm);
   border-block-start: 1px dashed var(--pf-t--global--border--color--default);
 }
 
-// A dot on the corner of a button, in the blue that marks
-// something new or informative rather than in the brand colour, saying there is something new
-// behind it since it was last opened. It sits outside the button, so the
-// button keeps its size and its padding cannot clip it, and it is only a
-// visual cue: the button's name says the same in words. A ring in the page
-// colour keeps it apart from the button's edge; in forced colours it takes
-// the system highlight, since backgrounds are dropped there.
+// A dot on the corner of a button, saying there is something new behind it.
+// Outside the button, so it does not change its size, and only a visual cue,
+// since the button name says the same. In forced colors it uses Highlight.
 .agm-unseen-dot-anchor {
   position: relative;
   display: inline-block;
@@ -507,15 +461,13 @@ nav.agm-breadcrumb > ol > li > a {
   }
 }
 
-// The popup with the planned changes keeps one size: PatternFly's large width,
-// and the height PatternFly allows a dialog at most, so it does not grow and
-// shrink with the tab shown. Its content scrolls inside it.
+// The planned changes popup keeps the maximum height, so switching tabs does
+// not resize it.
 .pf-v6-c-modal-box.agm-planned-changes-popup {
   block-size: var(--pf-v6-c-modal-box--MaxHeight);
 }
 
-// A device panel's section: its content indented under the title, so it reads
-// as held by the section.
+// Device details section content, indented under its title.
 .agm-details-section__content {
   padding-inline-start: var(--pf-t--global--spacer--md);
 }
