@@ -132,10 +132,10 @@ describe("usePartitionSpaceItems", () => {
     );
   }
 
-  it("marks as taken the decision the device gives every partition", () => {
+  it("marks nothing as taken even if the decision matches the value", () => {
     installerRender(<Items part={shrinkable} rule="resizeIfNeeded" />);
 
-    expect(screen.getByRole("menuitem", { name: /^Shrink if needed/ })).toHaveClass(
+    expect(screen.getByRole("menuitem", { name: /^Shrink if needed/ })).not.toHaveClass(
       "pf-m-selected",
     );
   });
