@@ -32,6 +32,7 @@ import AppRegistration from "@icons/app_registration.svg?component";
 import Apps from "@icons/apps.svg?component";
 import AppsOutage from "@icons/apps_outage.svg?component";
 import Archive from "@icons/archive.svg?component";
+import Article from "@icons/article.svg?component";
 import ArrowDropDown from "@icons/arrow_drop_down.svg?component";
 import Backspace from "@icons/backspace.svg?component";
 import Block from "@icons/block.svg?component";
@@ -45,6 +46,7 @@ import Compress from "@icons/compress.svg?component";
 import CreateNewFolder from "@icons/create_new_folder.svg?component";
 import Delete from "@icons/delete.svg?component";
 import DeleteSweep from "@icons/delete_sweep.svg?component";
+import DoNotTouch from "@icons/do_not_touch.svg?component";
 import DeployedCodeAlert from "@icons/deployed_code_alert.svg?component";
 import DeployedCodeUpdate from "@icons/deployed_code_update.svg?component";
 import DeviceHub from "@icons/device_hub.svg?component";
@@ -124,6 +126,7 @@ const icons = {
   apps_outage: AppsOutage,
   app_registration: AppRegistration,
   archive: Archive,
+  article: Article,
   arrow_drop_down: ArrowDropDown,
   backspace: Backspace,
   block: Block,
@@ -131,6 +134,7 @@ const icons = {
   create_new_folder: CreateNewFolder,
   delete_sweep: DeleteSweep,
   device_hub: DeviceHub,
+  do_not_touch: DoNotTouch,
   check_circle: CheckCircle,
   do_not_disturb_on: DoNotDisturbOn,
   home_storage: HomeStorage,

@@ -89,7 +89,7 @@ function decisionLabel(decision: Decision): TranslatedString {
 }
 
 const DECISION_ICONS = {
-  keep: "lock",
+  keep: "do_not_touch",
   resizeIfNeeded: "compress",
   delete: "delete_sweep",
 } as const;

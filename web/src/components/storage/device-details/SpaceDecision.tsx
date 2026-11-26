@@ -30,7 +30,7 @@ import Icon from "~/components/layout/Icon";
 
 const POLICIES: ConfigModel.SpacePolicy[] = ["delete", "resize", "keep"];
 
-const ICONS = { delete: "delete_sweep", resize: "compress", keep: "lock" } as const;
+const ICONS = { delete: "delete_sweep", resize: "compress", keep: "do_not_touch" } as const;
 
 /** The title of each item. */
 function label(
