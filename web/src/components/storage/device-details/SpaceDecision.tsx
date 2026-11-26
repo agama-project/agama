@@ -143,7 +143,6 @@ export default function SpaceDecision({
         <MenuButtonItem
           key={value}
           icon={<Icon size="md" name={ICONS[value]} />}
-          isDanger={value === "delete"}
           description={meaning(value, isVolumeGroup)}
           onClick={() => choose(value)}
         >

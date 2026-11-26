@@ -71,7 +71,6 @@ export default function SpacePolicyMenuItem({
     <MenuButtonItem
       key={value}
       icon={<Icon size="md" name={value === "delete" ? "delete_sweep" : "compress"} />}
-      isDanger={value === "delete"}
       description={meaning(value, isVolumeGroup)}
       onClick={() => choose(value)}
     >
