@@ -144,7 +144,7 @@ describe("usePartitionSpaceItems", () => {
     installerRender(<Items part={unshrinkable} rule="resizeIfNeeded" />);
 
     expect(screen.getByRole("menuitem", { name: /^Do not modify/ })).not.toHaveClass(
-      "pf-m-selected"
+      "pf-m-selected",
     );
     expect(screen.getByRole("menuitem", { name: /^Shrink if needed/ })).not.toHaveClass(
       "pf-m-selected",
