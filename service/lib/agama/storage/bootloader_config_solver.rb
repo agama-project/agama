@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/cmdline_args"
-require "bootloader/systeminfo"
+require "bootloader/bootloader_factory"
 require "yast"
 require "y2storage"
 
@@ -46,24 +46,11 @@ module Agama
         return if config.type
 
         config.type =
-          if self.class.bls_compliant_system?
+          if ::Bootloader::BootloaderFactory.bls_installable?
             kernel_bls_type || product_bls_type || DEFAULT_BLS_TYPE
           else
             DEFAULT_TYPE
           end
-      end
-
-      # Archs in which a BLS-compliant bootloader is supported
-      BLS_ARCHS = [:x86_64, :i386, :aarch64, :arm, :riscv64].freeze
-      private_constant :BLS_ARCHS
-
-      # Whether the usage of a BLS-compliant bootloader is supported
-      #
-      # @return [Boolean]
-      def self.bls_compliant_system?
-        return false unless ::Bootloader::Systeminfo.efi?
-
-        BLS_ARCHS.any? { |a| Yast::Arch.public_send(a) }
       end
 
     private

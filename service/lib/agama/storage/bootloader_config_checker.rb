@@ -20,8 +20,8 @@
 # find current contact information at www.suse.com.
 
 require "agama/issue"
-require "agama/storage/bootloader_config_solver"
 require "agama/storage/issue_classes"
+require "bootloader/bootloader_factory"
 require "bootloader/systeminfo"
 require "yast/i18n"
 
@@ -65,7 +65,7 @@ module Agama
             ),
             kind: IssueClasses::Config::WRONG_BOOTLOADER
           )
-        elsif !BootloaderConfigSolver.bls_compliant_system?
+        elsif !::Bootloader::BootloaderFactory.bls_installable?
           error(
             format(
               _("The bootloader '%s' is not supported on this architecture."),

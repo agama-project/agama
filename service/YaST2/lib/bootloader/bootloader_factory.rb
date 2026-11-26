@@ -107,6 +107,17 @@ module Bootloader
       end
     # rubocop:enable Metrics/CyclomaticComplexity
 
+      # Whether a BLS-compliant bootloader can be installed on this system.
+      #
+      # @return [Boolean]
+      def bls_installable?
+        ((Yast::Arch.x86_64 ||
+          Yast::Arch.i386 ||
+          Yast::Arch.aarch64 ||
+          Yast::Arch.arm ||
+          Yast::Arch.riscv64) && Systeminfo.efi?)
+      end
+
     private
 
       def use_systemd_boot?
@@ -129,14 +140,6 @@ module Bootloader
       def grub2_efi_installable?
         Systeminfo.efi_mandatory? ||
           ((Yast::Arch.x86_64 || Yast::Arch.i386) && Systeminfo.efi?)
-      end
-
-      def bls_installable?
-        ((Yast::Arch.x86_64 ||
-          Yast::Arch.i386 ||
-          Yast::Arch.aarch64 ||
-          Yast::Arch.arm ||
-          Yast::Arch.riscv64) && Systeminfo.efi?)
       end
 
       def proposed_name

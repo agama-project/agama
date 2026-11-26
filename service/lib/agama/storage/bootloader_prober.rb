@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/bootloader"
-require "agama/storage/bootloader_config_solver"
+require "bootloader/bootloader_factory"
 require "yast"
 require "y2storage"
 
@@ -33,7 +33,7 @@ module Agama
       # @return [Array<Bootloader>]
       def probe
         res = [Bootloader.new(Y2Storage::BootloaderType::GRUB2, tpm: grub2_tpm?)]
-        if BootloaderConfigSolver.bls_compliant_system?
+        if ::Bootloader::BootloaderFactory.bls_installable?
           res << Bootloader.new(Y2Storage::BootloaderType::SYSTEMD_BOOT, tpm: bls_tpm?)
         end
         res << Bootloader.new(Y2Storage::BootloaderType::NONE)
