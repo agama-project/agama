@@ -23,10 +23,10 @@
 import { _, n_, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { compact } from "~/utils";
-import type { Storage as System } from "~/model/system";
-import type { ConfigModel } from "~/model/storage/config-model";
 import { isEmpty } from "radashi";
 import { baseName, deviceSize } from "~/components/storage/utils";
+import type { Storage as System } from "~/model/system";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 const driveTypeDescription = (device: System.Device): string => {
   if (device.drive.type === "multipath") {

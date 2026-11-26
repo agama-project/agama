@@ -28,8 +28,8 @@ import { useAvailableDevices, useVolumeTemplates } from "~/hooks/model/system/st
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { _, n_, formatList } from "~/i18n";
 import { formattedPath } from "~/components/storage/utils";
-import type { TranslatedString } from "~/i18n";
 import { sprintf } from "sprintf-js";
+import type { TranslatedString } from "~/i18n";
 
 function snapshotsRelevant(volumes, partitions) {
   const rootOutline = volumes.find((v) => v.mountPath === "/")?.outline;

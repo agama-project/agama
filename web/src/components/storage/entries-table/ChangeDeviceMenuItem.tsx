@@ -26,10 +26,10 @@ import { MenuButtonItem } from "~/components/core/MenuButton";
 import configModel from "~/model/storage/config-model";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
+import Icon from "~/components/layout/Icon";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
 import type { MenuItemProps } from "@patternfly/react-core";
-import Icon from "~/components/layout/Icon";
 
 const useOnlyOneOption = (
   config: ConfigModel.Config,

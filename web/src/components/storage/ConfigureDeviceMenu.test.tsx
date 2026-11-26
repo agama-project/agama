@@ -23,9 +23,9 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { mockNavigateFn, installerRender } from "~/test-utils";
+import { _ } from "~/i18n";
 import type { Storage } from "~/model/proposal";
 import type { ConfigModel } from "~/model/storage/config-model";
-import { _ } from "~/i18n";
 import ConfigureDeviceMenu from "./ConfigureDeviceMenu";
 
 const vda: Storage.Device = {

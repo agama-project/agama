@@ -34,9 +34,9 @@ import { useDeviceDetails } from "~/components/storage/shared/use-device-details
 import { useConfigModel, useDeleteVolumeGroup } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
 import { _, n_, formatList } from "~/i18n";
+import Icon from "~/components/layout/Icon";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
-import Icon from "~/components/layout/Icon";
 
 export type VolumeGroupMenuProps = {
   /** The group as the configuration describes it. */

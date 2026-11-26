@@ -25,8 +25,8 @@ import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/core/RowMenuToggle";
 import { useSetSpacePolicy } from "~/hooks/model/storage/config-model";
 import { _, TranslatedString } from "~/i18n";
-import type { ConfigModel, DeviceCollection } from "~/model/storage/config-model";
 import Icon from "~/components/layout/Icon";
+import type { ConfigModel, DeviceCollection } from "~/model/storage/config-model";
 
 const POLICIES: ConfigModel.SpacePolicy[] = ["delete", "resize", "keep"];
 

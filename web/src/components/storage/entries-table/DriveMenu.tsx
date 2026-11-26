@@ -39,9 +39,9 @@ import {
 import { useRetarget } from "~/components/storage/shared/use-retarget";
 import { _ } from "~/i18n";
 import { useDevice } from "~/hooks/model/system/storage";
+import Icon from "~/components/layout/Icon";
 import type { Partitionable } from "~/model/storage/config-model";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
-import Icon from "~/components/layout/Icon";
 
 type RemoveDeviceMenuItemProps = {
   device: Partitionable.Device;

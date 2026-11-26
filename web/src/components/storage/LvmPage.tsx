@@ -52,9 +52,9 @@ import {
   useAddVolumeGroup,
   useEditVolumeGroup,
 } from "~/hooks/model/storage/config-model";
+import Text from "~/components/core/Text";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
-import Text from "~/components/core/Text";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const FUTURE = [

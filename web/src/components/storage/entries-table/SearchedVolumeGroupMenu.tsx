@@ -31,9 +31,9 @@ import configModel from "~/model/storage/config-model";
 import SpacePolicyMenuItem from "~/components/storage/entries-table/SpacePolicyMenuItem";
 import { useConfigModel, useDeleteVolumeGroup } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
+import Icon from "~/components/layout/Icon";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
-import Icon from "~/components/layout/Icon";
 
 type RemoveVolumeGroupMenuItemProps = {
   deviceConfig: ConfigModel.VolumeGroup;
