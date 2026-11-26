@@ -328,6 +328,37 @@ describe("CurrentContentSection", () => {
     });
   });
 
+  describe("on the free space of a device", () => {
+    const withFreeSpace = (filesystem?: ConfigModel.Filesystem): Entry => {
+      const base = entry("keep");
+      return {
+        ...base,
+        config: { ...base.config, filesystem },
+        device: base.device && {
+          ...base.device,
+          partitionTable: { type: "gpt", unusedSlots: [{ start: 100, size: 1024 ** 3 }] },
+        },
+      };
+    };
+
+    it("offers to use it if needed", async () => {
+      await renderShown(<CurrentContentSection entry={withFreeSpace()} subject={subject} />);
+
+      const [, , action] = cellsOf("Free space");
+      within(action).getByText("Use if needed");
+    });
+
+    it("does not offer to use it if all the content is going to be deleted", async () => {
+      await renderShown(
+        <CurrentContentSection entry={withFreeSpace()} subject={subject} fixedDecision="delete" />,
+      );
+
+      const [, , action] = cellsOf("Free space");
+      expect(within(action).queryByText("Use if needed")).toBeNull();
+      within(action).getByText("All the content of the device will be deleted");
+    });
+  });
+
   it("rules the Action column off from what is there today, header included", async () => {
     await renderShown(<CurrentContentSection entry={entry("delete")} subject={subject} />);
 

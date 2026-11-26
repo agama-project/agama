@@ -554,7 +554,12 @@ export default function CurrentContentSection({
                       </Th>
                       <Td {...columnProps(COLUMNS.content)} />
                       <Td {...columnProps(COLUMNS.size)}>{deviceSize(row.size)}</Td>
-                      <Td {...columnProps(COLUMNS.action)}>{_("Use if needed")}</Td>
+                      <Td {...columnProps(COLUMNS.action)}>
+                        {fixedDecision === "delete" && (
+                          <Text srOnly>{_("All the content of the device will be deleted")}</Text>
+                        )}
+                        {fixedDecision !== "delete" && _("Use if needed")}
+                      </Td>
                       <Td />
                     </Tr>
                   );
