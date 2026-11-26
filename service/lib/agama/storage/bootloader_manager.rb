@@ -95,6 +95,18 @@ module Agama
         ::Bootloader::BootloaderFactory.current.packages
       end
 
+      # Proposes bootloader configuration.
+      #
+      # @param product_config [Agama::Config]
+      # @return [Hash, nil]
+      def proposal(product_config)
+        solved = @config.copy
+        BootloaderConfigSolver.new(product_config).solve(solved)
+        return nil unless solved.type
+
+        { type: solved.type.value }
+      end
+
     private
 
       def write_config

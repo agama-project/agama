@@ -32,24 +32,16 @@ module Agama
       #
       # @return [Hash] Agama "bootloader" section
       def read
-        global = profile.fetch_as_hash("bootloader")
-          .fetch_as_hash("global")
-        return {} if global.empty?
+        bootloader_hash = profile.fetch_as_hash("bootloader")
+        global = bootloader_hash.fetch_as_hash("global")
+        loader_type = bootloader_hash["loader_type"]
+        return {} if global.empty? && loader_type.to_s.empty?
 
         bootloader = {}
-
-        if global["timeout"].is_a?(Integer)
-          if global["timeout"] >= 0
-            bootloader["timeout"] = global["timeout"]
-          else
-            bootloader["stopOnBootMenu"] = true
-          end
-        end
-
-        bootloader["extraKernelParams"] = global["append"] unless global["append"].to_s.empty?
-        if !global["update_nvram"].to_s.empty?
-          bootloader["updateNvram"] = [true, "true"].include?(global["update_nvram"])
-        end
+        add_type(bootloader, loader_type)
+        add_timeout(bootloader, global)
+        add_kernel_params(bootloader, global)
+        add_update_nvram(bootloader, global)
 
         { "bootloader" => bootloader }
       end
@@ -57,6 +49,47 @@ module Agama
     private
 
       attr_reader :profile
+
+      def add_type(bootloader, loader_type)
+        type = convert_loader_type(loader_type)
+        bootloader["type"] = type if type
+      end
+
+      def add_timeout(bootloader, global)
+        return unless global["timeout"].is_a?(Integer)
+
+        if global["timeout"] >= 0
+          bootloader["timeout"] = global["timeout"]
+        else
+          bootloader["stopOnBootMenu"] = true
+        end
+      end
+
+      def add_kernel_params(bootloader, global)
+        bootloader["extraKernelParams"] = global["append"] unless global["append"].to_s.empty?
+      end
+
+      # In the AutoYaST schema, update_nvram is defined as STRING_BOOL ("true" | "false"):
+      # https://github.com/yast/yast-bootloader/blob/master/src/autoyast-rnc/bootloader.rnc
+      # Without config:type="boolean" in XML, YaST parses it as a String ("true" / "false"),
+      # while typed profiles or in-memory hashes provide a Boolean. We accept both and normalize
+      # to boolean true/false as required by Agama's schema.
+      def add_update_nvram(bootloader, global)
+        return if global["update_nvram"].to_s.empty?
+
+        bootloader["updateNvram"] = [true, "true"].include?(global["update_nvram"])
+      end
+
+      def convert_loader_type(loader_type)
+        case loader_type
+        when "grub2", "grub2-efi"
+          "grub2"
+        when "systemd-boot"
+          "systemd-boot"
+        when "none"
+          "none"
+        end
+      end
     end
   end
 end

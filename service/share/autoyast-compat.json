@@ -108,7 +108,7 @@
           { "key": "xen_kernel_append", "support": "no" }
         ]
       },
-      { "key": "loader_type", "support": "no" }
+      { "key": "loader_type", "support": "yes", "agama": "bootloader.type" }
     ]
   },
   { "key": "configuration_management", "support": "no" },

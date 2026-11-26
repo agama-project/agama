@@ -306,6 +306,16 @@ impl MessageHandler<message::bootloader::GetConfig> for Service {
     }
 }
 
+impl MessageHandler<message::bootloader::GetProposal> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::bootloader::GetProposal,
+    ) -> Result<Option<bootloader::Proposal>, Error> {
+        let raw_json = self.bootloader_proxy.proposal().await?;
+        try_from_string(&raw_json)
+    }
+}
+
 impl MessageHandler<message::bootloader::GetSystem> for Service {
     async fn handle(
         &mut self,

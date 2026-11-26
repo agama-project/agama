@@ -94,4 +94,40 @@ describe Bootloader::BootloaderFactory do
       end
     end
   end
+
+  describe ".bls_installable?" do
+    let(:efi) { true }
+    let(:x86_64) { true }
+
+    before do
+      allow(Bootloader::Systeminfo).to receive(:efi?).and_return(efi)
+      allow(Yast::Arch).to receive(:x86_64).and_return(x86_64)
+      allow(Yast::Arch).to receive(:i386).and_return(false)
+      allow(Yast::Arch).to receive(:aarch64).and_return(false)
+      allow(Yast::Arch).to receive(:arm).and_return(false)
+      allow(Yast::Arch).to receive(:riscv64).and_return(false)
+    end
+
+    context "on a supported architecture with EFI" do
+      it "returns true" do
+        expect(described_class.bls_installable?).to eq true
+      end
+    end
+
+    context "on a supported architecture without EFI" do
+      let(:efi) { false }
+
+      it "returns false" do
+        expect(described_class.bls_installable?).to eq false
+      end
+    end
+
+    context "on an unsupported architecture" do
+      let(:x86_64) { false }
+
+      it "returns false" do
+        expect(described_class.bls_installable?).to eq false
+      end
+    end
+  end
 end

@@ -326,3 +326,30 @@ The AutoYaST proposal keeps its previous behavior: it does not set DPS ids, ids 
 partitions or DPS device mapper names. The only exception is that the DPS ids are considered Linux
 partition ids (see `Y2Storage::PartitionId.linux_system_ids`), so a profile drive with
 `<use>linux</use>` also deletes the partitions with those ids.
+
+## Bootloader configuration
+
+The profile can specify the bootloader to install using the `bootloader.type` setting:
+
+~~~json
+{
+  "bootloader": {
+    "type": "systemd-boot"
+  }
+}
+~~~
+
+The available options are:
+* `grub2`: Install GRUB2 (on EFI systems, `grub2-efi` is used).
+* `systemd-boot`: Install systemd-boot (supported only on EFI systems).
+* `none`: Do not install any bootloader.
+
+If not specified in the profile, the bootloader type is inferred from the product definition (such as `boot.default_efi_bootloader` on EFI systems) or defaults to `grub2`.
+
+The effective bootloader proposed for the system can be inspected via the `bootloader` section in `GET /proposal`.
+
+Setting an unsupported bootloader type (such as `systemd-boot` on a non-EFI system or architecture) generates a `configWrongBootloader` issue.
+
+### Deprecation of systemd-boot tech preview
+
+Previously, activating `systemd-boot` could be done via the `inst.systemd_boot_preview=1` boot option or through product defaults. With the introduction of `bootloader.type` in the Agama configuration schema, the `inst.systemd_boot_preview` tech preview kernel parameter is deprecated and will soon be removed.

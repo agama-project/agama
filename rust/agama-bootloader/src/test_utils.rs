@@ -22,7 +22,11 @@
 
 use std::sync::Arc;
 
-use agama_utils::{actor::Handler, api::bootloader::Config, issue, BoxFuture, Resolvable};
+use agama_utils::{
+    actor::Handler,
+    api::bootloader::{Config, Proposal},
+    issue, BoxFuture, Resolvable,
+};
 use async_trait::async_trait;
 use tokio::sync::Mutex;
 
@@ -35,6 +39,7 @@ use crate::{
 #[derive(Default, Clone)]
 pub struct TestClientState {
     pub config: Config,
+    pub proposal: Option<Proposal>,
 }
 
 /// Storage test client.
@@ -81,6 +86,11 @@ impl BootloaderClient for TestClient {
     async fn get_config(&self) -> Result<Config, Error> {
         let state = self.state.lock().await;
         Ok(state.config.clone())
+    }
+
+    async fn get_proposal(&self) -> Result<Option<Proposal>, Error> {
+        let state = self.state.lock().await;
+        Ok(state.proposal.clone())
     }
 
     async fn get_system(&self) -> Result<Option<serde_json::Value>, Error> {

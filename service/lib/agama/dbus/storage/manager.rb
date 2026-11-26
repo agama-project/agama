@@ -63,6 +63,7 @@ module Agama
           @serialized_resolvables = serialize_storage_resolvables
           @serialized_bootloader_system = serialize_bootloader_system
           @serialized_bootloader_config = serialize_bootloader_config
+          @serialized_bootloader_proposal = serialize_bootloader_proposal
           @serialized_bootloader_resolvables = serialize_bootloader_resolvables
           register_progress_callbacks
         end
@@ -225,6 +226,7 @@ module Agama
         dbus_interface "org.opensuse.Agama.Storage1.Bootloader" do
           dbus_reader_attr_accessor :serialized_bootloader_system, "s", dbus_name: "System"
           dbus_reader_attr_accessor :serialized_bootloader_config, "s", dbus_name: "Config"
+          dbus_reader_attr_accessor :serialized_bootloader_proposal, "s", dbus_name: "Proposal"
           dbus_reader_attr_accessor :serialized_bootloader_resolvables, "s",
             dbus_name: "Resolvables"
           dbus_method(:SetConfig, "in serialized_config:s, out result:u") do |serialized_config|
@@ -326,6 +328,7 @@ module Agama
           update_serialized_proposal
           update_serialized_issues
           update_serialized_resolvables
+          update_serialized_bootloader_proposal
         end
 
         # Performs the bootloader configuration applying the current config.
@@ -333,6 +336,7 @@ module Agama
           logger.info("Configuring bootloader")
           manager.configure_bootloader
           update_serialized_bootloader_config
+          update_serialized_bootloader_proposal
           update_serialized_bootloader_resolvables
         end
 
@@ -400,6 +404,15 @@ module Agama
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_bootloader_config = serialized_bootloader_config
+        end
+
+        # Updates the bootloader proposal if needed.
+        def update_serialized_bootloader_proposal
+          serialized_bootloader_proposal = serialize_bootloader_proposal
+          return if self.serialized_bootloader_proposal == serialized_bootloader_proposal
+
+          # This assignment emits a D-Bus PropertiesChanged.
+          self.serialized_bootloader_proposal = serialized_bootloader_proposal
         end
 
         # Updates the bootloader resolvables if needed.
@@ -492,6 +505,16 @@ module Agama
         # @return [String]
         def serialize_bootloader_config
           JSON.pretty_generate(manager.bootloader_config.to_json)
+        end
+
+        # Generates the serialized JSON of the bootloader proposal.
+        #
+        # @return [String]
+        def serialize_bootloader_proposal
+          proposal = manager.bootloader_proposal
+          return serialize_nil unless proposal
+
+          JSON.pretty_generate(proposal)
         end
 
         # Generates the serialized JSON of the list of bootloader resolvables.

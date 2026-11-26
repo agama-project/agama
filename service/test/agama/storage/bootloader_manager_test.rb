@@ -331,4 +331,41 @@ describe Agama::Storage::BootloaderManager do
       end
     end
   end
+
+  describe "#proposal" do
+    before do
+      allow(::Bootloader::Systeminfo).to receive(:efi?).and_return(true)
+      allow(Yast::Arch).to receive(:x86_64).and_return(true)
+      allow(Yast::Arch).to receive(:i386).and_return(false)
+      allow(Yast::Arch).to receive(:aarch64).and_return(false)
+      allow(Yast::Arch).to receive(:arm).and_return(false)
+      allow(Yast::Arch).to receive(:riscv64).and_return(false)
+    end
+
+    context "when bootloader type is not explicitly set" do
+      it "returns the default proposed bootloader" do
+        expect(agama_bootloader.proposal(product_config)).to eq({ type: "grub2" })
+      end
+
+      context "when product specifies systemd-boot" do
+        let(:product_data) { { "boot" => { "default_efi_bootloader" => "systemd-boot" } } }
+
+        it "returns systemd-boot proposal" do
+          expect(agama_bootloader.proposal(product_config)).to eq({ type: "systemd-boot" })
+        end
+      end
+    end
+
+    context "when bootloader type is explicitly set" do
+      it "returns the explicitly set bootloader" do
+        agama_bootloader.config.type = Y2Storage::BootloaderType::SYSTEMD_BOOT
+        expect(agama_bootloader.proposal(product_config)).to eq({ type: "systemd-boot" })
+      end
+
+      it "returns none when set to none" do
+        agama_bootloader.config.type = Y2Storage::BootloaderType::NONE
+        expect(agama_bootloader.proposal(product_config)).to eq({ type: "none" })
+      end
+    end
+  end
 end

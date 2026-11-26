@@ -1,6 +1,7 @@
 {
   "$schema": "file:///usr/share/agama/openapi/nightly/schemas/config.schema.json",
   "bootloader": {
+    "type": "systemd-boot",
     "stopOnBootMenu": true,
     "timeout": 10,
     "extraKernelParams": "quiet splash console=ttyS0",
