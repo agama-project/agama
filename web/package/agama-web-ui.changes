@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 26 11:01:52 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Enable legacy-container in the node_modules OBS service
+  (gh#agama-project/agama#4201).
+
+-------------------------------------------------------------------
 Fri Aug 28 05:51:20 UTC 2026 - Martin Vidner <mvidner@suse.com>
 
 - update development dependencies to:
