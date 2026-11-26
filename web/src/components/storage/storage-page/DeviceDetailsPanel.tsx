@@ -48,10 +48,7 @@ function entryDescription(entry: Entry): string | undefined {
 export type DeviceDetailsPanelProps = {
   /** The page the panel opens over. */
   page: React.ReactNode;
-  /**
-   * Where the panel stays pinned below the top of the page as it scrolls, if
-   * the page scrolls as a whole. See `SidePanel`.
-   */
+  /** How far below the top of the page the panel stays as it scrolls. See `SidePanel`. */
   pinnedOffset?: number;
 };
 

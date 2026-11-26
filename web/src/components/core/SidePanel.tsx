@@ -31,6 +31,7 @@ import {
   Flex,
   FlexItem,
 } from "@patternfly/react-core";
+import { css } from "@patternfly/react-styles";
 import Icon from "~/components/layout/Icon";
 import { _ } from "~/i18n";
 
@@ -50,11 +51,9 @@ export type SidePanelProps = {
   /** What the panel holds. */
   children?: React.ReactNode;
   /**
-   * Lets the page scroll as a whole, as pages do, rather than the page beside
-   * the panel scrolling on its own. The panel then stays pinned in view as the
-   * page scrolls, this many pixels below the top of the scrolling area, where
-   * something kept in sight sits, fits what is in view, and scrolls its own
-   * content.
+   * How many pixels below the top of the scrolling area the panel stays as the
+   * page scrolls, to leave room for something the page keeps in sight there.
+   * 0 if not given.
    */
   pinnedOffset?: number;
   /**
@@ -143,7 +142,7 @@ export default function SidePanel({
   page,
   children,
   id,
-  pinnedOffset,
+  pinnedOffset = 0,
   returnFocusTo,
   subjectKey,
 }: SidePanelProps): React.ReactNode {
@@ -151,18 +150,15 @@ export default function SidePanel({
   const titleId = useId();
   const isPressOnBackdrop = useRef(false);
   const frameId = useId();
-  const isPinned = pinnedOffset !== undefined;
   const [pinnedHeight, setPinnedHeight] = useState<number>();
 
-  /* Pinned, the panel fits what is in view: from where it starts, under what
+  /* The panel fits what is in view: from where it starts, under what
      the page keeps in sight or lower while the page above has not scrolled
      away yet, down to the bottom of the scrolling area or the end of the page
      beside it, whichever comes first. It is worked out again as the page
      scrolls, so the panel never sticks out of view and never makes the page
      longer, and nothing moves the page on the reader's behalf. */
   useEffect(() => {
-    if (!isPinned) return;
-
     const frame = document.getElementById(frameId);
     const scroller = scrollerOf(frame);
     const content = frame?.querySelector<HTMLElement>(
@@ -193,7 +189,7 @@ export default function SidePanel({
       scroller.removeEventListener("scroll", measure);
       observer?.disconnect();
     };
-  }, [isPinned, isOpen, frameId, pinnedOffset]);
+  }, [isOpen, frameId, pinnedOffset]);
 
   /* Where the reader was when they opened it, so closing it can put them back.
      Without this a reader who closes a panel is dropped at the top of the
@@ -289,22 +285,14 @@ export default function SidePanel({
     <Drawer
       id={frameId}
       style={
-        isPinned
-          ? ({
-              "--agm-side-panel--pinned-offset": `${pinnedOffset}px`,
-              "--agm-side-panel--pinned-height": pinnedHeight ? `${pinnedHeight}px` : "auto",
-            } as React.CSSProperties)
-          : undefined
+        {
+          "--agm-side-panel--pinned-offset": `${pinnedOffset}px`,
+          "--agm-side-panel--pinned-height": pinnedHeight ? `${pinnedHeight}px` : "auto",
+        } as React.CSSProperties
       }
       isExpanded={isOpen}
       position="end"
-      className={[
-        "agm-side-panel-frame",
-        isOpen && "agm-side-panel-frame--covered",
-        isPinned && "agm-side-panel-frame--pinned",
-      ]
-        .filter(Boolean)
-        .join(" ")}
+      className={css("agm-side-panel-frame", isOpen && "agm-side-panel-frame--covered")}
       onPointerDown={(event) => {
         isPressOnBackdrop.current = isOpen && isBackdrop(event);
       }}
