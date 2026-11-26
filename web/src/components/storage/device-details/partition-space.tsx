@@ -289,7 +289,6 @@ function usePartitionSpaceItems({
 }
 
 export {
-  decisionLabel,
   decisionOf,
   decisionUnder,
   recoverableBy,

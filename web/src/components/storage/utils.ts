@@ -55,44 +55,6 @@ const SIZE_METHODS = Object.freeze({
 const DEFAULT_SIZE_UNIT = "GiB";
 
 /**
- * Returns the translated label for a partitionable device space policy.
- *
- * @param policy - Space policy identifier
- * @returns Translated policy label
- */
-const partitionableSpacePolicyLabel = (policy: ConfigModel.SpacePolicy): TranslatedString => {
-  switch (policy) {
-    case "delete":
-      return _("Delete current content");
-    case "resize":
-      return _("Shrink existing partitions");
-    case "keep":
-      return _("Use available space");
-    case "custom":
-      return _("Custom");
-  }
-};
-
-/**
- * Returns the translated label for a volume group space policy.
- *
- * @param policy - Space policy identifier
- * @returns Translated policy label
- */
-const volumeGroupSpacePolicyLabel = (policy: ConfigModel.SpacePolicy): TranslatedString => {
-  switch (policy) {
-    case "delete":
-      return _("Delete current content");
-    case "resize":
-      return _("Shrink existing logical volumes");
-    case "keep":
-      return _("Use available space");
-    case "custom":
-      return _("Custom");
-  }
-};
-
-/**
  * Returns the equivalent in bytes resulting from parsing given input
  *
  * @example
@@ -492,8 +454,6 @@ function isExistingBootPartition(partition: System.Device): boolean {
 export {
   DEFAULT_SIZE_UNIT,
   SIZE_METHODS,
-  partitionableSpacePolicyLabel,
-  volumeGroupSpacePolicyLabel,
   baseName,
   deviceBaseName,
   deviceLabel,

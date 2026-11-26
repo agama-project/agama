@@ -77,28 +77,4 @@ function usersOf(
   return [...groups, ...raids];
 }
 
-/**
- * The devices a software RAID is built from.
- *
- * The configuration does not record them: a RAID it reuses is described only by
- * its name. The machine does, so they are read from what it reports, which is
- * the only place a reader can learn which disks a RAID stands on.
- */
-function membersOf(
-  config: ConfigModel.Config | null,
-  systemDevices: Storage.Device[],
-  device: Storage.Device | null,
-): Related[] {
-  return (device?.md?.devices || [])
-    .map((sid) => systemDevices.find((candidate) => candidate.sid === sid)?.name)
-    .filter((name): name is string => Boolean(name))
-    .map((name) => {
-      const at = (config?.drives || []).findIndex((drive) => drive.name === name);
-      return {
-        name: baseName(name),
-        subject: at === -1 ? undefined : { collection: "drives" as const, index: at },
-      };
-    });
-}
-
-export { usersOf, membersOf };
+export { usersOf };

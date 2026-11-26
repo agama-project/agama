@@ -65,29 +65,6 @@ const ZFCP_SORT = "sortBy";
 /** iSCSI page: sorted column and direction. */
 const ISCSI_SORT = "sortBy";
 
-/**
- * Token identifying an expandable section of a device.
- *
- * Built from the collection and the position of the device, which is how the
- * storage pages already address a device.
- *
- * @example
- * expandedToken("drives", 0); // "d0"
- */
-function expandedToken(collection: "drives" | "mdRaids", index: number): string {
-  return `${collection[0]}${index}`;
-}
-
-/**
- * Token identifying the logical volumes section of a volume group.
- *
- * @example
- * volumeGroupToken("system"); // "vgsystem"
- */
-function volumeGroupToken(vgName: string): string {
-  return `vg${vgName}`;
-}
-
 export {
   EXPANDED,
   SETTINGS_TAB,
@@ -96,6 +73,4 @@ export {
   DASD_SORT,
   ZFCP_SORT,
   ISCSI_SORT,
-  expandedToken,
-  volumeGroupToken,
 };
