@@ -523,7 +523,10 @@ impl<'a> NetworkManagerClient<'a> {
         proxy: &ConnectionProxy<'_>,
     ) -> Result<(), NmError> {
         if let ConnectionConfig::Wireless(ref mut wireless) = connection.config {
-            if wireless.security == SecurityProtocol::WPA2 {
+            if matches!(
+                wireless.security,
+                SecurityProtocol::WPA2 | SecurityProtocol::WPA3Personal
+            ) {
                 if let Some(secrets) =
                     Self::get_setting_secrets(proxy, "802-11-wireless-security").await
                 {
