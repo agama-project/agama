@@ -23,7 +23,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
-import { Divider, MenuItemProps, MenuPopperProps } from "@patternfly/react-core";
+import { Divider, MenuItemProps } from "@patternfly/react-core";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import {
   useConfigModel,
@@ -130,16 +130,13 @@ const AddDeviceMenuItem = ({
 type Picked = { collection: DetailsCollection; name: string };
 
 export type ConfigureDeviceMenuProps = {
-  /** What the toggle says, where the offer needs naming for its surroundings. */
+  /** The toggle label. */
   label?: TranslatedString;
-  /** Which way the menu opens, for a toggle that sits against an edge. */
-  popperProps?: MenuPopperProps;
 };
 
 /** Menu that provides options for users to configure storage drives. */
 export default function ConfigureDeviceMenu({
   label = _("More devices"),
-  popperProps = { position: "left" },
 }: ConfigureDeviceMenuProps): React.ReactNode {
   const [deviceSelectorOpen, setDeviceSelectorOpen] = useState(false);
   const openDeviceSelector = () => setDeviceSelectorOpen(true);
@@ -202,7 +199,7 @@ export default function ConfigureDeviceMenu({
       <MenuButton
         menuProps={{
           "aria-label": _("Configure device menu"),
-          popperProps,
+          popperProps: { position: "left" },
         }}
         /* Bordered, so it does not look like a link to another page. */
         toggleProps={{ variant: "default", icon: <Icon name="add_circle" /> }}

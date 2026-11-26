@@ -36,7 +36,6 @@ export default function GlobalActions() {
         // TRANSLATORS: offered at the foot of the list of what the
         // installation is made of: bring more disks into it.
         label={_("Add more devices")}
-        popperProps={{ position: "left" }}
       />
     </Flex>
   );
