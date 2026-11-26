@@ -126,7 +126,7 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
     ? [
         <MenuButtonItem
           key="open"
-          icon={<Icon size="md" name="right_panel_open" />}
+          icon={<Icon size="md" name="article" />}
           /* Named in full only for a reader who is told the item rather than
              shown it. On screen the menu hangs off the row it belongs to, and
              a name the reader can see beside the item is a name repeated. */

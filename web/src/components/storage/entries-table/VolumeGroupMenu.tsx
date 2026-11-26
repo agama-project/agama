@@ -108,7 +108,7 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
           ? [
               <MenuButtonItem
                 key="open"
-                icon={<Icon size="md" name="right_panel_open" />}
+                icon={<Icon size="md" name="article" />}
                 /* A group's name is a word the reader chose, so the name alone
                    does not say what is being configured: "Configure system"
                    reads as a thing to do to the system. Said in full where the
