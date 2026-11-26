@@ -28,7 +28,7 @@
       }
     },
     "bootloaderType": {
-      "enum": ["grub2", "systemd-boot", "none"]
+      "enum": ["grub2", "grub2-bls", "systemd-boot", "none"]
     },
     "encryptionAuthMethod": {
       "enum": ["password", "tpm"]
