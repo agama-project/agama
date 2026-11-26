@@ -39,23 +39,16 @@ import type { ConfigModel } from "~/model/storage/config-model";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 
 export type VolumeGroupMenuProps = {
-  /** The group as the configuration describes it. */
+  /** The volume group in the configuration. */
   group: ConfigModel.VolumeGroup;
-  /**
-   * Where it is written. Given on the group's row, where opening its panel and
-   * its edit form are among the offers; left out in the panel itself.
-   */
+  /** Where it is in the configuration. Given on the row, not in the panel. */
   subject?: DetailsSubject;
 };
 
 /**
- * What can be done to an LVM volume group, from its row.
- *
- * A group the machine already has and a group this configuration is defining
- * are offered different things. The first can be swapped for another group that
- * exists, which is what the menu the rest of the interface uses is for. The
- * second exists only here, so what there is to do with it is change how it is
- * defined, or stop defining it.
+ * The menu of an LVM volume group. A group that already exists on the system
+ * gets the menu of existing groups; one this configuration creates can be
+ * edited or dropped.
  */
 export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps): React.ReactNode {
   const config = useConfigModel();
@@ -66,8 +59,7 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
   const targetDevices = configModel.volumeGroup.filterTargetDevices(config, group);
   const convert = targetDevices.length === 1 && !!lvs.length;
   const { openDetails } = useDeviceDetails();
-  // TRANSLATORS: names the menu of things that can be done to one LVM volume
-  // group of the installation. %s is its name, such as "system".
+  // TRANSLATORS: %s is a volume group name, such as "system"
   const label = sprintf(_("Actions for %s"), group.vgName);
   let description: string;
 
@@ -103,35 +95,29 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
       menuProps={{ "aria-label": label, popperProps: { position: "end" } }}
       customToggle={<RowMenuToggle label={label} />}
       items={[
-        /* First, because it is what clicking the row does. */
+        /* First, as the main action of the row. */
         ...(subject
           ? [
               <MenuButtonItem
                 key="open"
                 icon={<Icon size="md" name="article" />}
-                /* A group's name is a word the reader chose, so the name alone
-                   does not say what is being configured: "Configure system"
-                   reads as a thing to do to the system. Said in full where the
-                   item is heard rather than seen, and left at the verb on
-                   screen, where the row around it says which group this is. */
+                /* Screen readers get the full name, since a group name alone, as in
+                   "Configure system", is ambiguous; on screen, the row says which
+                   group. */
                 aria-label={sprintf(
-                  // TRANSLATORS: opens the panel where one LVM volume group of
-                  // the installation is read and changed. %s is its name, such
-                  // as "system".
+                  // TRANSLATORS: opens the details panel of a volume group. %s is its name, such as "system"
                   _("Configure %s LVM volume group"),
                   group.vgName,
                 )}
                 onClick={() => openDetails(subject)}
                 description={_("Customize how the volume group will be used")}
               >
-                {/* TRANSLATORS: opens the panel where one entry of the
-                    installation is read and changed. */}
+                {/* TRANSLATORS: opens the details panel of a volume group */}
                 {_("Details")}
               </MenuButtonItem>,
             ]
           : []),
-        /* Only on the row. The group's panel offers the same form as a link
-           under its properties, after what the form changes. */
+        /* Only on the row: the panel links to the same form. */
         ...(subject
           ? [
               <MenuButtonItem
@@ -143,15 +129,12 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
                     pathname: generateEncodedPath(PATHS.volumeGroup.edit, {
                       id: String(subject.index),
                     }),
-                    /* The page keeps its state across the form, open panel
-                       included. */
                     search: location.search,
                   })
                 }
               >
-                {/* TRANSLATORS: offered on an LVM volume group of the
-                    installation: change which disks it is built on and what it
-                    will hold. */}
+                {/* TRANSLATORS: changes which disks a volume group is built on and
+                    what it holds */}
                 {_("Edit")}
               </MenuButtonItem>,
             ]

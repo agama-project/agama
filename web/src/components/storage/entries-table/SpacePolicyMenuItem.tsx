@@ -61,8 +61,7 @@ export default function SpacePolicyMenuItem({
   const setSpacePolicy = useSetSpacePolicy();
   const isVolumeGroup = collection === "volumeGroups";
 
-  /* Choosing what the device already allows changes nothing, so nothing is
-     written. */
+  /* Choosing the current policy changes nothing. */
   const choose = (next: ConfigModel.SpacePolicy) => {
     if (next !== policy) setSpacePolicy(collection, index, { type: next });
   };
@@ -87,13 +86,10 @@ export default function SpacePolicyMenuItem({
     <MenuButtonItem
       key="space-policy"
       icon={<Icon size="md" name="home_storage" />}
-      /* Leading back out, named after where the reader is, for context; and
-         saying it leads back, for whoever hears rather than sees it. */
+      /* Named after the current submenu, and saying it leads back. */
       upProps={{
         label: title,
-        // TRANSLATORS: name of the item leading back to the full menu from
-        // the choices for a device's current partitions. %s is the title of
-        // those choices, such as "Existing partitions".
+        // TRANSLATORS: goes back to the full menu. %s is the submenu title, such as "Existing partitions"
         "aria-label": sprintf(_("Back from %s"), title),
       }}
       description={description}

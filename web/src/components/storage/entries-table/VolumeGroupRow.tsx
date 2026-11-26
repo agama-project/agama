@@ -33,27 +33,17 @@ import type { ConfigModel } from "~/model/storage/config-model";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 
 export type VolumeGroupRowProps = {
-  /** The group as the configuration describes it. */
+  /** The volume group in the configuration. */
   group: ConfigModel.VolumeGroup;
-  /** Where it is written, which is how the panel is opened on it. */
+  /** Where it is in the configuration. */
   subject: DetailsSubject;
-  /**
-   * Whether the row sits under a title naming its kind, so the line under its
-   * name only needs to say whether the group is new.
-   */
+  /** Whether the row is under a group title, so the line under the name only says whether it is new. */
   isGrouped?: boolean;
 };
 
 /**
- * An LVM volume group, as a row of the list.
- *
- * Its first column reads like a disk's: the size beside the name, where the
- * machine has the group, and a short line under it, its kind or that it is to
- * be created (see {@link volumeGroupFacts}).
- *
- * A group being defined for the first time costs nothing, since there is
- * nothing of it on the machine yet. One that already exists is read like any
- * other entry: what the installer does to what it holds.
+ * The row of an LVM volume group. A group the installation creates has no
+ * size and no existing data yet.
  */
 export default function VolumeGroupRow({
   group,
@@ -62,11 +52,9 @@ export default function VolumeGroupRow({
 }: VolumeGroupRowProps): React.ReactNode {
   const device = useDevice(group.name || "");
   const { size, description } = volumeGroupFacts(group, device);
-  // TRANSLATORS: said under the name of a volume group the installation
-  // creates, in a list headed "Volume groups".
+  // TRANSLATORS: marks a volume group the installation creates
   const newMark = !group.name ? _("New") : undefined;
-  /* Only an existing group: the installation creates a new one even while it
-     holds no logical volume yet. */
+  /* A new group is created even when it holds no logical volume yet. */
   const isIdle = !!group.name && !configModel.volumeGroup.usedMountPaths(group).length;
 
   return (

@@ -38,17 +38,14 @@ import type {
   DetailsSubject,
 } from "~/components/storage/shared/use-device-details";
 
-/**
- * The order of the groups, which is the one the configuration is built in:
- * from what is defined down to the hardware it is defined on.
- */
+/** The group order: from what is defined down to the hardware it is defined on. */
 const TYPE_ORDER: DetailsCollection[] = ["volumeGroups", "mdRaids", "drives"];
 
 type Row = {
   subject: DetailsSubject;
-  /** Set for a volume group, whose row reads the group itself. */
+  /** Set for a volume group. */
   group?: ConfigModel.VolumeGroup;
-  /** Set for a disk or a RAID, as the model spells its name. */
+  /** Set for a disk or a RAID. */
   deviceName?: string;
 };
 
@@ -66,50 +63,32 @@ function rowsOf(config: ConfigModel.Config | null): Row[] {
   return [...groups, ...partitionables("mdRaids"), ...partitionables("drives")];
 }
 
-/** What a group of the table is called, by kind and by how many it holds. */
+/** The title of a group of rows. */
 function groupTitle(collection: DetailsCollection, count: number): TranslatedString {
   switch (collection) {
     case "volumeGroups":
-      // TRANSLATORS: heads the LVM volume groups in the list of what the
-      // installation is made of.
       return n_("LVM volume group", "LVM volume groups", count);
     case "mdRaids":
-      // TRANSLATORS: heads the software RAID devices in the list of what the
-      // installation is made of.
       return n_("RAID device", "RAID devices", count);
     case "drives":
-      // TRANSLATORS: heads the disks in the list of what the installation is
-      // made of.
+      // TRANSLATORS: heads the disks the installation uses
       return n_("Used disk", "Used disks", count);
   }
 }
 
 export type EntriesTableProps = {
-  /** The level of the headings naming each group of rows. */
+  /** The heading level of the group titles. */
   groupHeadingLevel?: TitleProps["headingLevel"];
 };
 
 /**
- * What the configuration is made of, under the summary of what it does.
+ * The table of storage entries: disks, RAID devices and volume groups, grouped
+ * by kind when there is more than one kind.
  *
- * A regular table, one row per entry, with the columns named in its header:
- * the device, what the new system uses it for, what happens to its existing
- * data, and the menu of actions. The rows follow the configuration's order.
- *
- * Two of PatternFly's defaults are turned off:
- *
- * - It calls a table a grid, which announces an interactive widget with a
- *   keyboard model of its own. This is something to read.
- * - It stacks each row into a block below a breakpoint, which drops the table
- *   semantics exactly where the window is tightest. The table keeps its width
- *   instead and scrolls inside its own box.
- *
- * The box is always a region named after the table, so the landmark stays put
- * whatever the width. While the table scrolls, the box is also a Tab stop, so
- * a keyboard reader can bring the hidden columns into view with the arrow
- * keys: tabbing between the row menus alone would scroll straight to the last
- * column, past the ones in between. Once the table fits, the stop goes, since
- * it would scroll nothing. Firefox does the same by itself; Chromium does not.
+ * It opts out of two PatternFly defaults: the grid role, since it is a table to
+ * read, and stacking rows on narrow screens, which drops the table semantics.
+ * Instead, it scrolls sideways in a region named after the table, which is a
+ * Tab stop only while it scrolls, so keyboard users can scroll it.
  */
 export default function EntriesTable({ groupHeadingLevel }: EntriesTableProps): React.ReactNode {
   const config = useConfigModel();
@@ -120,8 +99,6 @@ export default function EntriesTable({ groupHeadingLevel }: EntriesTableProps): 
   const rows = rowsOf(config);
   if (!rows.length) return null;
 
-  /* One group per kind, in the configuration's order, titled only when there
-     is more than one kind. */
   const groups = TYPE_ORDER.map((collection) => ({
     collection,
     rows: rows.filter((row) => row.subject.collection === collection),
@@ -143,10 +120,8 @@ export default function EntriesTable({ groupHeadingLevel }: EntriesTableProps): 
   const columnCount = 4;
 
   return (
-    /* Keep this wrapper, and its class here rather than on the table: it lets
-       the table scroll sideways on narrow screens. A table cannot scroll by
-       itself, and making it scroll would break how some screen readers read
-       it. */
+    /* The scroll box: a table scrolling by itself would confuse some screen
+       readers. */
     <div
       ref={setBox}
       className="agm-entries-table"
@@ -155,20 +130,14 @@ export default function EntriesTable({ groupHeadingLevel }: EntriesTableProps): 
       tabIndex={scrolls ? 0 : undefined}
     >
       <Table role="table" gridBreakPoint="" variant="compact">
-        {/* Read rather than shown: nothing on the page heads the table, and a
-            visible title would be a design change of its own. A plain caption
-            rather than PatternFly's Caption, whose types reject the id the
-            region needs to point at it (it passes it on all the same). */}
+        {/* A plain caption, since the PatternFly one rejects the id the
+            region points at. */}
         <caption id={captionId} className={a11yStyles.screenReader}>
-          {/* TRANSLATORS: names the list of the disks, RAID devices and volume
-              groups the installation is made of. */}
+          {/* TRANSLATORS: names the table of disks, RAID devices and volume groups the installation uses */}
           {_("Devices of the installation")}
         </caption>
         <Thead>
-          {/* Wrapped rather than cut short. PatternFly makes a header it
-              truncates a Tab stop, for the tooltip with the rest of its text:
-              one more stop for the keyboard, and the full name only on
-              request. */}
+          {/* Wrapped, since PatternFly makes truncated headers a Tab stop. */}
           <Tr>
             <Th modifier="wrap">{columnName("device")}</Th>
             <Th modifier="wrap">{columnName("usedFor")}</Th>

@@ -109,9 +109,7 @@ export type ChangeDeviceMenuItemProps = {
   openFn: () => void;
 } & MenuItemProps;
 
-/**
- * Internal component holding the presentation of the option to change the device
- */
+/** The menu item to use another device instead of the current one. */
 export default function ChangeDeviceMenuItem({
   modelDevice,
   device,

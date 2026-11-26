@@ -34,9 +34,7 @@ import type { Storage as System } from "~/model/system";
 
 type Volume = ConfigModel.Partition | ConfigModel.LogicalVolume;
 
-/* ---- Used for ------------------------------------------------------------- */
-
-/** The mount points of the volumes the installation creates or reuses. */
+/** The mount points of the given volumes. */
 function mountPathsOf(volumes: Volume[]): string[] {
   return volumes.filter((v) => v.mountPath).map((v) => v.mountPath);
 }
@@ -49,10 +47,7 @@ function isUsed(volume: Volume): boolean {
   return !!volume.name && !!volume.mountPath;
 }
 
-/**
- * Names such as mount points or volume groups, joined the way the language
- * joins a list.
- */
+/** Names such as mount points, joined as a list in the current language. */
 function Names({ names }: { names: string[] }) {
   return <>{formatList(names.map((n) => formattedPath(n)))}</>;
 }
@@ -62,7 +57,7 @@ function withNames(sentence: string, names: string[]): React.ReactNode {
   return <Interpolate sentence={sentence}>{() => <Names names={names} />}</Interpolate>;
 }
 
-/** What a disk or a RAID is used for, one value per line. */
+/** What a disk or a RAID is used for. */
 function driveUsedFor(
   device: ConfigModel.Drive | ConfigModel.MdRaid,
   groups: string[],
@@ -70,18 +65,15 @@ function driveUsedFor(
   isIdle: boolean,
 ): React.ReactNode[] {
   if (isIdle) {
-    // TRANSLATORS: what a disk added to the installation is used for, when
-    // nothing is planned on it yet; the installer leaves it untouched.
+    // TRANSLATORS: a disk with nothing planned on it, which the installer leaves untouched
     return [_("Nothing yet (skipped)")];
   }
 
   if (device.filesystem) {
     return device.filesystem.reuse
-      ? // TRANSLATORS: what a disk is used for: a single file system over
-        // all of it, mounted at %s, such as "/home".
+      ? // TRANSLATORS: %s is a mount point, such as "/home"
         [withNames(_("Mounting it at %s"), [device.mountPath])]
-      : // TRANSLATORS: what a disk is used for: a single file system over
-        // all of it, formatted and mounted at %s, such as "/home".
+      : // TRANSLATORS: %s is a mount point, such as "/home"
         [withNames(_("Formating it for %s"), [device.mountPath])];
   }
 
@@ -103,8 +95,7 @@ function driveUsedFor(
   if (groups.length && groups.length <= NAMES_PER_LINE) {
     lines.push(
       withNames(
-        // TRANSLATORS: what a disk is used for: it holds the LVM volume
-        // group(s) named by %s, such as "system" or "system and data".
+        // TRANSLATORS: %s is a list of volume group names, such as "system and data"
         n_("Hosting the volume group %s", "Hosting the volume groups %s", groups.length),
         groups,
       ),
@@ -112,7 +103,6 @@ function driveUsedFor(
   } else if (groups.length) {
     lines.push(
       sprintf(
-        // TRANSLATORS: what a disk is used for: it holds %d LVM volume groups.
         n_("Hosting %d LVM volume group", "Hosting %d LVM volume groups", groups.length),
         groups.length,
       ),
@@ -182,8 +172,6 @@ function volumeGroupUsedFor(group: ConfigModel.VolumeGroup): React.ReactNode[] {
   const newVols = logicalVols.filter((v) => isNew(v));
   const usedVols = logicalVols.filter((v) => isUsed(v));
 
-  // TRANSLATORS: what a volume group is used for, when no logical volume is
-  // planned in it yet.
   if (!newVols.length && !usedVols.length) return [_("Nothing yet")];
 
   const lines: React.ReactNode[] = [];
@@ -248,7 +236,6 @@ const existingVgActions = (
   group: ConfigModel.VolumeGroup,
   device: System.Device | null,
 ): TranslatedString[] => {
-  /* Nothing on the VG today, nothing to say about what happens to it. */
   if (!device?.logicalVolumes?.length) return [];
 
   const lvs = group?.logicalVolumes || [];
@@ -298,10 +285,7 @@ const existingVgActions = (
   return lines;
 };
 
-/**
- * This considers only the case in which the drive contains partitions initially and will contain
- * partitions after installation.
- */
+/** What happens to the existing data of a disk or a RAID. */
 const existingDriveActions = (
   drive: Partitionable.Device,
   device: System.Device | null,
@@ -371,8 +355,8 @@ const existingDriveActions = (
 };
 
 /**
- * The "Existing data" cell. A device with nothing on it yet shows nothing, and
- * tells screen readers so, rather than leaving them on a cell read as "blank".
+ * The "Existing data" cell. When there is nothing to say, only screen readers
+ * get a text, so the cell is not read as blank.
  */
 function ExistingDataCell({
   config,
@@ -393,8 +377,7 @@ function ExistingDataCell({
     return (
       <Text srOnly>
         {
-          // TRANSLATORS: read by screen readers in the "Existing data" column
-          // for a device that is still not configured.
+          // TRANSLATORS: read by screen readers for a device with nothing planned yet
           _("No actions planned yet.")
         }
       </Text>
@@ -406,9 +389,7 @@ function ExistingDataCell({
   return (
     <Text srOnly>
       {
-        // TRANSLATORS: read by screen readers in the "Existing data" column
-        // for a device that holds nothing yet, such as a volume group the
-        // installation creates.
+        // TRANSLATORS: read by screen readers for a device holding nothing yet
         _("No existing data")
       }
     </Text>
