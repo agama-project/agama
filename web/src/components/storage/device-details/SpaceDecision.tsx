@@ -40,13 +40,12 @@ function label(
 ): TranslatedString {
   switch (policy) {
     case "delete":
-      return someReused
-        ? isVolumeGroup
+      if (someReused) {
+        return isVolumeGroup
           ? _("Delete all logical volumes with no mount point")
-          : _("Delete all partitions with no mount point")
-        : isVolumeGroup
-          ? _("Delete all logical volumes")
-          : _("Delete all partitions");
+          : _("Delete all partitions with no mount point");
+      }
+      return isVolumeGroup ? _("Delete all logical volumes") : _("Delete all partitions");
     case "resize":
       return isVolumeGroup
         ? _("Shrink logical volumes if needed and possible")

@@ -32,6 +32,25 @@ import CurrentContentSection, {
 } from "~/components/storage/device-details/CurrentContentSection";
 import { _ } from "~/i18n";
 import type { DeviceDetailsBodyProps } from "~/components/storage/device-details/DeviceDetailsBody";
+import type { Entry } from "~/components/storage/device-details/entry";
+
+/** What the user can do with the device, given what it holds today. */
+function summaryOf(entry: Entry): string {
+  if (hasCurrentContent(entry)) {
+    return _(
+      "Define some partitions to be created, mounted or formatted during instalation, or set the device to be formatted with no partitions.",
+    );
+  }
+
+  const filesystem = entry.device?.filesystem;
+  if (!filesystem) return _("Define some partitions or format the whole device.");
+
+  return sprintf(
+    // TRANSLATORS: %s is a filesystem type like "Ext4" or "Btrfs"
+    _("Define some partitions, format the whole device or mount the existing %s file system."),
+    filesystemLabel(filesystem.type),
+  );
+}
 
 /**
  * A device the installation does not use yet: says what can be done with it
@@ -45,19 +64,7 @@ export default function PartitionableNoContent({ entry, subject }: DeviceDetails
   const isCurrentlyPartitioned = hasCurrentContent(entry);
   const isCurrentlyFormatted = !!entry.device?.filesystem;
 
-  const summary = isCurrentlyPartitioned
-    ? _(
-        "Define some partitions to be created, mounted or formatted during instalation, or set the device to be formatted with no partitions.",
-      )
-    : isCurrentlyFormatted
-      ? sprintf(
-          // TRANSLATORS: %s is a filesystem type like "Ext4" or "Btrfs"
-          _(
-            "Define some partitions, format the whole device or mount the existing %s file system.",
-          ),
-          filesystemLabel(entry.device.filesystem.type),
-        )
-      : _("Define some partitions or format the whole device.");
+  const summary = summaryOf(entry);
 
   const actions = (
     <>

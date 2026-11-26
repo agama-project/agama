@@ -25,8 +25,8 @@ import { sprintf } from "sprintf-js";
 import { MenuButtonItem } from "~/components/core/MenuButton";
 import { useSetSpacePolicy } from "~/hooks/model/storage/config-model";
 import { _, TranslatedString } from "~/i18n";
-import type { ConfigModel, DeviceCollection } from "~/model/storage/config-model";
 import Icon from "~/components/layout/Icon";
+import type { ConfigModel, DeviceCollection } from "~/model/storage/config-model";
 
 /** Safest first, so the one that loses data comes last. */
 const POLICIES: ConfigModel.SpacePolicy[] = ["delete", "resize"];
@@ -37,11 +37,11 @@ function label(policy: ConfigModel.SpacePolicy): TranslatedString {
 }
 
 function meaning(policy: ConfigModel.SpacePolicy, isVg: boolean): TranslatedString {
-  return policy === "delete"
-    ? _("The space will be available for the new system")
-    : isVg
-      ? _("Some logical volumes may be reduced if needed")
-      : _("Some partitions may be reduced if needed");
+  if (policy === "delete") return _("The space will be available for the new system");
+
+  return isVg
+    ? _("Some logical volumes may be reduced if needed")
+    : _("Some partitions may be reduced if needed");
 }
 
 export type SpacePolicyMenuItemProps = {
