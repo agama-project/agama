@@ -23,10 +23,18 @@
 import React from "react";
 import Text from "~/components/core/Text";
 
+type DataLossProps = React.PropsWithChildren<{
+  /** Whether the text is also shown bold. Off by default: the color sets it apart. */
+  isBold?: boolean;
+}>;
+
 /** Text about data the installation loses, marked as strongly important. */
-export default function DataLoss({ children }: React.PropsWithChildren) {
+export default function DataLoss({ isBold = false, children }: DataLossProps) {
   return (
-    <Text component="strong" textStyle="textColorStatusDanger">
+    <Text
+      component="strong"
+      textStyle={isBold ? "textColorStatusDanger" : ["textColorStatusDanger", "fontWeightNormal"]}
+    >
       {children}
     </Text>
   );
