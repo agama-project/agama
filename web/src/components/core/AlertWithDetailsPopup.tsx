@@ -134,7 +134,6 @@ export default function AlertWithDetailsPopup({
     <Button
       variant="tertiary"
       size="sm"
-      className="agm-details-button"
       aria-label={actionAriaLabel}
       onClick={() => setIsOpen(true)}
     >
