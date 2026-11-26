@@ -22,6 +22,7 @@ use crate::service;
 use agama_utils::{api::bootloader, define_message, BoxFuture, Resolvable};
 
 define_message!(GetConfig -> bootloader::Config);
+define_message!(GetProposal -> Option<bootloader::Proposal>);
 define_message!(GetSystem -> Option<serde_json::Value>);
 define_message!(GetResolvables -> Vec<Resolvable>);
 define_message!(SetConfig { config: serde_json::Value } -> BoxFuture<Result<(), service::Error>>);

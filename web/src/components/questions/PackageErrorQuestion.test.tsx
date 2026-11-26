@@ -30,6 +30,7 @@ const answerFn = jest.fn();
 const question: Question = {
   id: 1,
   class: "packageProvideError",
+  title: "Package provide error",
   text: "Package download failed",
   field: { type: FieldType.None },
   actions: [
@@ -37,7 +38,7 @@ const question: Question = {
     { id: "skip", label: "Skip" },
   ],
   defaultAction: "Retry",
-  data: { package: "foo", error_code: "INVALID" },
+  data: { package: "foo", error_code: "Invalid" },
 };
 
 const renderQuestion = () =>

@@ -19,6 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "yast"
 require "agama/question_with_password"
 require "y2storage/disk_size"
 
@@ -27,6 +28,8 @@ module Agama
     module Callbacks
       # Callbacks for LUKS activation
       class ActivateLuks
+        include Yast::I18n
+
         # Constructor
         #
         # @param questions_client [Agama::HTTP::Clients::Questions]
@@ -77,6 +80,7 @@ module Agama
           }
           QuestionWithPassword.new(
             qclass:         "luksActivation",
+            title:          _("Encrypted device"),
             text:           generate_text(data),
             options:        [:skip, :decrypt],
             default_option: :decrypt,

@@ -29,6 +29,7 @@ import { plainRender } from "~/test-utils";
 const question: Question = {
   id: 1,
   class: "autoyastUnsupported",
+  title: "Unsupported AutoYaST elements",
   text: "Some elements from the AutoYaST profile are not supported.",
   field: { type: FieldType.String },
   actions: [
@@ -49,6 +50,12 @@ const answerFn: AnswerCallback = jest.fn();
 describe("UnsupportedAutoYaST", () => {
   beforeEach(() => {
     mockQuestion = { ...question };
+  });
+
+  it("renders the question title", async () => {
+    plainRender(<UnsupportedAutoYaST question={question} answerCallback={answerFn} />);
+
+    await screen.findByRole("dialog", { name: question.title });
   });
 
   it("mentions the planned elements", () => {

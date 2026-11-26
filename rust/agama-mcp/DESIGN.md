@@ -103,10 +103,26 @@ Disabled by default. Activated via kernel command line:
 -   `get_logs(log_type?, lines?)`: Queries `journalctl` directly.
     Scopes: `installer` (`agama*`), `system`, `zypp`, or specific unit
     (e.g. `NetworkManager.service`). Default 100 lines (max 1000).
+    Sensitive parameters (e.g. `live.password`, `inst.mcp.token`) and
+    passwords in URLs are filtered (`<FILTERED>`) across all modes.
 
 ------------------------------------------------------------------------
 
 ## 4. Security Model & Token Isolation
+
+### Threat: Credential Leakage via System Logs
+
+Kernel boot arguments and systemd services log the kernel command line containing sensitive parameters (such as `live.password`, `inst.mcp.token`, or URLs with basic authentication credentials). An AI agent reading system logs via `get_logs` could recover these credentials and compromise the live system or remote network services.
+
+### Solution: Unconditional Log Parameter Filtering
+
+`get_logs` unconditionally filters sensitive parameters across all operating modes (both `config` and `full`), replacing their values with `<FILTERED>`. This covers:
+- Agama boot parameters (`live.password`, `live.password_hash`, `inst.mcp.token`).
+- Common linuxrc and dracut boot credentials (`inst.password`, `vncpassword`, `sshpassword`, `rd.live.password`, `rd.luks.key`, `regcode`).
+- Basic authentication credentials in URLs (e.g. `http://user:pass@host`), including passwords containing `@`.
+- Credentials in query strings (e.g. `smb://server/share?username=joe&password=secret`, `?token=secret`).
+
+AI agents never need access to host credentials or remote passwords.
 
 ### Threat: Boundary Bypass via Agent Introspection
 

@@ -19,11 +19,23 @@
 // find current contact information at www.suse.com.
 
 use crate::service;
-use agama_utils::{api::bootloader::Config, define_message, BoxFuture};
+use agama_utils::{
+    api::bootloader::{Config, Proposal},
+    define_message, BoxFuture,
+};
 use serde_json::Value;
 
 define_message!(GetConfig -> Config);
+define_message!(GetProposal -> Option<Proposal>);
 define_message!(GetSystem -> Option<Value>);
 define_message!(SetConfig<T> { config: Option<T> } -> BoxFuture<Result<(), service::Error>>);
 define_message!(SetKernelArg { id: String, value: String } -> ());
 define_message!(SetLocale { locale: String } -> ());
+
+impl<T> SetConfig<T> {
+    pub fn with(config: T) -> Self {
+        Self {
+            config: Some(config),
+        }
+    }
+}

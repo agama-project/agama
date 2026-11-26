@@ -864,7 +864,14 @@ impl MessageHandler<message::GetProposal> for Service {
         let storage_available = !Self::is_storage_busy(&status);
         let software_available = !Self::is_software_busy(&status);
 
-        let (hostname, l10n, storage, network, users, access, software) = tokio::try_join!(
+        let (bootloader, hostname, l10n, storage, network, users, access, software) = tokio::try_join!(
+            async {
+                if storage_available {
+                    Ok::<_, Error>(self.bootloader.call(bootloader::message::GetProposal).await?)
+                } else {
+                    Ok(None)
+                }
+            },
             async { Ok::<_, Error>(self.hostname.call(hostname::message::GetProposal).await?) },
             async { Ok::<_, Error>(self.l10n.call(l10n::message::GetProposal).await?) },
             async {
@@ -887,6 +894,7 @@ impl MessageHandler<message::GetProposal> for Service {
         )?;
 
         Ok(Some(Proposal {
+            bootloader,
             hostname,
             l10n,
             network,

@@ -33,6 +33,10 @@ pub trait Bootloader {
     #[zbus(property)]
     fn config(&self) -> zbus::Result<String>;
 
+    /// Proposal property
+    #[zbus(property)]
+    fn proposal(&self) -> zbus::Result<String>;
+
     /// System property
     #[zbus(property)]
     fn system(&self) -> zbus::Result<String>;

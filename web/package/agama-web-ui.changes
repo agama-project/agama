@@ -1,4 +1,37 @@
 -------------------------------------------------------------------
+Thu Nov 26 08:28:30 UTC 2026 - David Díaz <dgonzalez@suse.com>
+
+- Stop highlighting the first option of a menu opened with a click
+  (gh#agama-project/agama#4307).
+
+-------------------------------------------------------------------
+Tue Nov 25 11:47:08 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve the questions presentation (gh#agama-project/agama#2028,
+  gh#agama-project/agama#4278):
+  - Extend the GenericQuestion component to include the technical
+    details.
+  - Drop the StorageCommitErrorQuestion component and use
+    GenericQuestion instead.
+  - Fix the "Organization" label in RegistrationCertificateQuestion.
+  - Do not use icons on questions titles.
+  - Use blank lines to split the text into paragraphs.
+
+-------------------------------------------------------------------
+Wed Nov 25 10:04:49 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Recognize a port of a bond or a bridge listed by its connection
+  id, not only by its interface name, and drop every IP setting,
+  including ignoreAutoDns, from a port (gh#agama-project/agama#3996).
+
+-------------------------------------------------------------------
+Tue Nov 24 16:59:01 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Handle the ports of bonds and bridges nested in their controller,
+  listing and editing them like any other connection
+  (gh#agama-project/agama#3996).
+
+-------------------------------------------------------------------
 Mon Nov 16 08:50:23 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1280086 (CVE-2026-87776)
@@ -26,7 +59,7 @@ Thu Nov  5 11:11:43 UTC 2026 - David Díaz <dgonzalez@suse.com>
 
 - Keep the options menu divider out of the terminal entry
   (gh#agama-project/agama#4186).
-  
+
 -------------------------------------------------------------------
 Wed Nov  4 09:18:57 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
@@ -36,7 +69,7 @@ Wed Nov  4 09:18:57 UTC 2026 - David Diaz <dgonzalez@suse.com>
 Wed Nov  4 09:04:37 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1278291 (CVE-2026-84369), bsc#1278292 (CVE-2026-84370)
-  - svgo version 3.3.5 
+  - svgo version 3.3.5
 
 -------------------------------------------------------------------
 Wed Nov  4 08:50:12 UTC 2026 - Ladislav Slezák <lslezak@suse.com>

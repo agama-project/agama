@@ -133,7 +133,7 @@ mod tests {
 
         let config = ctx.handler.call(message::GetConfig).await?;
         let connections = config.connections.unwrap().flatten();
-        let mut ids: Vec<&str> = connections.iter().map(|c| c.id.as_str()).collect();
+        let mut ids: Vec<&str> = connections.iter().map(|c| c.common.id.as_str()).collect();
         ids.sort_unstable();
         assert_eq!(ids, ["bond0", "br0", "br0.100", "eth0", "eth1"]);
 
@@ -142,7 +142,7 @@ mod tests {
             .connections
             .0
             .iter()
-            .map(|c| c.connection.id.as_str())
+            .map(|c| c.common.id.as_str())
             .collect();
         assert_eq!(roots, ["br0", "br0.100"]);
         Ok(())
@@ -209,11 +209,7 @@ mod tests {
         assert_eq!(ctx.network_events(), ["ProposalChanged", "SystemChanged"]);
 
         let system = ctx.handler.call(message::GetSystem).await?;
-        assert!(system
-            .connections
-            .0
-            .iter()
-            .any(|c| c.connection.id == "eth2"));
+        assert!(system.connections.0.iter().any(|c| c.common.id == "eth2"));
         Ok(())
     }
 }

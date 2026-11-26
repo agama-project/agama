@@ -79,14 +79,86 @@ describe Agama::AutoYaST::BootloaderReader do
     end
 
     context "when update_nvram is defined" do
-      let(:global) do
-        { "update_nvram" => true }
+      context "with a boolean value" do
+        let(:global) do
+          { "update_nvram" => true }
+        end
+
+        it "returns a hash including the 'updateNvram'" do
+          expect(subject.read["bootloader"]).to include(
+            "updateNvram" => true
+          )
+        end
       end
 
-      it "returns a hash including the 'updateNvram'" do
-        expect(subject.read["bootloader"]).to include(
-          "updateNvram" => true
-        )
+      context "with string 'true'" do
+        let(:global) do
+          { "update_nvram" => "true" }
+        end
+
+        it "converts 'true' to boolean true" do
+          expect(subject.read["bootloader"]).to include(
+            "updateNvram" => true
+          )
+        end
+      end
+
+      context "with string 'false'" do
+        let(:global) do
+          { "update_nvram" => "false" }
+        end
+
+        it "converts 'false' to boolean false" do
+          expect(subject.read["bootloader"]).to include(
+            "updateNvram" => false
+          )
+        end
+      end
+    end
+
+    context "when loader_type is defined" do
+      let(:profile) do
+        { "bootloader" => { "loader_type" => loader_type } }
+      end
+
+      context "with 'grub2'" do
+        let(:loader_type) { "grub2" }
+
+        it "returns 'grub2' as type" do
+          expect(subject.read["bootloader"]).to include(
+            "type" => "grub2"
+          )
+        end
+      end
+
+      context "with 'grub2-efi'" do
+        let(:loader_type) { "grub2-efi" }
+
+        it "maps 'grub2-efi' to 'grub2'" do
+          expect(subject.read["bootloader"]).to include(
+            "type" => "grub2"
+          )
+        end
+      end
+
+      context "with 'systemd-boot'" do
+        let(:loader_type) { "systemd-boot" }
+
+        it "returns 'systemd-boot' as type" do
+          expect(subject.read["bootloader"]).to include(
+            "type" => "systemd-boot"
+          )
+        end
+      end
+
+      context "with 'none'" do
+        let(:loader_type) { "none" }
+
+        it "returns 'none' as type" do
+          expect(subject.read["bootloader"]).to include(
+            "type" => "none"
+          )
+        end
       end
     end
   end

@@ -31,9 +31,14 @@ describe Agama::Storage::BootloaderProber do
   before do
     allow(Y2Storage::StorageManager).to receive(:instance).and_return(storage_manager)
     allow(storage_manager).to receive(:arch).and_return(storage_arch)
+    allow(::Bootloader::Systeminfo).to receive(:efi?) { storage_arch.efiboot? }
     allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(false)
     allow(Y2Storage::EncryptionMethod::TPM_BLS).to receive(:possible?).and_return(false)
     allow(Yast::Arch).to receive(:has_tpm2).and_return(false)
+    allow(Yast::Arch).to receive(:x86_64).and_return(false)
+    allow(Yast::Arch).to receive(:i386).and_return(false)
+    allow(Yast::Arch).to receive(:arm).and_return(false)
+    allow(Yast::Arch).to receive(:riscv64).and_return(false)
   end
 
   describe "#probe" do
@@ -47,11 +52,11 @@ describe Agama::Storage::BootloaderProber do
         allow(storage_arch).to receive(:x86?).and_return(false)
       end
 
-      it "returns only grub2" do
+      it "returns grub2 and none" do
         bootloaders = subject.probe
-        expect(bootloaders.size).to eq(1)
-        expect(bootloaders.first).to be_a(Agama::Storage::Bootloader)
-        expect(bootloaders.first.type).to eq(Y2Storage::BootloaderType::GRUB2)
+        expect(bootloaders.map(&:type)).to eq(
+          [Y2Storage::BootloaderType::GRUB2, Y2Storage::BootloaderType::NONE]
+        )
       end
     end
 
@@ -64,11 +69,11 @@ describe Agama::Storage::BootloaderProber do
         allow(Yast::Arch).to receive(:aarch64).and_return(false)
       end
 
-      it "returns only grub2" do
+      it "returns grub2 and none" do
         bootloaders = subject.probe
-        expect(bootloaders.size).to eq(1)
-        expect(bootloaders.first).to be_a(Agama::Storage::Bootloader)
-        expect(bootloaders.first.type).to eq(Y2Storage::BootloaderType::GRUB2)
+        expect(bootloaders.map(&:type)).to eq(
+          [Y2Storage::BootloaderType::GRUB2, Y2Storage::BootloaderType::NONE]
+        )
       end
     end
 
@@ -81,11 +86,11 @@ describe Agama::Storage::BootloaderProber do
         allow(Yast::Arch).to receive(:aarch64).and_return(false)
       end
 
-      it "returns only grub2" do
+      it "returns grub2 and none" do
         bootloaders = subject.probe
-        expect(bootloaders.size).to eq(1)
-        expect(bootloaders.first).to be_a(Agama::Storage::Bootloader)
-        expect(bootloaders.first.type).to eq(Y2Storage::BootloaderType::GRUB2)
+        expect(bootloaders.map(&:type)).to eq(
+          [Y2Storage::BootloaderType::GRUB2, Y2Storage::BootloaderType::NONE]
+        )
       end
     end
 
@@ -102,18 +107,15 @@ describe Agama::Storage::BootloaderProber do
             allow(Yast::Arch).to receive(:has_tpm2).and_return(true)
           end
 
-          it "returns grub2, grub2_bls, and systemd_boot with TPM" do
+          it "returns grub2, systemd_boot, and none with TPM" do
             bootloaders = subject.probe
             expect(bootloaders.size).to eq(3)
-            expect(bootloaders[0]).to be_a(Agama::Storage::Bootloader)
             expect(bootloaders[0].type).to eq(Y2Storage::BootloaderType::GRUB2)
             expect(bootloaders[0].tpm_encryption_auth?).to eq(true)
-            expect(bootloaders[1]).to be_a(Agama::Storage::Bootloader)
-            expect(bootloaders[1].type).to eq(Y2Storage::BootloaderType::GRUB2_BLS)
+            expect(bootloaders[1].type).to eq(Y2Storage::BootloaderType::SYSTEMD_BOOT)
             expect(bootloaders[1].tpm_encryption_auth?).to eq(true)
-            expect(bootloaders[2]).to be_a(Agama::Storage::Bootloader)
-            expect(bootloaders[2].type).to eq(Y2Storage::BootloaderType::SYSTEMD_BOOT)
-            expect(bootloaders[2].tpm_encryption_auth?).to eq(true)
+            expect(bootloaders[2].type).to eq(Y2Storage::BootloaderType::NONE)
+            expect(bootloaders[2].tpm_encryption_auth?).to eq(false)
           end
         end
 
@@ -124,17 +126,14 @@ describe Agama::Storage::BootloaderProber do
             allow(Yast::Arch).to receive(:has_tpm2).and_return(false)
           end
 
-          it "returns grub2, grub2_bls, and systemd_boot without TPM" do
+          it "returns grub2, systemd_boot, and none without TPM" do
             bootloaders = subject.probe
             expect(bootloaders.size).to eq(3)
-            expect(bootloaders[0]).to be_a(Agama::Storage::Bootloader)
             expect(bootloaders[0].type).to eq(Y2Storage::BootloaderType::GRUB2)
             expect(bootloaders[0].tpm_encryption_auth?).to eq(false)
-            expect(bootloaders[1]).to be_a(Agama::Storage::Bootloader)
-            expect(bootloaders[1].type).to eq(Y2Storage::BootloaderType::GRUB2_BLS)
+            expect(bootloaders[1].type).to eq(Y2Storage::BootloaderType::SYSTEMD_BOOT)
             expect(bootloaders[1].tpm_encryption_auth?).to eq(false)
-            expect(bootloaders[2]).to be_a(Agama::Storage::Bootloader)
-            expect(bootloaders[2].type).to eq(Y2Storage::BootloaderType::SYSTEMD_BOOT)
+            expect(bootloaders[2].type).to eq(Y2Storage::BootloaderType::NONE)
             expect(bootloaders[2].tpm_encryption_auth?).to eq(false)
           end
         end
@@ -145,18 +144,13 @@ describe Agama::Storage::BootloaderProber do
           allow(storage_arch).to receive(:efiboot?).and_return(false)
         end
 
-        it "returns grub2, grub2_bls, and systemd_boot without TPM" do
+        it "returns only grub2 and none without TPM" do
           bootloaders = subject.probe
-          expect(bootloaders.size).to eq(3)
-          expect(bootloaders[0]).to be_a(Agama::Storage::Bootloader)
-          expect(bootloaders[0].type).to eq(Y2Storage::BootloaderType::GRUB2)
+          expect(bootloaders.map(&:type)).to eq(
+            [Y2Storage::BootloaderType::GRUB2, Y2Storage::BootloaderType::NONE]
+          )
           expect(bootloaders[0].tpm_encryption_auth?).to eq(false)
-          expect(bootloaders[1]).to be_a(Agama::Storage::Bootloader)
-          expect(bootloaders[1].type).to eq(Y2Storage::BootloaderType::GRUB2_BLS)
           expect(bootloaders[1].tpm_encryption_auth?).to eq(false)
-          expect(bootloaders[2]).to be_a(Agama::Storage::Bootloader)
-          expect(bootloaders[2].type).to eq(Y2Storage::BootloaderType::SYSTEMD_BOOT)
-          expect(bootloaders[2].tpm_encryption_auth?).to eq(false)
         end
       end
     end
@@ -166,6 +160,7 @@ describe Agama::Storage::BootloaderProber do
         allow(storage_arch).to receive(:s390?).and_return(false)
         allow(storage_arch).to receive(:ppc?).and_return(false)
         allow(storage_arch).to receive(:x86?).and_return(true)
+        allow(Yast::Arch).to receive(:x86_64).and_return(true)
         allow(Yast::Arch).to receive(:aarch64).and_return(false)
       end
 
@@ -192,11 +187,11 @@ describe Agama::Storage::BootloaderProber do
         allow(Yast::Arch).to receive(:aarch64).and_return(false)
       end
 
-      it "returns only grub2" do
+      it "returns grub2 and none" do
         bootloaders = subject.probe
-        expect(bootloaders.size).to eq(1)
-        expect(bootloaders.first).to be_a(Agama::Storage::Bootloader)
-        expect(bootloaders.first.type).to eq(Y2Storage::BootloaderType::GRUB2)
+        expect(bootloaders.map(&:type)).to eq(
+          [Y2Storage::BootloaderType::GRUB2, Y2Storage::BootloaderType::NONE]
+        )
       end
     end
   end

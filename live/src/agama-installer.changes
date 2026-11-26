@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 25 14:58:39 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add Orca and brttly to the installation medium
+  (gh#agama-project/agama#2481, gh#agama-project/agama#4257).
+
+-------------------------------------------------------------------
 Mon Nov 23 12:00:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Optimize live boot dependencies and background services
@@ -44,7 +50,7 @@ Fri Nov  6 13:05:49 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 Mon Nov  2 09:32:14 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1289014
-  - disable gnome kiosk screensaver 
+  - disable gnome kiosk screensaver
 
 -------------------------------------------------------------------
 Tue Oct 27 16:04:15 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

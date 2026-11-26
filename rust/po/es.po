@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-12 20:22+0000\n"
+"POT-Creation-Date: 2026-11-18 08:12+0000\n"
 "PO-Revision-Date: 2026-09-22 14:51+0000\n"
 "Last-Translator: Victor hck <victorhck@opensuse.org>\n"
 "Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -1046,11 +1046,11 @@ msgstr "Registrando el sistema"
 msgid "Could not remove the repository %s"
 msgstr "No se ha podido eliminar el repositorio %s"
 
-#: agama-software/src/zypp_server.rs:471
+#: agama-software/src/zypp_server.rs:472
 msgid "Could not read the repositories"
 msgstr "No se han podido leer los repositorios"
 
-#: agama-software/src/zypp_server.rs:507
+#: agama-software/src/zypp_server.rs:508
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
@@ -1058,21 +1058,21 @@ msgstr ""
 "Error al buscar el producto en los repositorios. Puede que tenga que "
 "registrar el sistema."
 
-#: agama-software/src/zypp_server.rs:510
+#: agama-software/src/zypp_server.rs:511
 msgid "Failed to find the product in the repositories."
 msgstr "Error al buscar el producto en los repositorios."
 
-#: agama-software/src/zypp_server.rs:573
+#: agama-software/src/zypp_server.rs:574
 msgid "There are conflicts in the software selection"
 msgstr "Hay conflictos en la selección de software"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:600
+#: agama-software/src/zypp_server.rs:601
 msgid "Could not select %s '%s' for installation"
 msgstr "No se ha podido seleccionar el %s \"%s\" para la instalación"
 
-#: agama-software/src/zypp_server.rs:1018
+#: agama-software/src/zypp_server.rs:1019
 msgid "Failed to register the system"
 msgstr "Error al registrar el sistema"
 

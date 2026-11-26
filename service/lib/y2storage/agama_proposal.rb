@@ -22,6 +22,7 @@
 require "agama/storage/config_checker"
 require "agama/storage/config_solver"
 require "agama/storage/bootloader_config"
+require "agama/storage/bootloader_config_checker"
 require "agama/storage/bootloader_config_solver"
 require "yast"
 require "y2storage/exceptions"
@@ -110,7 +111,12 @@ module Y2Storage
         .new(config, bootloader_config: bootloader_config, product_config: product_config)
         .issues
 
+      bootloader_issues = Agama::Storage::BootloaderConfigChecker
+        .new(bootloader_config)
+        .issues
+
       issues_list.concat(issues)
+      issues_list.concat(bootloader_issues)
 
       if issues?
         @devices = nil

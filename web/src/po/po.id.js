@@ -1680,6 +1680,9 @@ export default {
   "Loading data...": [
     "Memuat data..."
   ],
+  "Loading terminal": [
+    "Memuat terminal"
+  ],
   "Loading the installation repositories...": [
     "Memuat repositori instalasi..."
   ],

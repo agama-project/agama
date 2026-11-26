@@ -22,33 +22,33 @@
 
 import React from "react";
 import { Content } from "@patternfly/react-core";
-import ExpandableTechnicalSection from "~/components/questions/ExpandableTechnicalSection";
-import QuestionDialog from "~/components/questions/QuestionDialog";
-import { _ } from "~/i18n";
-import type { AnswerCallback, Question } from "~/model/question";
 
 /**
- * Component for rendering storage commit error questions
+ * Component for rendering question text, splitting it into paragraphs
+ * wherever the text contains a blank line.
  *
- * @param question - the question to be answered
- * @param answerCallback - the callback to be triggered on answer
+ * @param text - the question text to display
+ * @param isEditorial - forwarded to each paragraph's Content
  */
-export default function StorageCommitErrorQuestion({
-  question,
-  answerCallback,
+export default function QuestionText({
+  text,
+  isEditorial,
 }: {
-  question: Question;
-  answerCallback: AnswerCallback;
+  text: string;
+  isEditorial?: boolean;
 }): React.ReactNode {
+  const paragraphs = text
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
+
   return (
-    <QuestionDialog
-      question={question}
-      answerCallback={answerCallback}
-      aria-label={_("Question")}
-      variant="medium"
-    >
-      <Content component="p">{question.text}</Content>
-      <ExpandableTechnicalSection text={question.data?.details} />
-    </QuestionDialog>
+    <Content>
+      {paragraphs.map((paragraph, index) => (
+        <Content key={index} component="p" isEditorial={isEditorial}>
+          {paragraph}
+        </Content>
+      ))}
+    </Content>
   );
 }

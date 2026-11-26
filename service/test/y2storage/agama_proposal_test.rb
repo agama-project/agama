@@ -820,6 +820,31 @@ describe Y2Storage::AgamaProposal do
           )
         end
       end
+
+      context "when bootloader configuration is invalid" do
+        let(:bootloader_config) do
+          Agama::Storage::BootloaderConfig.new.tap do |bc|
+            bc.type = Y2Storage::BootloaderType::SYSTEMD_BOOT
+          end
+        end
+
+        before do
+          allow(Bootloader::Systeminfo).to receive(:efi?).and_return(false)
+        end
+
+        it "aborts the proposal process" do
+          proposal.propose
+          expect(proposal.failed?).to eq true
+        end
+
+        it "reports the bootloader error in issues_list" do
+          proposal.propose
+          expect(proposal.issues_list).to include an_object_having_attributes(
+            kind:        Agama::Storage::IssueClasses::Config::WRONG_BOOTLOADER,
+            description: "The bootloader 'systemd-boot' cannot be installed on a non-EFI system."
+          )
+        end
+      end
     end
 
     context "when there are more drives than disks in the system" do

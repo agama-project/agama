@@ -80,7 +80,12 @@ fn test_removing_a_controller_reports_it_without_its_ports() {
 
     // Everything is on its way out, so nothing is nested anymore.
     let reported = exposed(&state);
-    assert!(find(&reported, "br0").bridge.unwrap().ports.is_none());
+    assert!(find(&reported, "br0")
+        .bridge
+        .unwrap()
+        .common
+        .ports
+        .is_none());
     assert_eq!(
         root_ids(&reported),
         ["bond0", "br0", "br0.100", "eth0", "eth1"]
@@ -93,7 +98,7 @@ fn test_removing_a_controller_reports_it_without_its_ports() {
 fn test_removing_a_controller_along_with_its_ports() {
     let mut state = stacked_state();
     let mut bond0 = find(&exposed(&state), "bond0");
-    bond0.status = Some(Status::Removed);
+    bond0.common.status = Some(Status::Removed);
 
     state
         .update_state(Config {
@@ -121,11 +126,13 @@ fn test_a_loop_of_controllers_does_not_hang_the_removal() {
     state.add_connection(second).unwrap();
 
     let collection = state
-        .connection_collection_from(&NetworkConnectionsCollection(vec![NetworkConnection {
-            id: "second".to_string(),
-            status: Some(Status::Removed),
-            ..Default::default()
-        }]))
+        .connection_collection_from(&NetworkConnectionsCollection(vec![
+            NetworkConnection::from(ConnectionCommon {
+                id: "second".to_string(),
+                status: Some(Status::Removed),
+                ..Default::default()
+            }),
+        ]))
         .unwrap();
 
     // Given at the top level, "second" is moved out of "first", which breaks the loop.
@@ -152,14 +159,17 @@ fn test_a_loop_of_controllers_is_still_reported() {
 fn test_removing_a_connection_that_is_still_listed_as_a_port_is_rejected() {
     let state = NetworkState::default();
     let collection = NetworkConnectionsCollection(vec![
-        NetworkConnection {
+        NetworkConnection::from(ConnectionCommon {
             id: "eth0".to_string(),
             interface: Some("eth0".to_string()),
             status: Some(Status::Removed),
             ..Default::default()
-        },
+        }),
         NetworkConnection {
-            id: "bond0".to_string(),
+            common: ConnectionCommon {
+                id: "bond0".to_string(),
+                ..Default::default()
+            },
             bond: Some(BondSettings {
                 port_connections: Some(vec![name("eth0")]),
                 ..Default::default()

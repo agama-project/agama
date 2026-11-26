@@ -1,4 +1,54 @@
 -------------------------------------------------------------------
+Thu Nov 26 10:00:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Support setting the bootloader type (grub2, systemd-boot, none)
+  in the JSON configuration schema (bootloader.type).
+- Expose the proposed bootloader type in the proposal endpoint.
+  (gh#agama/agama-project#4277)
+
+-------------------------------------------------------------------
+Wed Nov 25 15:36:17 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Export deprecated aliases for question answers and IEEE 802.1X
+  in OpenAPI schema (gh#agama-project/agama#4235, bsc#1290384).
+  
+-------------------------------------------------------------------
+Wed Nov 25 15:36:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Filter out `live.password`, `inst.mcp.token`, sensitive boot
+  parameters, and basic auth passwords in URLs from MCP server logs,
+  replacing secrets with `<FILTERED>` to prevent credential exposure.
+
+-------------------------------------------------------------------
+Wed Nov 25 15:34:30 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Make the wireless "mode" and "security" settings of a network
+  connection optional again in the profile, defaulting to
+  "infrastructure" and "none" as documented. The generated network
+  schema had made them required, and a profile without them failed
+  to load.
+- Accept the IEEE 802.1X settings of a network connection under the
+  "ieee-8021x" key in the profile schema too, as the profile already
+  did.
+
+-------------------------------------------------------------------
+Wed Nov 25 11:42:38 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve the questions API (gh#agama-project/agama#2028,
+  gh#agama-project/agama#4278):
+  - Add a title to each question.
+  - Fix the wrong checksum question which was using the wrong class
+    ID.
+
+-------------------------------------------------------------------
+Tue Nov 24 16:58:01 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Report the state of the ports nested in a bond or a bridge in the
+  network system information. Its connection types are renamed to
+  SystemNetworkConnection and SystemNetworkConnections in the
+  OpenAPI specification (gh#agama-project/agama#4255).
+
+-------------------------------------------------------------------
 Mon Nov 23 12:00:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Start agama-web-server after NetworkManager instead of waiting
@@ -15,13 +65,14 @@ Mon Nov 23 12:00:00 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
     directory is empty.
 - Add fast file and disk-label existence check for predefined profile
   locations in agama-autoinstall before delegating to YaST.
+>>>>>>> origin/master
 
 -------------------------------------------------------------------
 Wed Nov 18 15:32:09 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Added the "inst.cors=<origin>" boot option, its value is passed
   to the "--enable-cors" option of the web server
- 
+
 -------------------------------------------------------------------
 Tue Nov 17 11:30:16 UTC 2026 - José Iván López González <jlopez@suse.com>
 

@@ -32,6 +32,7 @@ require "agama/storage/iscsi/manager"
 require "agama/storage/proposal"
 require "agama/with_locale"
 require "yast/i18n"
+require "y2storage/bootloader_type"
 require "y2storage/clients/inst_prepdisk"
 require "y2storage/feature"
 require "y2storage/luks"
@@ -114,7 +115,14 @@ module Agama
         # Check only the bootloader type since we know the rest of the bootloader configuration is
         # irrelevant (ie. does not influence the calculation of the storage setup).
         # Although formally it is a bit wrong since the manager should not know those details.
-        bootloader_config.type == boot_config_json[:type]
+        bootloader_config.type == Y2Storage::BootloaderType.find(boot_config_json[:type])
+      end
+
+      # Proposed bootloader.
+      #
+      # @return [Hash, nil]
+      def bootloader_proposal
+        bootloader.proposal(product_config)
       end
 
       # Probes the devices.

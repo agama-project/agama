@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/cmdline_args"
-require "bootloader/systeminfo"
+require "bootloader/bootloader_factory"
 require "yast"
 require "y2storage"
 
@@ -46,7 +46,7 @@ module Agama
         return if config.type
 
         config.type =
-          if bls_compliant_system?
+          if ::Bootloader::BootloaderFactory.bls_installable?
             kernel_bls_type || product_bls_type || DEFAULT_BLS_TYPE
           else
             DEFAULT_TYPE
@@ -68,19 +68,6 @@ module Agama
       DEFAULT_BLS_TYPE = Y2Storage::BootloaderType::GRUB2
       private_constant :DEFAULT_BLS_TYPE
 
-      # Archs in which a BLS-compliant bootloader is supported
-      BLS_ARCHS = [:x86_64, :i386, :aarch64, :arm, :riscv64].freeze
-      private_constant :BLS_ARCHS
-
-      # Whether the usage of a BLS-compliant bootloader is supported
-      #
-      # @return [Boolean]
-      def bls_compliant_system?
-        return false unless ::Bootloader::Systeminfo.efi?
-
-        BLS_ARCHS.any? { |a| Yast::Arch.public_send(a) }
-      end
-
       # @return [Y2Storage::BootloaderType, nil]
       def product_bls_type
         Y2Storage::BootloaderType.find(product_config.data.dig("boot", "default_efi_bootloader"))
@@ -88,8 +75,8 @@ module Agama
 
       # Bootloader type indicated in the kernel options.
       #
-      # This is only used for the systemd-boot preview and will be dropped once the config allows
-      # changing the bootloader
+      # @deprecated This is only used for the systemd-boot preview and will soon be dropped now
+      #   that the configuration supports setting the bootloader type.
       #
       # @return [Y2Storage::BootloaderType, nil] nil if "systemd_boot_preview" kernel option is
       #   not set.

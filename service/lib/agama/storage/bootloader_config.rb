@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/copyable"
+require "y2storage/bootloader_type"
 
 module Agama
   module Storage
@@ -69,7 +70,13 @@ module Agama
       attr_accessor :keys_to_export
 
       def initialize
+        reset
+      end
+
+      # Resets the configuration to default values.
+      def reset
         @keys_to_export = []
+        @type = nil
         @stop_on_boot_menu = false # false means use proposal, which has timeout
         @timeout = 10 # just some reasonable timeout, we do not send it anywhere
         @update_nvram = nil
@@ -84,6 +91,7 @@ module Agama
         result = {}
 
         # our json use camel case
+        result[:type] = type.value if keys_to_export.include?(:type) && type
         result[:stopOnBootMenu] = stop_on_boot_menu if keys_to_export.include?(:stop_on_boot_menu)
         result[:timeout] = timeout if keys_to_export.include?(:timeout)
         result[:updateNvram] = update_nvram if keys_to_export.include?(:update_nvram)
@@ -99,17 +107,27 @@ module Agama
       # @param hsh [Hash]
       # @return [Config] self
       def load_json(hsh)
+        reset
+
+        update_type(hsh)
         update_attribute(hsh, :timeout, :timeout, conflicts: :stop_on_boot_menu)
         update_attribute(hsh, :stopOnBootMenu, :stop_on_boot_menu, conflicts: :timeout)
         update_attribute(hsh, :extraKernelParams, :extra_kernel_params)
         update_attribute(hsh, :updateNvram, :update_nvram)
 
-        self.scoped_kernel_params = hsh[:kernelArgs]
+        self.scoped_kernel_params = hsh[:kernelArgs] || {}
 
         self
       end
 
     private
+
+      def update_type(hsh)
+        return unless hsh.key?(:type)
+
+        self.type = Y2Storage::BootloaderType.find(hsh[:type])
+        keys_to_export.push(:type) unless keys_to_export.include?(:type)
+      end
 
       def update_attribute(hsh, json_key, attr_key, conflicts: nil)
         return unless hsh.key?(json_key)

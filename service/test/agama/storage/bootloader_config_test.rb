@@ -48,20 +48,26 @@ describe Agama::Storage::BootloaderConfig do
       config.load_json({ timeout: 10, extraKernelParams: "verbose" })
       expect(config.to_json).to eq({ timeout: 10, extraKernelParams: "verbose" })
     end
+
+    it "exports type when set" do
+      config.load_json({ type: "systemd-boot" })
+      expect(config.to_json).to eq({ type: "systemd-boot" })
+    end
   end
 
   describe "#load_json" do
     it "loads config from given json" do
-      content = { stopOnBootMenu: true, updateNvram: true }
+      content = { stopOnBootMenu: true, updateNvram: true, type: "systemd-boot" }
       config.load_json(content)
       expect(config.stop_on_boot_menu).to eq true
       expect(config.update_nvram).to eq true
+      expect(config.type).to eq Y2Storage::BootloaderType::SYSTEMD_BOOT
     end
 
     it "remembers which keys are set" do
-      content = { timeout: 10 }
+      content = { timeout: 10, type: "grub2" }
       config.load_json(content)
-      expect(config.keys_to_export).to eq([:timeout])
+      expect(config.keys_to_export).to eq([:type, :timeout])
     end
   end
 end

@@ -94,6 +94,7 @@ fn sample_system_info() -> SystemInfo {
 
 fn sample_proposal() -> Proposal {
     Proposal {
+        bootloader: None,
         hostname: None,
         l10n: None,
         network: Default::default(),
@@ -108,6 +109,7 @@ fn sample_question() -> Question {
     Question {
         id: 1,
         spec: QuestionSpec {
+            title: "GPG signature failed".to_string(),
             text: "Cannot verify GPG signature. Import key?".to_string(),
             class: "importGpg".to_string(),
             field: QuestionField::None,
