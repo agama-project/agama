@@ -334,8 +334,10 @@ const existingDriveActions = (
     lines.push(_("Some existing partitions may be shrunk"));
   }
 
-  if (deleted + formatParts.length === total) {
+  if (deleted === total) {
     lines.push(_("All disk content will be deleted"));
+  } else if (deleted + formatParts.length === total) {
+    lines.push(_("All data will be deleted"));
   } else if (!deleted && !formatParts.length) {
     if (canShrink) {
       lines.push(_("The current data will be kept"));
