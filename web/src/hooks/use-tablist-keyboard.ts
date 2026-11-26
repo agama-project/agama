@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useRef } from "react";
 
 type Tablist = {
   /** Props for the element wrapping the tabs. */
@@ -55,7 +55,7 @@ function useTablistKeyboard(
   active: string,
   onSelect: (key: string) => void,
 ): Tablist {
-  const ref = React.useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   /* PatternFly renders the tabs, so they are found in the DOM. */
   const focusAt = (index: number) => {

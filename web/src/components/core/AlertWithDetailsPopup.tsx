@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { Alert, AlertProps, Button, ModalProps } from "@patternfly/react-core";
 import Popup from "~/components/core/Popup";
 
@@ -108,7 +108,7 @@ export default function AlertWithDetailsPopup({
   popupActions,
   children,
 }: AlertWithDetailsPopupProps): React.ReactNode {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const close = () => setIsOpen(false);
 
   const action = (

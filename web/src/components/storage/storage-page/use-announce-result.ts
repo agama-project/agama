@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import { useEffect, useRef } from "react";
 import { proposalFailedTitle } from "~/components/storage/ProposalFailedInfo";
 import { fixableConfigTitle } from "~/components/storage/FixableConfigInfo";
 import { summaryOf } from "~/components/storage/storage-page/Consequences";
@@ -40,9 +40,9 @@ type AlertKind = "success" | "problem";
  */
 function useAnnounceKind(kind: AlertKind | null, title: TranslatedString) {
   const announce = useAnnounce();
-  const announcedKind = React.useRef(kind);
+  const announcedKind = useRef(kind);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (announcedKind.current === kind) return;
 
     const previous = announcedKind.current;

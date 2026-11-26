@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Button,
   Content,
@@ -41,7 +41,7 @@ import { _ } from "~/i18n";
 /** A button opening the planned changes, when a layout was calculated. */
 function PreviewResult(): React.ReactNode {
   const actions = useActions();
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>

@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { Tab, Tabs, TabTitleText } from "@patternfly/react-core";
 import ProposalActions from "~/components/storage/ProposalActions";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
@@ -38,7 +38,7 @@ export default function PlannedChangesPopup(): React.ReactNode {
   const actions = useActions();
   const manager = useDevicesManager();
   /* Not kept in the address, like the popup itself. */
-  const [tab, setTab] = React.useState("actions");
+  const [tab, setTab] = useState("actions");
   const { containerProps, tabProps } = useTablistKeyboard(["actions", "layout"], tab, setTab);
 
   return (

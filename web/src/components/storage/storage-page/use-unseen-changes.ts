@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { proposalQuery } from "~/hooks/model/proposal";
 
@@ -53,11 +53,11 @@ function markSeen(at: number) {
  */
 function useUnseenChanges() {
   const { dataUpdatedAt } = useSuspenseQuery({ ...proposalQuery, select: () => null });
-  const lastSeenAt = React.useSyncExternalStore(subscribe, read);
-  const markCurrentSeen = React.useCallback(() => markSeen(dataUpdatedAt), [dataUpdatedAt]);
+  const lastSeenAt = useSyncExternalStore(subscribe, read);
+  const markCurrentSeen = useCallback(() => markSeen(dataUpdatedAt), [dataUpdatedAt]);
 
   /* Entering the page shows them. */
-  React.useEffect(() => {
+  useEffect(() => {
     if (seenAt === null) markSeen(dataUpdatedAt);
   }, [dataUpdatedAt]);
 

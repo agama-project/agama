@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@patternfly/react-core";
 import Popup from "~/components/core/Popup";
 import PlannedChangesPopup from "~/components/storage/storage-page/PlannedChangesPopup";
@@ -49,7 +49,7 @@ function summaryOf(actions: Storage.Action[]): TranslatedString {
 /** A button opening the planned storage changes in a popup. */
 export default function Consequences(): React.ReactNode {
   const actions = useActions();
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const { hasUnseenChanges, markSeen } = useUnseenChanges();
   const close = () => setIsOpen(false);
   const open = () => {
@@ -58,7 +58,7 @@ export default function Consequences(): React.ReactNode {
   };
 
   /* Changes arriving while the popup is open are seen. */
-  React.useEffect(() => {
+  useEffect(() => {
     if (isOpen && hasUnseenChanges) markSeen();
   }, [isOpen, hasUnseenChanges, markSeen]);
 

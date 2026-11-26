@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import SidePanel from "~/components/core/SidePanel";
 import DeviceDetailsHeading from "~/components/storage/device-details/DeviceDetailsHeading";
 import DeviceDetailsBody from "~/components/storage/device-details/DeviceDetailsBody";
@@ -65,7 +65,7 @@ export default function DeviceDetailsPanel({
   const isOpen = entry !== null;
 
   /* Replaces the address, so Back does not lead to an entry that is gone. */
-  React.useEffect(() => {
+  useEffect(() => {
     if (isStale) close();
   }, [isStale, close]);
 

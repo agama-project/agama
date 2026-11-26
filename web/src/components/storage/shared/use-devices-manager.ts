@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import { useMemo } from "react";
 import DevicesManager from "~/model/storage/devices-manager";
 import { useFlattenDevices as useSystemDevices } from "~/hooks/model/system/storage";
 import {
@@ -38,10 +38,7 @@ function useDevicesManager(): DevicesManager {
   const staging = useProposalDevices();
   const actions = useActions();
 
-  return React.useMemo(
-    () => new DevicesManager(system, staging, actions),
-    [system, staging, actions],
-  );
+  return useMemo(() => new DevicesManager(system, staging, actions), [system, staging, actions]);
 }
 
 export { useDevicesManager };

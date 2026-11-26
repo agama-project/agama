@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { sprintf } from "sprintf-js";
 import Interpolate, { markerText } from "~/components/core/Interpolate";
 import Text from "~/components/core/Text";
@@ -69,10 +69,10 @@ function sentence(count: number, isLossy: boolean): string {
  */
 function useAnnounceChanges(isLossy: boolean, hasUnseenChanges: boolean, summary: string) {
   const announce = useAnnounce();
-  const wasLossy = React.useRef(isLossy);
-  const hadUnseenChanges = React.useRef(hasUnseenChanges);
+  const wasLossy = useRef(isLossy);
+  const hadUnseenChanges = useRef(hasUnseenChanges);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const parts: string[] = [];
 
     if (wasLossy.current !== isLossy) parts.push(summary);

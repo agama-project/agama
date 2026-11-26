@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId, useMemo, useRef } from "react";
+import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import {
   MenuToggle,
   DrilldownMenu,
@@ -157,7 +157,7 @@ function useMenuItemAria(
   ref: React.RefObject<HTMLElement>,
   { hasFlyout, isChecked }: { hasFlyout: boolean; isChecked?: boolean },
 ) {
-  React.useEffect(() => {
+  useEffect(() => {
     const item = ref.current;
     if (!item) return;
 
@@ -210,7 +210,7 @@ export function MenuButtonItem({
   const navigate = useNavigate();
   const location = useLocation();
 
-  const innerRef = React.useRef<HTMLAnchorElement | HTMLButtonElement>(null);
+  const innerRef = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
   const hasFlyout = flyoutItems.length > 0;
   useMenuItemAria(innerRef, { hasFlyout, isChecked });
 
@@ -303,11 +303,11 @@ export default function MenuButton({
   const { isOpen, setIsOpen, menuRef, getToggleRef, onToggleKeydown } = useComboboxKeyboard({
     component: "menu",
   });
-  const [menuDrilledIn, setMenuDrilledIn] = React.useState<string[]>([]);
-  const [drilldownPath, setDrilldownPath] = React.useState<string[]>([]);
-  const [activeMenu, setActiveMenu] = React.useState<string>(rootId);
-  const [activeItemId, setActiveItemId] = React.useState("");
-  const [menuHeights, setMenuHeights] = React.useState({});
+  const [menuDrilledIn, setMenuDrilledIn] = useState<string[]>([]);
+  const [drilldownPath, setDrilldownPath] = useState<string[]>([]);
+  const [activeMenu, setActiveMenu] = useState<string>(rootId);
+  const [activeItemId, setActiveItemId] = useState("");
+  const [menuHeights, setMenuHeights] = useState({});
 
   menuProps = { popperProps: {}, closeOnClick: true, ...menuProps };
 

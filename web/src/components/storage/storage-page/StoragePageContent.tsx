@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { Divider, PageSection, Stack } from "@patternfly/react-core";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import EntriesTable from "~/components/storage/entries-table/EntriesTable";
@@ -44,7 +44,7 @@ import DeviceDetailsPanel from "~/components/storage/storage-page/DeviceDetailsP
  * device panel opens below the result.
  */
 export default function StoragePageContent(): React.ReactNode {
-  const [resultNode, setResultNode] = React.useState<HTMLDivElement | null>(null);
+  const [resultNode, setResultNode] = useState<HTMLDivElement | null>(null);
   const { height: resultHeight = 0 } = useElementSize(resultNode);
   const state = usePageState();
   useAnnounceResult();

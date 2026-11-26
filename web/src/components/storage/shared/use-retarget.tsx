@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { sprintf } from "sprintf-js";
 import DeviceSelectorModal from "~/components/storage/DeviceSelectorModal";
 import { deviceBaseName, formattedPath } from "~/components/storage/utils";
@@ -195,7 +195,7 @@ function useRetarget(entry: Partitionable.Device, device: Storage.Device): Retar
   const convertDevice = useConvertDevice();
   const vgSelectionSideEffect = reuseVgSideEffect(entry);
   const targets = targetDevices(entry, config, useAvailableDevices());
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const vgEmptyStateTitle = (): TranslatedString | undefined => {
     return entry.filesystem ? _("Volume groups cannot be formatted") : undefined;
