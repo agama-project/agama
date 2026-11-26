@@ -279,7 +279,6 @@ function usePartitionSpaceItems({
         key={decision}
         icon={<Icon size="md" name={DECISION_ICONS[decision]} />}
         isSelected={decision === current}
-        isDanger={decision === "delete"}
         isAriaDisabled={refused}
         description={descriptionOf(decision, partition, refused, booting)}
         onClick={refused ? undefined : () => choose(decision)}
