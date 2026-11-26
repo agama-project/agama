@@ -53,6 +53,7 @@ impl ProblemDetailsExt for ProblemDetails {
             ProblemDetails::SchemaValidationFailed { .. } => StatusCode::BAD_REQUEST,
             ProblemDetails::InvalidJson { .. } => StatusCode::BAD_REQUEST,
             ProblemDetails::InternalError { .. } => StatusCode::INTERNAL_SERVER_ERROR,
+            ProblemDetails::PendingIssues { .. } => StatusCode::INTERNAL_SERVER_ERROR,
             ProblemDetails::Unauthorized { .. } => StatusCode::UNAUTHORIZED,
             ProblemDetails::Generic { .. } => StatusCode::INTERNAL_SERVER_ERROR,
             ProblemDetails::BadRequest { .. } => StatusCode::BAD_REQUEST,
