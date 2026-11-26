@@ -88,7 +88,7 @@ function useAnnounceChanges(isLossy: boolean, hasUnseenChanges: boolean, summary
     if (wasLossy.current !== isLossy) parts.push(summary);
     if (hasUnseenChanges && !hadUnseenChanges.current) {
       // TRANSLATORS: read by screen readers when the planned storage changes
-      // differ from the ones the user last opened in "Details".
+      // differ from the ones the user last opened in "Preview result…".
       parts.push(_("The planned changes are different since you last reviewed them."));
     }
 
@@ -116,20 +116,9 @@ export default function Summary(): React.ReactNode {
 
   useAnnounceChanges(isLossy, hasUnseenChanges, markerText(title));
 
-  const details = (
-    <Consequences
-      // TRANSLATORS: opens a popup with the layout the disks will have and
-      // the actions needed to get there.
-      label={_("Preview result…")}
-      // TRANSLATORS: full name of the "Details" button, for screen readers.
-      aria-label={_("Details of the planned storage changes")}
-      isCompact={false}
-    />
-  );
-
   return (
     <div>
-      <Marked sentence={title} /> {details}
+      <Marked sentence={title} /> <Consequences />
     </div>
   );
 }

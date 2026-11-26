@@ -27,7 +27,6 @@ import PlannedChangesPopup from "~/components/storage/storage-page/PlannedChange
 import Text from "~/components/core/Text";
 import { useUnseenChanges } from "~/components/storage/storage-page/use-unseen-changes";
 import { useActions } from "~/hooks/model/proposal/storage";
-import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import type { TranslatedString } from "~/i18n";
 import type { Storage } from "~/model/proposal";
@@ -52,27 +51,11 @@ function summaryOf(actions: Storage.Action[]): TranslatedString {
     : _("The configuration will be applied during installation with no expected data loss");
 }
 
-export type ConsequencesProps = {
-  /** What the button opening the popup says. "Details…" if not given. */
-  label?: React.ReactNode;
-  /** The name of the button for assistive technologies, starting with its visible words. */
-  "aria-label"?: string;
-  /**
-   * Fitted into the line of text it follows, rather than at a button's
-   * regular size. True if not given.
-   */
-  isCompact?: boolean;
-};
-
 /**
  * A button opening what the current storage configuration will do to the
  * disks: the final layout and the full list of actions, in a popup.
  */
-export default function Consequences({
-  label,
-  "aria-label": ariaLabel,
-  isCompact = true,
-}: ConsequencesProps): React.ReactNode {
+export default function Consequences(): React.ReactNode {
   const actions = useActions();
   const [isOpen, setIsOpen] = React.useState(false);
   const { hasUnseenChanges, markSeen } = useUnseenChanges();
@@ -87,34 +70,20 @@ export default function Consequences({
     if (isOpen && hasUnseenChanges) markSeen();
   }, [isOpen, hasUnseenChanges, markSeen]);
 
-  /* The dot is only what the eye catches; the name says the same in words,
-     after the visible ones, so it still starts with what is on the button. */
-  const name =
-    ariaLabel && hasUnseenChanges
-      ? // TRANSLATORS: name of the "Details" button for screen readers when
-        // the planned changes differ from the ones last reviewed. %s is its
-        // usual name, such as "Details of the planned storage changes".
-        sprintf(_("%s (updated)"), ariaLabel)
-      : ariaLabel;
-
   return (
     <>
       <span className="agm-unseen-dot-anchor">
-        <Button
-          variant="tertiary"
-          size="sm"
-          className={isCompact ? "agm-details-button agm-summary__details" : "agm-details-button"}
-          aria-label={name}
-          onClick={open}
-        >
+        <Button variant="tertiary" size="sm" onClick={open}>
           {/* TRANSLATORS: opens a popup with the layout the disks will have
               and the actions needed to get there. */}
-          {label || _("Details…")}
-          {!ariaLabel && hasUnseenChanges && (
+          {_("Preview result…")}
+          {hasUnseenChanges && (
+            /* The dot is only what the eye catches; this says the same in
+               words, after the visible ones. */
             <Text srOnly>
               {
-                // TRANSLATORS: hidden hint read after "Details" when the
-                // planned storage changes differ from the ones last reviewed.
+                // TRANSLATORS: read by screen readers after "Preview result…"
+                // when the planned changes differ from the ones last reviewed.
                 _(" (updated)")
               }
             </Text>
