@@ -555,8 +555,11 @@ impl<'a> NetworkManagerClient<'a> {
     ) -> Option<HashMap<String, OwnedValue>> {
         match proxy.get_secrets(setting).await {
             Ok(mut secrets) => secrets.remove(setting),
-            Err(_) => {
-                tracing::error!("Could not read connection secrets");
+            Err(e) => {
+                tracing::warn!(
+                    "Could not read the '{setting}' secrets of {}: {e}",
+                    proxy.inner().path()
+                );
                 None
             }
         }
