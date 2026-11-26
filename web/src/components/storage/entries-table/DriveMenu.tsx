@@ -75,9 +75,9 @@ const RemoveDeviceMenuItem = ({ device, onClick }: RemoveDeviceMenuItemProps): R
       key="delete"
       icon={<Icon size="md" name="do_not_disturb_on" />}
       isDanger
-      isDisabled={isDisabled}
+      isAriaDisabled={isDisabled}
       description={description}
-      onClick={() => onClick(device)}
+      onClick={isDisabled ? undefined : () => onClick(device)}
     >
       {_("Do not use")}
     </MenuButtonItem>
