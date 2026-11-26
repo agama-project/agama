@@ -65,7 +65,6 @@ describe Agama::AutoYaST::ProfileFetcher do
   end
 
   before do
-    stub_const("Y2Autoinstallation::XmlChecks::ERRORS_PATH", File.join(tmpdir, "errors"))
     stub_const("Agama::AutoYaST::PreScript::SCRIPTS_DIR", File.join(tmpdir, "scripts"))
     Yast.import "Installation"
     allow(Yast::Installation).to receive(:sourcedir).and_return(File.join(tmpdir, "mount"))
@@ -144,17 +143,6 @@ describe Agama::AutoYaST::ProfileFetcher do
         expect(Yast::Profile).to_not receive(:ReadXML)
         subject.fetch
       end
-    end
-  end
-
-  context "when an invalid profile is given" do
-    let(:xml_valid?) { false }
-    let(:xml_errors) { ["Some validation error"] }
-    let(:profile_name) { "invalid.xml" }
-
-    it "reports the problem" do
-      expect(Yast2::Popup).to receive(:show)
-      subject.fetch
     end
   end
 

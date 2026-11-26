@@ -43,7 +43,6 @@ module Agama
     # It is expected that many of the AutoYaST options are ignored because Agama does not have the
     # same features.
     #
-    # TODO: handle invalid profiles (YAST_SKIP_XML_VALIDATION).
     # TODO: capture reported errors (e.g., via the Report.Error function).
     class Converter
       # Converts the given AutoYaST profile to an Agama profile.

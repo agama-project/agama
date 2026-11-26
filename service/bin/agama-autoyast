@@ -33,9 +33,6 @@ ENV["PATH"] = "/sbin:/usr/sbin:/usr/bin:/bin"
 
 require "yast"
 
-# Disable AutoYaST XML validation. It will be enabled in the future.
-ENV["YAST_SKIP_XML_VALIDATION"] = "1"
-
 require "rubygems"
 # find Gemfile when D-Bus activates a git checkout
 Dir.chdir(__dir__) do
