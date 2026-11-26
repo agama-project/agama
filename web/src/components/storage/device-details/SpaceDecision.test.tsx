@@ -45,7 +45,7 @@ const openItems = async (user) => {
   await user.click(toggle());
   return screen
     .getAllByRole("menuitem")
-    .map((item) => within(item).getByText(/^(Keep|Shrink|Delete)/).textContent);
+    .map((item) => within(item).getByText(/^(Do not modify|Shrink|Delete)/).textContent);
 };
 
 const item = (name: RegExp) => screen.getByRole("menuitem", { name });
@@ -64,7 +64,7 @@ describe("SpaceDecision", () => {
     expect(await openItems(user)).toEqual([
       "Delete all partitions",
       "Shrink partitions if needed and possible",
-      "Keep all partitions",
+      "Do not modify partitions",
     ]);
   });
 
@@ -75,7 +75,7 @@ describe("SpaceDecision", () => {
     expect(await openItems(user)).toEqual([
       "Delete all logical volumes",
       "Shrink logical volumes if needed and possible",
-      "Keep all logical volumes",
+      "Do not modify logical volumes",
     ]);
   });
 
@@ -91,7 +91,7 @@ describe("SpaceDecision", () => {
 
     screen.getByText("Only the currently available space will be used for new partitions.");
     screen.getByText("The size of some existing partitions may be reduced, keeping their data.");
-    screen.getByText("Their data is lost and their space is freed.");
+    screen.getByText("Their data will be lost and their space will be freed.");
   });
 
   it("gives every partition the action chosen", async () => {

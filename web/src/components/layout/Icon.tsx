@@ -28,86 +28,95 @@ import React from "react";
 import Add from "@icons/add.svg?component";
 import AddCircle from "@icons/add_circle.svg?component";
 import Amend from "@icons/amend.svg?component";
+import AppRegistration from "@icons/app_registration.svg?component";
 import Apps from "@icons/apps.svg?component";
 import AppsOutage from "@icons/apps_outage.svg?component";
-import AppRegistration from "@icons/app_registration.svg?component";
 import Archive from "@icons/archive.svg?component";
+import Article from "@icons/article.svg?component";
 import ArrowDropDown from "@icons/arrow_drop_down.svg?component";
 import Backspace from "@icons/backspace.svg?component";
-import ClearAll from "@icons/clear_all.svg?component";
-import Close from "@icons/close.svg?component";
-import DragIndicator from "@icons/drag_indicator.svg?component";
-import Terminal from "@icons/terminal.svg?component";
-import TextDecrease from "@icons/text_decrease.svg?component";
-import TextIncrease from "@icons/text_increase.svg?component";
 import Block from "@icons/block.svg?component";
 import ChangeCircle from "@icons/change_circle.svg?component";
-import DeviceHub from "@icons/device_hub.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
-import LastPage from "@icons/last_page.svg?component";
-import LockOpen from "@icons/lock_open.svg?component";
-import NetworkNode from "@icons/network_node.svg?component";
-import PendingActions from "@icons/pending_actions.svg?component";
-import Schema from "@icons/schema.svg?component";
-import RotateAuto from "@icons/rotate_auto.svg?component";
-import SettingsBackupRestore from "@icons/settings_backup_restore.svg?component";
-import MoveDown from "@icons/move_down.svg?component";
-import Stacks from "@icons/stacks.svg?component";
-import Compress from "@icons/compress.svg?component";
 import ChevronLeft from "@icons/chevron_left.svg?component";
 import ChevronRight from "@icons/chevron_right.svg?component";
-import Monitor from "@icons/monitor.svg?component";
+import ClearAll from "@icons/clear_all.svg?component";
+import Close from "@icons/close.svg?component";
+import Compress from "@icons/compress.svg?component";
+import CreateNewFolder from "@icons/create_new_folder.svg?component";
 import Delete from "@icons/delete.svg?component";
-import DoneAll from "@icons/done_all.svg?component";
-import DeployedCodeUpdate from "@icons/deployed_code_update.svg?component";
+import DeleteSweep from "@icons/delete_sweep.svg?component";
+import DoNotTouch from "@icons/do_not_touch.svg?component";
 import DeployedCodeAlert from "@icons/deployed_code_alert.svg?component";
+import DeployedCodeUpdate from "@icons/deployed_code_update.svg?component";
+import DeviceHub from "@icons/device_hub.svg?component";
+import Dns from "@icons/dns.svg?component";
+import DoNotDisturbOn from "@icons/do_not_disturb_on.svg?component";
+import DoneAll from "@icons/done_all.svg?component";
 import Download from "@icons/download.svg?component";
+import DragIndicator from "@icons/drag_indicator.svg?component";
 import EditSquare from "@icons/edit_square.svg?component";
 import Emergency from "@icons/emergency.svg?component";
 import Error from "@icons/error.svg?component";
 import ErrorFill from "@icons/error-fill.svg?component";
-import Dns from "@icons/dns.svg?component";
 import ExpandCircleDown from "@icons/expand_circle_down.svg?component";
 import FileJson from "@icons/file_json.svg?component";
 import Fingerprint from "@icons/fingerprint.svg?component";
-import KeyboardArrowDown from "@icons/keyboard_arrow_down.svg?component";
 import Globe from "@icons/globe.svg?component";
 import HardDrive from "@icons/hard_drive.svg?component";
+import HomeStorage from "@icons/home_storage.svg?component";
+import HomeStorageGear from "@icons/home_storage_gear.svg?component";
+import HourglassDisabled from "@icons/hourglass_disabled.svg?component";
 import Info from "@icons/info.svg?component";
 import Inventory2 from "@icons/inventory_2.svg?component";
 import Keyboard from "@icons/keyboard.svg?component";
+import KeyboardArrowDown from "@icons/keyboard_arrow_down.svg?component";
 import Language from "@icons/language.svg?component";
+import LastPage from "@icons/last_page.svg?component";
+import LibraryAdd from "@icons/library_add.svg?component";
+import LinkOff from "@icons/link_off.svg?component";
 import ListAlt from "@icons/list_alt.svg?component";
 import ListAltCheck from "@icons/list_alt_check.svg?component";
 import Lock from "@icons/lock.svg?component";
+import LockOpen from "@icons/lock_open.svg?component";
 import ManageAccounts from "@icons/manage_accounts.svg?component";
 import Menu from "@icons/menu.svg?component";
 import Minimize from "@icons/minimize.svg?component";
+import Monitor from "@icons/monitor.svg?component";
 import MoreHoriz from "@bolderIcons/more_horiz.svg?component";
+import MoreTime from "@icons/more_time.svg?component";
 import MoreVert from "@bolderIcons/more_vert.svg?component";
+import MoveDown from "@icons/move_down.svg?component";
+import NetworkNode from "@icons/network_node.svg?component";
 import NetworkWifi from "@icons/network_wifi.svg?component";
 import NetworkWifi1Bar from "@icons/network_wifi_1_bar.svg?component";
 import NetworkWifi3Bar from "@icons/network_wifi_3_bar.svg?component";
 import NotificationsActive from "@icons/notifications_active.svg?component";
+import Pending from "@icons/pending.svg?component";
+import PendingActions from "@icons/pending_actions.svg?component";
 import Report from "@icons/report.svg?component";
 import RestartAlt from "@icons/restart_alt.svg?component";
+import RightPanelOpen from "@icons/right_panel_open.svg?component";
+import RotateAuto from "@icons/rotate_auto.svg?component";
 import Routine from "@icons/routine.svg?component";
+import Schema from "@icons/schema.svg?component";
 import SearchOff from "@icons/search_off.svg?component";
 import SelectWindow from "@icons/select_window.svg?component";
+import SettingsBackupRestore from "@icons/settings_backup_restore.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
+import Stacks from "@icons/stacks.svg?component";
+import TaskAlt from "@icons/task_alt.svg?component";
+import Terminal from "@icons/terminal.svg?component";
+import TextDecrease from "@icons/text_decrease.svg?component";
+import TextIncrease from "@icons/text_increase.svg?component";
 import Translate from "@icons/translate.svg?component";
 import UnfoldLess from "@icons/unfold_less.svg?component";
 import UnfoldMore from "@icons/unfold_more.svg?component";
-import Warning from "@icons/warning.svg?component";
 import Visibility from "@icons/visibility.svg?component";
 import VisibilityOff from "@icons/visibility_off.svg?component";
-import WandStars from "@icons/wand_stars.svg?component";
+import Warning from "@icons/warning.svg?component";
 import Wifi from "@icons/wifi.svg?component";
 import WifiOff from "@icons/wifi_off.svg?component";
-import MoreTime from "@icons/more_time.svg?component";
-import TaskAlt from "@icons/task_alt.svg?component";
-import HourglassDisabled from "@icons/hourglass_disabled.svg?component";
-import Pending from "@icons/pending.svg?component";
 
 const icons = {
   add: Add,
@@ -117,16 +126,26 @@ const icons = {
   apps_outage: AppsOutage,
   app_registration: AppRegistration,
   archive: Archive,
+  article: Article,
   arrow_drop_down: ArrowDropDown,
   backspace: Backspace,
   block: Block,
   change_circle: ChangeCircle,
+  create_new_folder: CreateNewFolder,
+  delete_sweep: DeleteSweep,
   device_hub: DeviceHub,
+  do_not_touch: DoNotTouch,
   check_circle: CheckCircle,
+  do_not_disturb_on: DoNotDisturbOn,
+  home_storage: HomeStorage,
+  home_storage_gear: HomeStorageGear,
   last_page: LastPage,
+  library_add: LibraryAdd,
+  link_off: LinkOff,
   lock_open: LockOpen,
   network_node: NetworkNode,
   pending_actions: PendingActions,
+  right_panel_open: RightPanelOpen,
   schema: Schema,
   rotate_auto: RotateAuto,
   settings_backup_restore: SettingsBackupRestore,
@@ -185,7 +204,6 @@ const icons = {
   unfold_more: UnfoldMore,
   visibility: Visibility,
   visibility_off: VisibilityOff,
-  wand_stars: WandStars,
   warning: Warning,
   wifi: Wifi,
   wifi_off: WifiOff,

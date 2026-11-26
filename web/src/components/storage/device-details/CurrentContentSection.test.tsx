@@ -215,7 +215,7 @@ describe("CurrentContentSection", () => {
       <CurrentContentSection entry={entry("delete")} subject={subject} />,
     );
     await user.click(options());
-    await user.click(screen.getByRole("menuitem", { name: /^Keep all partitions/ }));
+    await user.click(screen.getByRole("menuitem", { name: /^Do not modify partitions/ }));
 
     screen.getByRole("table", { name: "Current content" });
   });
@@ -279,7 +279,7 @@ describe("CurrentContentSection", () => {
       );
       await user.click(options());
 
-      screen.getByRole("menuitem", { name: /^Keep all partitions/ });
+      screen.getByRole("menuitem", { name: /^Do not modify partitions/ });
     });
   });
 
@@ -361,7 +361,7 @@ describe("CurrentContentSection", () => {
       await renderShown(<CurrentContentSection entry={entry("resize")} subject={subject} />);
 
       const [, , action] = cellsOf("vdd1");
-      within(action).getByText("Keep");
+      within(action).getByText("None");
       within(action).getByText("Cannot be shrunk");
     });
 

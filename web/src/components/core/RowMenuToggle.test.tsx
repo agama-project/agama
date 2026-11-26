@@ -41,11 +41,11 @@ describe("RowMenuToggle", () => {
   });
 
   it("draws the given icon instead", () => {
-    plainRender(<RowMenuToggle label="Change" icon="wand_stars" />);
+    plainRender(<RowMenuToggle label="Change" icon="home_storage_gear" />);
     const button = screen.getByRole("button", { name: "Change" });
     expect(button.querySelector("[data-icon-name]")).toHaveAttribute(
       "data-icon-name",
-      "wand_stars",
+      "home_storage_gear",
     );
   });
 
@@ -64,5 +64,33 @@ describe("RowMenuToggle", () => {
     const ref = React.createRef<HTMLButtonElement>();
     plainRender(<RowMenuToggle ref={ref} label="Actions for sda" />);
     expect(ref.current).toBe(screen.getByRole("button", { name: "Actions for sda" }));
+  });
+
+  it("shows no tooltip by default", async () => {
+    const { user } = plainRender(<RowMenuToggle label="Actions for sda" />);
+    await user.tab();
+    expect(screen.getByRole("button", { name: "Actions for sda" })).toHaveFocus();
+    expect(screen.queryByRole("tooltip")).toBeNull();
+  });
+
+  describe("when asked for a tooltip", () => {
+    it("shows the label on focus, without adding it as a description", async () => {
+      const { user } = plainRender(
+        <RowMenuToggle label="Actions for all partitions" aria-describedby="summary" hasTooltip />,
+      );
+      await user.tab();
+      const tooltip = await screen.findByRole("tooltip");
+      expect(tooltip).toHaveTextContent("Actions for all partitions");
+      expect(screen.getByRole("button", { name: "Actions for all partitions" })).toHaveAttribute(
+        "aria-describedby",
+        "summary",
+      );
+    });
+
+    it("still forwards the ref to the button", () => {
+      const ref = React.createRef<HTMLButtonElement>();
+      plainRender(<RowMenuToggle ref={ref} label="Actions for sda" hasTooltip />);
+      expect(ref.current).toBe(screen.getByRole("button", { name: "Actions for sda" }));
+    });
   });
 });

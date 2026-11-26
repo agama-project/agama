@@ -132,18 +132,20 @@ describe("usePartitionSpaceItems", () => {
     );
   }
 
-  it("marks as taken the decision the device gives every partition", () => {
+  it("marks nothing as taken even if the decision matches the value", () => {
     installerRender(<Items part={shrinkable} rule="resizeIfNeeded" />);
 
-    expect(screen.getByRole("menuitem", { name: /^Shrink if needed/ })).toHaveClass(
+    expect(screen.getByRole("menuitem", { name: /^Shrink if needed/ })).not.toHaveClass(
       "pf-m-selected",
     );
   });
 
-  it("marks keeping as taken where shrinking is allowed but impossible", () => {
+  it("marks nothing as taken where shrinking is allowed by the user but impossible", () => {
     installerRender(<Items part={unshrinkable} rule="resizeIfNeeded" />);
 
-    expect(screen.getByRole("menuitem", { name: /^Keep/ })).toHaveClass("pf-m-selected");
+    expect(screen.getByRole("menuitem", { name: /^Do not modify/ })).not.toHaveClass(
+      "pf-m-selected",
+    );
     expect(screen.getByRole("menuitem", { name: /^Shrink if needed/ })).not.toHaveClass(
       "pf-m-selected",
     );

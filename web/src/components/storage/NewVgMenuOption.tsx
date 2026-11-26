@@ -32,6 +32,7 @@ import {
 } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
 import type { ConfigModel } from "~/model/storage/config-model";
+import Icon from "~/components/layout/Icon";
 
 export type NewVgMenuOptionProps = { device: ConfigModel.Drive | ConfigModel.MdRaid };
 
@@ -77,6 +78,7 @@ export default function NewVgMenuOption({ device }: NewVgMenuOptionProps): React
       component="a"
       onClick={() => convertToVg(device.name)}
       itemId="lvm"
+      icon={<Icon size="md" name="library_add" />}
       description={descriptionText()}
     >
       <Flex component="span" justifyContent={{ default: "justifyContentSpaceBetween" }}>

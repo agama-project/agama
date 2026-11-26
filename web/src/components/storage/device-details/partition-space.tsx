@@ -23,6 +23,7 @@
 import React from "react";
 import { sprintf } from "sprintf-js";
 import { MenuButtonItem } from "~/components/core/MenuButton";
+import Icon from "~/components/layout/Icon";
 import { deviceSize, isExistingBootPartition } from "~/components/storage/utils";
 import { useConfigModel, useSetSpacePolicy } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
@@ -40,7 +41,7 @@ type Decision = "keep" | "resizeIfNeeded" | "delete";
  * configuration can hold, and they are still read elsewhere; neither is offered
  * here, because neither is a decision the reader can make anywhere else either.
  */
-const DECISIONS: Decision[] = ["keep", "resizeIfNeeded", "delete"];
+const DECISIONS: Decision[] = ["delete", "resizeIfNeeded", "keep"];
 
 /**
  * What a device's own rule allows each of its partitions, where the rule is one
@@ -74,9 +75,8 @@ function decisionUnder(policy: ConfigModel.SpacePolicy): Decision | undefined {
 function decisionLabel(decision: Decision): TranslatedString {
   switch (decision) {
     case "keep":
-      // TRANSLATORS: offered on one partition already on a device: do nothing
-      // to it.
-      return _("Keep");
+      // TRANSLATORS: offered on one partition already on a device: do nothing to it.
+      return _("Do not modify");
     case "resizeIfNeeded":
       // TRANSLATORS: offered on one partition already on a device: allow it to
       // be made smaller, should the installation run short of room.
@@ -87,16 +87,20 @@ function decisionLabel(decision: Decision): TranslatedString {
   }
 }
 
+const DECISION_ICONS = {
+  keep: "do_not_touch",
+  resizeIfNeeded: "compress",
+  delete: "delete_sweep",
+} as const;
+
 function meaning(decision: Decision, partition: System.Device): TranslatedString {
   switch (decision) {
     case "keep":
-      // TRANSLATORS: explains keeping one partition.
-      return _("All data is kept, not used by the new system.");
+      return _("Data will be kept, not used by the new system.");
     case "delete":
-      // TRANSLATORS: explains deleting one partition, and how much room that
-      // gives. %s is a size, such as "45 GiB".
+      // TRANSLATORS: %s is a size, such as "45 GiB".
       return sprintf(
-        _("Data is lost, %s is freed for new partitions."),
+        _("Data will be lost, %s will be freed for new partitions."),
         deviceSize(partition.block?.size),
       );
   }
@@ -186,7 +190,7 @@ function descriptionOf(
     // TRANSLATORS: explains allowing one partition to be made smaller, and
     // how much room that can give at most. %s is a size, such as "45 GiB".
     return sprintf(
-      _("Data is kept, up to %s may be freed for new partitions."),
+      _("Data will be kept, up to %s may be freed for new partitions."),
       deviceSize(recoverable),
     );
   }
@@ -273,8 +277,7 @@ function usePartitionSpaceItems({
     return (
       <MenuButtonItem
         key={decision}
-        isSelected={decision === current}
-        isDanger={decision === "delete"}
+        icon={<Icon size="md" name={DECISION_ICONS[decision]} />}
         isAriaDisabled={refused}
         description={descriptionOf(decision, partition, refused, booting)}
         onClick={refused ? undefined : () => choose(decision)}

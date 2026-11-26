@@ -26,8 +26,11 @@ import RowMenuToggle from "~/components/core/RowMenuToggle";
 import { useSetSpacePolicy } from "~/hooks/model/storage/config-model";
 import { _, TranslatedString } from "~/i18n";
 import type { ConfigModel, DeviceCollection } from "~/model/storage/config-model";
+import Icon from "~/components/layout/Icon";
 
 const POLICIES: ConfigModel.SpacePolicy[] = ["delete", "resize", "keep"];
+
+const ICONS = { delete: "delete_sweep", resize: "compress", keep: "do_not_touch" } as const;
 
 /** The title of each item. */
 function label(
@@ -49,7 +52,7 @@ function label(
         ? _("Shrink logical volumes if needed and possible")
         : _("Shrink partitions if needed and possible");
     case "keep":
-      return isVolumeGroup ? _("Keep all logical volumes") : _("Keep all partitions");
+      return isVolumeGroup ? _("Do not modify logical volumes") : _("Do not modify partitions");
   }
 }
 
@@ -63,7 +66,7 @@ function meaning(policy: ConfigModel.SpacePolicy, isVg: boolean): TranslatedStri
     case "delete":
       // TRANSLATORS: description of "Delete all partitions". "Their" means the
       // partitions or logical volumes (must fit both nouns).
-      return _("Their data is lost and their space is freed.");
+      return _("Their data will be lost and their space will be freed.");
     case "resize":
       return isVg
         ? // TRANSLATORS: description of "Shrink volume groups if needed and possible".
@@ -72,9 +75,9 @@ function meaning(policy: ConfigModel.SpacePolicy, isVg: boolean): TranslatedStri
           _("The size of some existing partitions may be reduced, keeping their data.");
     case "keep":
       return isVg
-        ? // TRANSLATORS: description of "Keep all logical volumes".
+        ? // TRANSLATORS: description of "Do not modify logical volumes".
           _("Only the currently available space will be used for new volumes.")
-        : // TRANSLATORS: description of "Keep all partitions".
+        : // TRANSLATORS: description of "Do not modify partitions".
           _("Only the currently available space will be used for new partitions.");
   }
 }
@@ -129,7 +132,8 @@ export default function SpaceDecision({
       customToggle={
         <RowMenuToggle
           label={name}
-          icon="wand_stars"
+          icon="home_storage_gear"
+          hasTooltip
           size="sm"
           className="agm-inline-menu-toggle"
           aria-describedby={describedBy}
@@ -138,7 +142,7 @@ export default function SpaceDecision({
       items={POLICIES.map((value) => (
         <MenuButtonItem
           key={value}
-          isDanger={value === "delete"}
+          icon={<Icon size="md" name={ICONS[value]} />}
           description={meaning(value, isVolumeGroup)}
           onClick={() => choose(value)}
         >

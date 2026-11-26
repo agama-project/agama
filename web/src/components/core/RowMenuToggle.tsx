@@ -23,6 +23,7 @@
 import React from "react";
 import { MenuToggle, MenuToggleProps } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
+import VisualTooltip from "~/components/core/VisualTooltip";
 import type { IconProps } from "~/components/layout/Icon";
 
 export type RowMenuToggleProps = Omit<MenuToggleProps, "ref"> & {
@@ -30,10 +31,15 @@ export type RowMenuToggleProps = Omit<MenuToggleProps, "ref"> & {
   label: string;
   /**
    * The mark drawn, three dots in a line by default. A toggle sitting at the
-   * end of a sentence takes a wand with stars instead, so it is not read as the sentence
-   * trailing off.
+   * end of a sentence takes another mark instead, so it is not read as the
+   * sentence trailing off.
    */
-  icon?: Extract<IconProps["name"], "more_horiz" | "wand_stars">;
+  icon?: Extract<IconProps["name"], "more_horiz" | "home_storage_gear">;
+  /**
+   * Shows the label on hover and focus too, for a toggle whose mark alone does
+   * not say what it opens. Screen readers keep hearing only the label.
+   */
+  hasTooltip?: boolean;
 };
 
 /**
@@ -51,11 +57,15 @@ export type RowMenuToggleProps = Omit<MenuToggleProps, "ref"> & {
  * meets them one at a time nothing about which device they are on.
  */
 const RowMenuToggle = React.forwardRef<HTMLButtonElement, RowMenuToggleProps>(
-  ({ label, icon = "more_horiz", ...props }, ref) => (
-    <MenuToggle ref={ref} variant="plain" aria-label={label} {...props}>
-      <Icon name={icon} />
-    </MenuToggle>
-  ),
+  ({ label, icon = "more_horiz", hasTooltip = false, ...props }, ref) => {
+    const toggle = (
+      <MenuToggle ref={ref} variant="plain" aria-label={label} {...props}>
+        <Icon name={icon} />
+      </MenuToggle>
+    );
+
+    return hasTooltip ? <VisualTooltip content={label}>{toggle}</VisualTooltip> : toggle;
+  },
 );
 
 RowMenuToggle.displayName = "RowMenuToggle";

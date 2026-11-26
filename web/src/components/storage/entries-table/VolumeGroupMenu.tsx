@@ -36,6 +36,7 @@ import configModel from "~/model/storage/config-model";
 import { _, n_, formatList } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
+import Icon from "~/components/layout/Icon";
 
 export type VolumeGroupMenuProps = {
   /** The group as the configuration describes it. */
@@ -107,6 +108,7 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
           ? [
               <MenuButtonItem
                 key="open"
+                icon={<Icon size="md" name="article" />}
                 /* A group's name is a word the reader chose, so the name alone
                    does not say what is being configured: "Configure system"
                    reads as a thing to do to the system. Said in full where the
@@ -134,6 +136,7 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
           ? [
               <MenuButtonItem
                 key="edit"
+                icon={<Icon size="md" name="edit_square" />}
                 description={_("Change how the volume group will be created")}
                 onClick={() =>
                   navigate({
@@ -156,6 +159,7 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
         <Divider key="before-remove" />,
         <MenuButtonItem
           key="remove"
+          icon={<Icon size="md" name="delete" />}
           isDanger
           description={description}
           onClick={() => deleteVolumeGroup(group.vgName, convert)}

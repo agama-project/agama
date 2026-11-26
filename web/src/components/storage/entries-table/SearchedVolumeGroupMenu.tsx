@@ -33,6 +33,7 @@ import { useConfigModel, useDeleteVolumeGroup } from "~/hooks/model/storage/conf
 import { _ } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
+import Icon from "~/components/layout/Icon";
 
 type RemoveVolumeGroupMenuItemProps = {
   deviceConfig: ConfigModel.VolumeGroup;
@@ -47,7 +48,13 @@ const RemoveVolumeGroupMenuItem = ({
   const description = _("Remove the configuration for this volume group");
 
   return (
-    <MenuButtonItem key="delete" isDanger description={description} onClick={deleteFn}>
+    <MenuButtonItem
+      key="delete"
+      icon={<Icon size="md" name="do_not_disturb_on" />}
+      isDanger
+      description={description}
+      onClick={deleteFn}
+    >
       {_("Do not use")}
     </MenuButtonItem>
   );
@@ -100,6 +107,7 @@ export default function SearchedVolumeGroupMenu({
       ? [
           <MenuButtonItem
             key="open"
+            icon={<Icon size="md" name="article" />}
             /* Named in full only for a reader who is told the item rather than
                shown it. On screen the menu hangs off the row it belongs to, and
                a name the reader can see beside the item is a name repeated. */
@@ -145,7 +153,7 @@ export default function SearchedVolumeGroupMenu({
     <MenuButton
       menuProps={{
         "aria-label": label,
-        popperProps: { position: "end", minWidth: "25rem" },
+        popperProps: { position: "end", minWidth: "26rem" },
         hasFlyouts: withFlyouts,
       }}
       customToggle={<RowMenuToggle label={label} />}

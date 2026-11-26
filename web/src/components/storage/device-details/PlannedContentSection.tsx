@@ -41,6 +41,7 @@ import { generateEncodedPath } from "~/utils";
 import { columnProps, tableProps } from "~/components/storage/shared/table-columns";
 import { useDeleteLogicalVolume, useDeletePartition } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
+import Icon from "~/components/layout/Icon";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { Entry } from "~/components/storage/device-details/entry";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
@@ -220,11 +221,17 @@ export default function PlannedContentSection({
                       <RowMenuToggle label={sprintf(_("Actions for %s"), label(vol))} size="sm" />
                     }
                     items={[
-                      <MenuButtonItem key="edit" to={editPath(vol)} keepQuery>
+                      <MenuButtonItem
+                        key="edit"
+                        icon={<Icon size="md" name="edit_square" />}
+                        to={editPath(vol)}
+                        keepQuery
+                      >
                         {_("Edit")}
                       </MenuButtonItem>,
                       <MenuButtonItem
                         key="delete"
+                        icon={<Icon size="md" name={source ? "link_off" : "delete"} />}
                         /* For a reused partition, only the plan goes away. */
                         isDanger={!source}
                         onClick={() => remove(vol.mountPath)}

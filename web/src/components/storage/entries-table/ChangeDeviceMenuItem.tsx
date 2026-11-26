@@ -29,6 +29,7 @@ import { _ } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
 import type { MenuItemProps } from "@patternfly/react-core";
+import Icon from "~/components/layout/Icon";
 
 const useOnlyOneOption = (
   config: ConfigModel.Config,
@@ -124,6 +125,7 @@ export default function ChangeDeviceMenuItem({
   return (
     <MenuButtonItem
       aria-label={_("Change device menu")}
+      icon={<Icon size="md" name="move_down" />}
       description={<Description modelDevice={modelDevice} actionDescription={actionTitle} />}
       isDisabled={isDisabled}
       key="retarget"

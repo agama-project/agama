@@ -26,6 +26,7 @@ import { MenuButtonItem } from "~/components/core/MenuButton";
 import { useSetSpacePolicy } from "~/hooks/model/storage/config-model";
 import { _, TranslatedString } from "~/i18n";
 import type { ConfigModel, DeviceCollection } from "~/model/storage/config-model";
+import Icon from "~/components/layout/Icon";
 
 /** Safest first, so the one that loses data comes last. */
 const POLICIES: ConfigModel.SpacePolicy[] = ["delete", "resize"];
@@ -37,7 +38,7 @@ function label(policy: ConfigModel.SpacePolicy): TranslatedString {
 
 function meaning(policy: ConfigModel.SpacePolicy, isVg: boolean): TranslatedString {
   return policy === "delete"
-    ? _("The space becomes available for the new system")
+    ? _("The space will be available for the new system")
     : isVg
       ? _("Some logical volumes may be reduced if needed")
       : _("Some partitions may be reduced if needed");
@@ -69,7 +70,7 @@ export default function SpacePolicyMenuItem({
   const choices = POLICIES.map((value) => (
     <MenuButtonItem
       key={value}
-      isDanger={value === "delete"}
+      icon={<Icon size="md" name={value === "delete" ? "delete_sweep" : "compress"} />}
       description={meaning(value, isVolumeGroup)}
       onClick={() => choose(value)}
     >
@@ -85,6 +86,7 @@ export default function SpacePolicyMenuItem({
   return (
     <MenuButtonItem
       key="space-policy"
+      icon={<Icon size="md" name="home_storage" />}
       /* Leading back out, named after where the reader is, for context; and
          saying it leads back, for whoever hears rather than sees it. */
       upProps={{
