@@ -46,7 +46,7 @@ function isNew(volume: Volume): boolean {
 }
 
 function isUsed(volume: Volume): boolean {
-  return volume.name && !!volume.mountPath;
+  return !!volume.name && !!volume.mountPath;
 }
 
 /**
@@ -235,16 +235,19 @@ function volumeGroupUsedFor(group: ConfigModel.VolumeGroup): React.ReactNode[] {
 }
 
 function isFormatted(vol: Volume): boolean {
-  return vol.name && vol.mountPath && !vol.filesystem?.reuse;
+  return !!vol.name && !!vol.mountPath && !vol.filesystem?.reuse;
 }
 
-function mayShrink(vol: Volume, device): boolean {
-  const devVols = "logicalVolumes" in device ? device.logicalVolumes : device.partitions;
+function mayShrink(vol: Volume, device: System.Device): boolean {
+  const devVols = device.logicalVolumes || device.partitions || [];
   const devVol = devVols.find((v) => v.name === vol.name);
-  return devVol.block?.shrinking?.supported;
+  return !!devVol?.block?.shrinking?.supported;
 }
 
-const existingVgActions = (group: ConfigModel.VolumeGroup, device): TranslatedString[] => {
+const existingVgActions = (
+  group: ConfigModel.VolumeGroup,
+  device: System.Device | null,
+): TranslatedString[] => {
   /* Nothing on the VG today, nothing to say about what happens to it. */
   if (!device?.logicalVolumes?.length) return [];
 
@@ -301,8 +304,8 @@ const existingVgActions = (group: ConfigModel.VolumeGroup, device): TranslatedSt
  */
 const existingDriveActions = (
   drive: Partitionable.Device,
-  device,
-  systemDevices,
+  device: System.Device | null,
+  systemDevices: System.Device[],
 ): TranslatedString[] => {
   if (!device?.partitions?.length) {
     if (drive.filesystem?.reuse) return [_("The current data will be kept")];
