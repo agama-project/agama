@@ -29,6 +29,7 @@ import RowMenuToggle from "~/components/core/RowMenuToggle";
 import {
   baseName,
   filesystemType,
+  filesystemLabel,
   partitionIdLabel,
   formattedPath,
   sizeDescription,
@@ -45,6 +46,7 @@ import type { Entry } from "~/components/storage/device-details/entry";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 import type { ColumnLook } from "~/components/storage/shared/table-columns";
 import type { Planned } from "~/components/storage/device-details/planned";
+import type { Storage } from "~/model/system";
 
 /* Sizes are end-aligned, so they compare at a glance. */
 const COLUMNS = {
@@ -64,6 +66,21 @@ function label(part: Planned): string {
 
   const id = partitionId(part);
   return id ? partitionIdLabel(id) : "";
+}
+
+/**
+ * Corresponding device for a reused partition or logical volume.
+ */
+function sourceFor(vol: Planned, entry: Entry): Storage.Device | undefined {
+  if (vol.name) {
+    if (entry.isVolumeGroup) {
+      return entry.device?.logicalVolumes?.find((v) => v.name === vol.name);
+    }
+
+    return entry.device?.partitions?.find((p) => p.name === vol.name);
+  }
+
+  return undefined;
 }
 
 export type PlannedContentSectionProps = {
@@ -143,11 +160,11 @@ export default function PlannedContentSection({
           <Th {...columnProps(COLUMNS.filesystem)} modifier="nowrap">
             {_("File system")}
           </Th>
-          <Th {...columnProps(COLUMNS.action)} modifier="nowrap">
-            {_("Action")}
-          </Th>
           <Th {...columnProps(COLUMNS.size)} modifier="nowrap">
             {_("Size")}
+          </Th>
+          <Th {...columnProps(COLUMNS.action)} modifier="nowrap">
+            {_("Action")}
           </Th>
           <Th>
             {/* Hidden from sight, to leave its width to the sizes. */}
@@ -156,63 +173,61 @@ export default function PlannedContentSection({
         </Tr>
       </Thead>
       <Tbody>
-        {planned.map((part) => {
+        {planned.map((vol) => {
           /* A reused partition shows its current file system and size. */
-          const source = part.name
-            ? entry.device?.partitions?.find((p) => p.name === part.name)
-            : undefined;
-          const keepsData = Boolean(part.name) && part.filesystem?.reuse === true;
+          const source = sourceFor(vol, entry);
+          const keepsData = Boolean(vol.name) && vol.filesystem?.reuse === true;
 
           return (
-            <Tr key={label(part)}>
+            <Tr key={label(vol)}>
               <Th scope="row" {...columnProps(COLUMNS.path)}>
-                {label(part)}
+                {label(vol)}
               </Th>
               <Td {...columnProps(COLUMNS.filesystem)}>
                 {keepsData
-                  ? source?.filesystem?.type
-                  : part.filesystem && filesystemType(part.filesystem)}
+                  ? filesystemLabel(source.filesystem.type)
+                  : vol.filesystem && filesystemType(vol.filesystem)}
               </Td>
+              <Td {...columnProps(COLUMNS.size)}>{sizeDescription(vol.size)}</Td>
               <Td {...columnProps(COLUMNS.action)}>
                 {source
                   ? sprintf(
                       // TRANSLATORS: %s is the short-name of a partition, like sda3
                       keepsData ? _("Mount %s") : _("Format %s"),
-                      baseName(source.name, { truncate: true }),
+                      formattedPath(baseName(source.name, { truncate: true })),
                     )
                   : isVolumeGroup
                     ? sprintf(
-                        // TRANSLATORS: refers to an LVM logical volume, %s is its name
-                        _("Create volume %s"),
-                        formattedPath((part as ConfigModel.LogicalVolume).lvName),
+                        // TRANSLATORS: refers to an LVM logical volume, %s is its escaped name
+                        _("Create %s"),
+                        formattedPath((vol as ConfigModel.LogicalVolume).lvName),
                       )
-                    : _("Create partition")}
+                    : _("Create")}
               </Td>
-              <Td {...columnProps(COLUMNS.size)}>{sizeDescription(part.size)}</Td>
               <Td isActionCell>
                 {/* Edit and delete need a mount point: items requested by id get no menu. */}
-                {part.mountPath && (
+                {vol.mountPath && (
                   <MenuButton
                     menuProps={{
                       "aria-label": sprintf(
                         // TRANSLATORS: %s is a mount point, like /home
                         _("Actions for %s"),
-                        label(part),
+                        label(vol),
                       ),
                       popperProps: { position: "end" },
                     }}
                     customToggle={
-                      <RowMenuToggle label={sprintf(_("Actions for %s"), label(part))} size="sm" />
+                      <RowMenuToggle label={sprintf(_("Actions for %s"), label(vol))} size="sm" />
                     }
                     items={[
-                      <MenuButtonItem key="edit" to={editPath(part)} keepQuery>
+                      <MenuButtonItem key="edit" to={editPath(vol)} keepQuery>
                         {_("Edit")}
                       </MenuButtonItem>,
                       <MenuButtonItem
                         key="delete"
                         /* For a reused partition, only the plan goes away. */
                         isDanger={!source}
-                        onClick={() => remove(part.mountPath)}
+                        onClick={() => remove(vol.mountPath)}
                       >
                         {source ? _("Stop reusing") : _("Delete")}
                       </MenuButtonItem>,
