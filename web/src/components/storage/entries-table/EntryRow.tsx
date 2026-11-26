@@ -26,6 +26,7 @@ import { Label, Stack, StackItem } from "@patternfly/react-core";
 import { css } from "@patternfly/react-styles";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import Text from "~/components/core/Text";
+import CellValues from "~/components/storage/entries-table/CellValues";
 import { useDeviceDetails } from "~/components/storage/shared/use-device-details";
 import { columnName } from "~/components/storage/entries-table/columns";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
@@ -92,11 +93,7 @@ export default function EntryRow({
         </Stack>
       </Th>
       <Td dataLabel={columnName("usedFor")}>
-        <Stack>
-          {usedFor.map((line, index) => (
-            <StackItem key={index}>{line}</StackItem>
-          ))}
-        </Stack>
+        <CellValues values={usedFor} />
       </Td>
       <Td dataLabel={columnName("existingData")}>{existingData}</Td>
       {/* Named after the entry, so the panel can give focus back to this menu

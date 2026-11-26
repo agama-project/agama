@@ -21,12 +21,12 @@
  */
 
 import React from "react";
-import { Stack, StackItem } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 import { formattedPath } from "~/components/storage/utils";
 import { useFlattenDevices as useSystemDevices } from "~/hooks/model/system/storage";
 import Interpolate from "~/components/core/Interpolate";
 import Text from "~/components/core/Text";
+import CellValues from "~/components/storage/entries-table/CellValues";
 import { NAMES_PER_LINE } from "~/components/storage/shared/naming";
 import { _, n_, formatList, TranslatedString } from "~/i18n";
 import type { Partitionable, ConfigModel } from "~/model/storage/config-model";
@@ -398,15 +398,7 @@ function ExistingDataCell({
     );
   }
 
-  if (lines.length) {
-    return (
-      <Stack>
-        {lines.map((line) => (
-          <StackItem key={line}>{line}</StackItem>
-        ))}
-      </Stack>
-    );
-  }
+  if (lines.length) return <CellValues values={lines} />;
 
   return (
     <Text srOnly>
