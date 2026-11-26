@@ -501,6 +501,33 @@ which TanStack Form exposes via `state.errorMap.onSubmit.form`. The form
 renders it as an inline alert at the top so the user knows what went wrong and
 can try again.
 
+### User aids are not validation
+
+Some text in a form helps the user with the value they entered instead of
+judging it: what "Default" means for a mount point ("XFS (default file system
+for "/home")"), the size it gets, or that the mount point is already assigned
+elsewhere in the configuration. These aids follow the value the user finished
+entering: they appear, change or go away when the user leaves the field or
+picks a suggestion, never while typing. They do not take the focus and do not
+mark the field invalid.
+
+Validation keeps its own timing. The error for a value that is wrong, or
+already in use, appears only on submit, alongside any aid about the same
+value, which stays as it was. The error says what is wrong; how to resolve it
+is the aid's job.
+
+Example: the partition form. Once the user enters a mount point that is
+already assigned to another partition or a logical volume, a notice after the
+partition field names what holds it and how that is set up, and offers a
+checkbox to discard those settings and assign the mount point to the chosen
+partition. The checkbox
+waits for the submit like any other field, and counts only for the mount point
+it was chosen for. On submit without it, the field shows "Already assigned to
+another device".
+
+Do not turn checks of the value itself, such as a required field or a wrong
+format, into aids: those are validation and wait for submit.
+
 ---
 
 ## Combining patterns

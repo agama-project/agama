@@ -77,6 +77,130 @@ describe("configModel", () => {
     });
   });
 
+  describe("findMountPathHolder", () => {
+    const config: ConfigModel.Config = {
+      drives: [
+        {
+          name: "/dev/sda",
+          partitions: [{ mountPath: "/" }, { name: "/dev/sda2", mountPath: "/home" }],
+        },
+        { name: "/dev/sdb", mountPath: "/srv" },
+      ],
+      mdRaids: [{ name: "/dev/md0", partitions: [{ mountPath: "/data" }] }],
+      volumeGroups: [
+        { vgName: "system", targetDevices: [], logicalVolumes: [{ mountPath: "/var" }] },
+      ],
+    };
+
+    it("finds a new partition, with where it is and its settings", () => {
+      expect(configModel.findMountPathHolder(config, "/")).toEqual({
+        kind: "newPartition",
+        collection: "drives",
+        index: 0,
+        deviceName: "/dev/sda",
+        entry: { mountPath: "/" },
+      });
+    });
+
+    it("finds a reused partition by its name", () => {
+      expect(configModel.findMountPathHolder(config, "/home")).toMatchObject({
+        kind: "existingPartition",
+        partitionName: "/dev/sda2",
+      });
+    });
+
+    it("finds a partition on a RAID", () => {
+      expect(configModel.findMountPathHolder(config, "/data")).toMatchObject({
+        kind: "newPartition",
+        collection: "mdRaids",
+        deviceName: "/dev/md0",
+      });
+    });
+
+    it("finds a whole formatted device", () => {
+      expect(configModel.findMountPathHolder(config, "/srv")).toEqual({
+        kind: "device",
+        collection: "drives",
+        index: 1,
+        deviceName: "/dev/sdb",
+      });
+    });
+
+    it("finds a logical volume", () => {
+      expect(configModel.findMountPathHolder(config, "/var")).toMatchObject({
+        kind: "logicalVolume",
+        index: 0,
+        deviceName: "system",
+      });
+    });
+
+    it("returns null when nothing holds the mount path", () => {
+      expect(configModel.findMountPathHolder(config, "/opt")).toBeNull();
+    });
+  });
+
+  describe("canReleaseMountPath", () => {
+    const config: ConfigModel.Config = {
+      drives: [
+        { name: "/dev/sda", partitions: [{ mountPath: "/" }] },
+        { name: "/dev/sdb", mountPath: "/srv" },
+      ],
+    };
+
+    it("is true for a partition or a logical volume", () => {
+      expect(configModel.canReleaseMountPath(configModel.findMountPathHolder(config, "/"))).toBe(
+        true,
+      );
+    });
+
+    it("is false for a whole formatted device or for nothing", () => {
+      expect(configModel.canReleaseMountPath(configModel.findMountPathHolder(config, "/srv"))).toBe(
+        false,
+      );
+      expect(configModel.canReleaseMountPath(null)).toBe(false);
+    });
+  });
+
+  describe("releaseMountPath", () => {
+    const config: ConfigModel.Config = {
+      drives: [
+        {
+          name: "/dev/sda",
+          spacePolicy: "delete",
+          partitions: [{ mountPath: "/" }, { name: "/dev/sda2", mountPath: "/home" }],
+        },
+        { name: "/dev/sdb", mountPath: "/srv" },
+      ],
+      volumeGroups: [
+        { vgName: "system", targetDevices: [], logicalVolumes: [{ mountPath: "/var" }] },
+      ],
+    };
+
+    it("drops a new partition", () => {
+      const released = configModel.releaseMountPath(config, "/");
+      expect(configModel.usedMountPaths(released)).not.toContain("/");
+    });
+
+    it("stops using a reused partition", () => {
+      const released = configModel.releaseMountPath(config, "/home");
+      expect(released.drives[0].partitions.map((p) => p.mountPath)).toEqual(["/"]);
+    });
+
+    it("drops a logical volume", () => {
+      const released = configModel.releaseMountPath(config, "/var");
+      expect(released.volumeGroups[0].logicalVolumes).toEqual([]);
+    });
+
+    it("leaves a whole formatted device as it is", () => {
+      expect(configModel.releaseMountPath(config, "/srv")).toEqual(config);
+    });
+
+    it("does not change the given config", () => {
+      configModel.releaseMountPath(config, "/");
+      expect(configModel.usedMountPaths(config)).toContain("/");
+    });
+  });
+
   describe("isTargetDevice", () => {
     it("returns true when device is in volumeGroup targetDevices", () => {
       const config: ConfigModel.Config = {

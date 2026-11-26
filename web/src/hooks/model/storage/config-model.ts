@@ -291,6 +291,77 @@ function useEditPartition(): EditPartitionFn {
   };
 }
 
+type MoveMountPathToPartitionFn = (
+  collection: Partitionable.CollectionName,
+  index: number,
+  data: Data.Partition,
+  initialMountPath?: string,
+) => void;
+
+/**
+ * Saves the partition with a mount path something else holds, taking it from
+ * that holder in the same write (see configModel.releaseMountPath). Pass the
+ * mount path the partition had when editing it; leave it out when adding.
+ */
+function useMoveMountPathToPartition(): MoveMountPathToPartitionFn {
+  const config = useConfigModel();
+  return (
+    collection: Partitionable.CollectionName,
+    index: number,
+    data: Data.Partition,
+    initialMountPath?: string,
+  ) => {
+    const released = data.mountPath ? configModel.releaseMountPath(config, data.mountPath) : config;
+    putStorageModel(
+      initialMountPath
+        ? configModel.partition.edit(released, collection, index, initialMountPath, data)
+        : configModel.partition.add(released, collection, index, data),
+    );
+  };
+}
+
+type MoveMountPathToLogicalVolumeFn = (
+  vgIndex: number,
+  data: Data.LogicalVolume,
+  initialMountPath?: string,
+) => void;
+
+/**
+ * Saves the logical volume with a mount path something else holds, taking it
+ * from that holder in the same write (see configModel.releaseMountPath). Pass
+ * the mount path the logical volume had when editing it; leave it out when
+ * adding.
+ */
+function useMoveMountPathToLogicalVolume(): MoveMountPathToLogicalVolumeFn {
+  const config = useConfigModel();
+  return (vgIndex: number, data: Data.LogicalVolume, initialMountPath?: string) => {
+    const released = data.mountPath ? configModel.releaseMountPath(config, data.mountPath) : config;
+    putStorageModel(
+      initialMountPath
+        ? configModel.logicalVolume.edit(released, vgIndex, initialMountPath, data)
+        : configModel.logicalVolume.add(released, vgIndex, data),
+    );
+  };
+}
+
+type MoveMountPathToDeviceFn = (
+  collection: Partitionable.CollectionName,
+  index: number,
+  data: Data.Formattable,
+) => void;
+
+/**
+ * Formats the whole device with a mount path something else holds, taking it
+ * from that holder in the same write (see configModel.releaseMountPath).
+ */
+function useMoveMountPathToDevice(): MoveMountPathToDeviceFn {
+  const config = useConfigModel();
+  return (collection: Partitionable.CollectionName, index: number, data: Data.Formattable) => {
+    const released = data.mountPath ? configModel.releaseMountPath(config, data.mountPath) : config;
+    putStorageModel(configModel.partitionable.setFilesystem(released, collection, index, data));
+  };
+}
+
 type DeletePartitionFn = (
   collection: Partitionable.CollectionName,
   index: number,
@@ -398,6 +469,9 @@ export {
   useAddPartition,
   useEditPartition,
   useDeletePartition,
+  useMoveMountPathToPartition,
+  useMoveMountPathToLogicalVolume,
+  useMoveMountPathToDevice,
   useSetEncryption,
   useSetFilesystem,
   useSetSpacePolicy,

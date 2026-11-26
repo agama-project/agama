@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, waitFor } from "@testing-library/react";
-import { installerRender, mockParams } from "~/test-utils";
+import { installerRender, mockParams, outsideLiveRegions } from "~/test-utils";
 import PartitionForm from "./Form";
 
 // Mock scrollTo which is not available in jsdom
@@ -31,6 +31,7 @@ Element.prototype.scrollTo = jest.fn();
 const mockNavigate = jest.fn();
 const mockAddPartition = jest.fn();
 const mockEditPartition = jest.fn();
+const mockMoveMountPath = jest.fn();
 
 const mockSystemDevice = {
   name: "/dev/vdd",
@@ -70,6 +71,7 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
   usePartitionable: () => mockPartitionable,
   useAddPartition: () => mockAddPartition,
   useEditPartition: () => mockEditPartition,
+  useMoveMountPathToPartition: () => mockMoveMountPath,
   useSolvedConfigModel: (config) => {
     // Return a solved model with partition sizes calculated
     if (!config) return mockConfigModel;
@@ -513,6 +515,136 @@ describe("PartitionForm", () => {
       await user.click(screen.getByRole("button", { name: "Accept" }));
       await screen.findByText(/Must be smaller than maximum size/);
       expect(mockAddPartition).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("when the mount point is already assigned elsewhere", () => {
+    beforeEach(() => {
+      mockConfigModel = {
+        drives: [mockPartitionable],
+        volumeGroups: [
+          {
+            vgName: "system",
+            targetDevices: [],
+            logicalVolumes: [
+              {
+                mountPath: "/data",
+                filesystem: { default: false, type: "btrfs", label: "data" },
+                size: { default: false, min: 5 * 1024 * 1024 * 1024 },
+              },
+            ],
+          },
+        ],
+      };
+    });
+
+    const enterData = async (user) => {
+      await user.type(screen.getByLabelText("Mount point"), "/data");
+      await user.tab();
+    };
+
+    it("says nothing while the mount point is being typed", async () => {
+      const { user } = installerRender(<PartitionForm />);
+      await user.type(screen.getByLabelText("Mount point"), "/data");
+      expect(screen.queryByText(/already assigned to/, outsideLiveRegions)).toBeNull();
+    });
+
+    it("tells what holds it and how, once the mount point is entered", async () => {
+      const { user } = installerRender(<PartitionForm />);
+      await enterData(user);
+      screen.getByText(
+        "/data is already assigned to a logical volume in system",
+        outsideLiveRegions,
+      );
+      screen.getByText("Currently set up as Btrfs, at least 5 GiB");
+      screen.getByText('Label "data"');
+    });
+
+    it("says it once for screen readers when it appears", async () => {
+      const { user } = installerRender(<PartitionForm />);
+      await enterData(user);
+      screen.getByText("/data is already assigned to a logical volume in system", {
+        selector: "[aria-live]",
+      });
+    });
+
+    it("offers to discard those settings and assign it to the chosen partition", async () => {
+      const { user } = installerRender(<PartitionForm />);
+      await enterData(user);
+      const checkbox = screen.getByRole("checkbox", {
+        name: "Discard the current settings and assign /data to this new partition",
+      });
+      expect(checkbox).not.toBeChecked();
+
+      await user.click(screen.getByLabelText("Partition"));
+      await user.click(screen.getByRole("option", { name: /vdd1/ }));
+      screen.getByRole("checkbox", {
+        name: "Discard the current settings and assign /data to vdd1",
+      });
+    });
+
+    it("does not save without the choice, with a short error", async () => {
+      const { user } = installerRender(<PartitionForm />);
+      await enterData(user);
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+      await screen.findByText("Already assigned to another device");
+      screen.getByText(
+        "/data is already assigned to a logical volume in system",
+        outsideLiveRegions,
+      );
+      expect(mockAddPartition).not.toHaveBeenCalled();
+      expect(mockMoveMountPath).not.toHaveBeenCalled();
+    });
+
+    it("assigns it here when accepted with the choice", async () => {
+      const { user } = installerRender(<PartitionForm />);
+      await enterData(user);
+      await user.click(screen.getByRole("checkbox", { name: /Discard the current settings/ }));
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+      await waitFor(() => {
+        expect(mockMoveMountPath).toHaveBeenCalledWith(
+          "drives",
+          0,
+          expect.objectContaining({ mountPath: "/data" }),
+          undefined,
+        );
+      });
+      expect(mockAddPartition).not.toHaveBeenCalled();
+    });
+
+    it("does not apply the choice to another mount point", async () => {
+      const { user } = installerRender(<PartitionForm />);
+      await enterData(user);
+      await user.click(screen.getByRole("checkbox", { name: /Discard the current settings/ }));
+      const input = screen.getByLabelText("Mount point");
+      await user.clear(input);
+      await user.type(input, "/srv");
+      await user.tab();
+      expect(screen.queryByText(/already assigned to/, outsideLiveRegions)).toBeNull();
+
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+      await waitFor(() => {
+        expect(mockAddPartition).toHaveBeenCalledWith(
+          "drives",
+          0,
+          expect.objectContaining({ mountPath: "/srv" }),
+        );
+      });
+      expect(mockMoveMountPath).not.toHaveBeenCalled();
+    });
+
+    it("keeps the choice made for a mount point when coming back to it", async () => {
+      const { user } = installerRender(<PartitionForm />);
+      await enterData(user);
+      await user.click(screen.getByRole("checkbox", { name: /Discard the current settings/ }));
+      const input = screen.getByLabelText("Mount point");
+      await user.clear(input);
+      await user.type(input, "/srv");
+      await user.tab();
+      await user.clear(input);
+      await user.type(input, "/data");
+      await user.tab();
+      expect(screen.getByRole("checkbox", { name: /Discard the current settings/ })).toBeChecked();
     });
   });
 

@@ -74,7 +74,8 @@ export function validateMountPoint(value: string, usedMountPoints: string[]): st
   if (value === "") return _("Mount point is required");
   if (!MOUNT_POINT_REGEXP.test(value)) return _("Select or enter a valid mount point");
   if (usedMountPoints.includes(value)) {
-    return _("Select or enter a mount point that is not already assigned to another device");
+    // TRANSLATORS: said of a mount point.
+    return _("Already assigned to another device");
   }
   return undefined;
 }

@@ -38,17 +38,22 @@ import {
   optionalFilesystemLabel,
 } from "~/components/storage/shared/form/validation-helpers";
 import { FILESYSTEM_TYPE, FILESYSTEM_ACTION, SIZE_MODE, isReusingPartition } from "./fields";
+import { isReassigning } from "~/components/storage/shared/form/mount-point-holder";
 import { _ } from "~/i18n";
 import type {
   ValidationResult,
   FieldsValidationResult,
 } from "~/components/form/validation-helpers";
+import type { ConfigModel } from "~/model/storage/config-model";
 import type { FormFields, MountPointFields, FilesystemFields, SizeFields } from "./fields";
 
 function validateMountPoint(
   fields: FormFields,
   usedMountPoints: string[],
+  config?: ConfigModel.Config | null,
 ): FieldsValidationResult<MountPointFields> {
+  if (isReassigning(fields, usedMountPoints, config)) return {};
+
   return { mountPoint: validateMountPointValue(fields.mountPoint, usedMountPoints) };
 }
 
@@ -128,14 +133,16 @@ function validateSizeFields(fields: FormFields): FieldsValidationResult<SizeFiel
  *
  * @param fields - The form field values
  * @param usedMountPoints - Mount points already in use (excluding the current one when editing)
+ * @param config - The storage config, to know what holds a taken mount point
  * @returns Validation result with field errors, or undefined if valid
  */
 export function validate(
   fields: FormFields,
   usedMountPoints: string[] = [],
+  config?: ConfigModel.Config | null,
 ): ValidationResult<FormFields> {
   const fieldErrors = shake({
-    ...validateMountPoint(fields, usedMountPoints),
+    ...validateMountPoint(fields, usedMountPoints, config),
     ...validateFilesystemFields(fields),
     ...validateSizeFields(fields),
   });

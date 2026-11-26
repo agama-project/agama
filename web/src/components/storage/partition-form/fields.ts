@@ -93,6 +93,7 @@ const defaultValues: FormFields = {
   rangeMinSize: "",
   rangeMaxSize: "",
   expandMinSize: "",
+  reassignedMountPoint: "",
 };
 
 export const defaultOptions = formOptions({ defaultValues });

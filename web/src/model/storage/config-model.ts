@@ -55,6 +55,102 @@ function usedMountPaths(config: ConfigModel.Config): string[] {
   ];
 }
 
+/**
+ * What holds a mount path in the config, located the way the storage forms
+ * address it (`index` is the position in its collection):
+ *
+ * - "newPartition": a partition to be created on the device `deviceName`.
+ * - "existingPartition": the partition `partitionName`, reused on `deviceName`.
+ * - "logicalVolume": a logical volume in the volume group `deviceName`.
+ * - "device": the whole drive or RAID `deviceName`, formatted with it.
+ *
+ * Partitions and logical volumes also carry their `entry` in the config, to
+ * tell how they are set up.
+ */
+type MountPathHolder =
+  | {
+      kind: "newPartition";
+      collection: Partitionable.CollectionName;
+      index: number;
+      deviceName: string;
+      entry: ConfigModel.Partition;
+    }
+  | {
+      kind: "existingPartition";
+      collection: Partitionable.CollectionName;
+      index: number;
+      deviceName: string;
+      partitionName: string;
+      entry: ConfigModel.Partition;
+    }
+  | {
+      kind: "logicalVolume";
+      index: number;
+      deviceName: string;
+      entry: ConfigModel.LogicalVolume;
+    }
+  | {
+      kind: "device";
+      collection: Partitionable.CollectionName;
+      index: number;
+      deviceName: string;
+    };
+
+/** Finds what holds the given mount path, or null when nothing does. */
+function findMountPathHolder(
+  config: ConfigModel.Config,
+  mountPath: string,
+): MountPathHolder | null {
+  for (const collection of ["drives", "mdRaids"] as const) {
+    const devices = config[collection] || [];
+    for (const [index, device] of devices.entries()) {
+      const at = { collection, index, deviceName: device.name };
+      if (device.mountPath === mountPath) return { kind: "device", ...at };
+
+      const held = (device.partitions || []).find((p) => p.mountPath === mountPath);
+      if (!held) continue;
+      return held.name
+        ? { kind: "existingPartition", ...at, partitionName: held.name, entry: held }
+        : { kind: "newPartition", ...at, entry: held };
+    }
+  }
+
+  for (const [index, group] of (config.volumeGroups || []).entries()) {
+    const held = (group.logicalVolumes || []).find((l) => l.mountPath === mountPath);
+    if (held) return { kind: "logicalVolume", index, deviceName: group.vgName, entry: held };
+  }
+
+  return null;
+}
+
+/**
+ * Whether {@link releaseMountPath} can free the mount path from its holder: a
+ * partition or a logical volume can give it up; a whole formatted device
+ * cannot, since that would change what the device is used for.
+ */
+function canReleaseMountPath(
+  holder: MountPathHolder | null,
+): holder is Exclude<MountPathHolder, { kind: "device" }> {
+  return holder !== null && holder.kind !== "device";
+}
+
+/**
+ * Frees the mount path the same way the UI stops using what holds it: a new
+ * partition or logical volume is dropped, and a reused partition is left to
+ * the space decision of its device again. Returns the config unchanged when
+ * nothing holds the mount path or the holder cannot give it up.
+ */
+function releaseMountPath(config: ConfigModel.Config, mountPath: string): ConfigModel.Config {
+  const holder = findMountPathHolder(config, mountPath);
+  if (!canReleaseMountPath(holder)) return config;
+
+  if (holder.kind === "logicalVolume") {
+    return logicalVolume.remove(config, holder.deviceName, mountPath);
+  }
+
+  return partition.remove(config, holder.collection, holder.index, mountPath);
+}
+
 function isTargetDevice(config: ConfigModel.Config, deviceName: string): boolean {
   const targetDevices = (config.volumeGroups || []).flatMap((v) => v.targetDevices || []);
   return targetDevices.includes(deviceName);
@@ -121,6 +217,9 @@ function isGrub2WithTpm(config: ConfigModel.Config): boolean {
 export default {
   clone,
   usedMountPaths,
+  findMountPathHolder,
+  canReleaseMountPath,
+  releaseMountPath,
   isTargetDevice,
   setEncryption,
   devices,
@@ -139,4 +238,4 @@ export default {
   getBootloader,
   isGrub2WithTpm,
 };
-export type { ConfigModel, Data, Partitionable, DeviceCollection, Device, Volume };
+export type { ConfigModel, Data, Partitionable, DeviceCollection, Device, Volume, MountPathHolder };

@@ -51,6 +51,9 @@ import {
   useAddPartition,
   useEditPartition,
   useDeletePartition,
+  useMoveMountPathToPartition,
+  useMoveMountPathToLogicalVolume,
+  useMoveMountPathToDevice,
   useSetFilesystem,
   useSetSpacePolicy,
   useConvertPartitionableToVolumeGroup,
@@ -953,6 +956,98 @@ describe("config-model hooks", () => {
       result.current("drives", 0, "/", { mountPath: "/" });
 
       expect(mockPutStorageModel).toHaveBeenCalled();
+    });
+  });
+
+  describe("useMoveMountPathToPartition", () => {
+    const config: ConfigModel.Config = {
+      drives: [
+        { name: "/dev/sda", partitions: [{ mountPath: "swap" }] },
+        { name: "/dev/vdb", partitions: [{ name: "/dev/vdb2", mountPath: "/data" }] },
+      ],
+    };
+
+    it("takes the mount path from its holder and adds the partition in one write", () => {
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
+      const { result } = renderHook(() => useMoveMountPathToPartition(), { wrapper });
+
+      result.current("drives", 1, { name: "/dev/vdb1", mountPath: "swap" });
+
+      expect(mockPutStorageModel).toHaveBeenCalledTimes(1);
+      const saved = mockPutStorageModel.mock.calls[0][0];
+      expect(saved.drives[0].partitions).toEqual([]);
+      expect(saved.drives[1].partitions).toContainEqual(
+        expect.objectContaining({ name: "/dev/vdb1", mountPath: "swap" }),
+      );
+    });
+
+    it("edits the partition by its former mount path when given one", () => {
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
+      const { result } = renderHook(() => useMoveMountPathToPartition(), { wrapper });
+
+      result.current("drives", 1, { name: "/dev/vdb2", mountPath: "swap" }, "/data");
+
+      const saved = mockPutStorageModel.mock.calls[0][0];
+      expect(saved.drives[0].partitions).toEqual([]);
+      expect(saved.drives[1].partitions).toEqual([
+        expect.objectContaining({ name: "/dev/vdb2", mountPath: "swap" }),
+      ]);
+    });
+  });
+
+  describe("useMoveMountPathToLogicalVolume", () => {
+    const config: ConfigModel.Config = {
+      drives: [{ name: "/dev/sda", partitions: [{ mountPath: "/home" }] }],
+      volumeGroups: [
+        { vgName: "system", targetDevices: [], logicalVolumes: [{ mountPath: "/var" }] },
+      ],
+    };
+
+    it("takes the mount path from its holder and adds the logical volume in one write", () => {
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
+      const { result } = renderHook(() => useMoveMountPathToLogicalVolume(), { wrapper });
+
+      result.current(0, { mountPath: "/home", lvName: "home" });
+
+      expect(mockPutStorageModel).toHaveBeenCalledTimes(1);
+      const saved = mockPutStorageModel.mock.calls[0][0];
+      expect(saved.drives[0].partitions).toEqual([]);
+      expect(saved.volumeGroups[0].logicalVolumes).toContainEqual(
+        expect.objectContaining({ mountPath: "/home", lvName: "home" }),
+      );
+    });
+
+    it("edits the logical volume by its former mount path when given one", () => {
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
+      const { result } = renderHook(() => useMoveMountPathToLogicalVolume(), { wrapper });
+
+      result.current(0, { mountPath: "/home", lvName: "var" }, "/var");
+
+      const saved = mockPutStorageModel.mock.calls[0][0];
+      expect(saved.drives[0].partitions).toEqual([]);
+      expect(saved.volumeGroups[0].logicalVolumes).toEqual([
+        expect.objectContaining({ mountPath: "/home" }),
+      ]);
+    });
+  });
+
+  describe("useMoveMountPathToDevice", () => {
+    it("takes the mount path from its holder and formats the device in one write", () => {
+      const config: ConfigModel.Config = {
+        drives: [{ name: "/dev/sda", partitions: [{ mountPath: "/srv" }] }, { name: "/dev/sdb" }],
+      };
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
+      const { result } = renderHook(() => useMoveMountPathToDevice(), { wrapper });
+
+      result.current("drives", 1, {
+        mountPath: "/srv",
+        filesystem: { type: "xfs" },
+      });
+
+      expect(mockPutStorageModel).toHaveBeenCalledTimes(1);
+      const saved = mockPutStorageModel.mock.calls[0][0];
+      expect(saved.drives[0].partitions).toEqual([]);
+      expect(saved.drives[1]).toMatchObject({ mountPath: "/srv" });
     });
   });
 

@@ -29,6 +29,8 @@ import type { Storage as System } from "~/model/system";
 
 type FilesystemFieldsProps = {
   device: System.Device;
+  /** Content shown between the file system selector and its extra settings. */
+  afterSelector?: React.ReactNode;
 };
 
 /**
@@ -43,8 +45,10 @@ const FilesystemFields = withForm({
   props: {
     device: {} as System.Device,
   } as FilesystemFieldsProps,
-  render: function Render({ form, device }) {
-    return <SharedFilesystemFields form={form} reusedDevice={device} />;
+  render: function Render({ form, device, afterSelector }) {
+    return (
+      <SharedFilesystemFields form={form} reusedDevice={device} afterSelector={afterSelector} />
+    );
   },
 });
 
