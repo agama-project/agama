@@ -38,7 +38,7 @@ function label(policy: ConfigModel.SpacePolicy): TranslatedString {
 
 function meaning(policy: ConfigModel.SpacePolicy, isVg: boolean): TranslatedString {
   return policy === "delete"
-    ? _("The space will be available to the new system")
+    ? _("The space will be available for the new system")
     : isVg
       ? _("Some logical volumes may be reduced if needed")
       : _("Some partitions may be reduced if needed");
