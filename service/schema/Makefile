@@ -44,5 +44,3 @@ check: $(RNGDIR)/profile.rng
 install: all
 	$(INSTALL) -d $(DESTDIR)$(schemadir)/autoyast/rng
 	$(INSTALL) -m 644 $(RNGDIR)/*.rng $(DESTDIR)$(schemadir)/autoyast/rng
-	$(INSTALL) -d $(DESTDIR)$(schemadir)/autoyast/rnc
-	$(INSTALL) -m 644 $(RNCDIR)/profile.rnc $(RNCDIR)/includes.rnc $(DESTDIR)$(schemadir)/autoyast/rnc

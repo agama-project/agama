@@ -57,9 +57,9 @@ make install DESTDIR=%{buildroot}
 
 %files
 %defattr(-,root,root)
-%dir %{yast_schemadir}/autoyast/rnc
-%{yast_schemadir}/autoyast/rnc/profile.rnc
-%{yast_schemadir}/autoyast/rnc/includes.rnc
+%dir /usr/share/YaST2
+%dir %{yast_schemadir}
+%dir %{yast_schemadir}/autoyast
 %dir %{yast_schemadir}/autoyast/rng
 %{yast_schemadir}/autoyast/rng/*.rng
 
