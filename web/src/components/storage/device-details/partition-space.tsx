@@ -255,7 +255,11 @@ function usePartitionSpaceItems({
      allowed where it cannot be shrunk keeps it, and an option offered as
      impossible cannot also read as the one taken. */
   let current = decisionFor(partition);
-  if (current === "resizeIfNeeded" && !canShrink) current = "keep";
+  let forcedKeep = false;
+  if (current === "resizeIfNeeded" && !canShrink) {
+    current = "keep";
+    forcedKeep = true;
+  }
 
   const choose = (decision: Decision) => {
     const actions = governed
@@ -278,7 +282,7 @@ function usePartitionSpaceItems({
       <MenuButtonItem
         key={decision}
         icon={<Icon size="md" name={DECISION_ICONS[decision]} />}
-        isSelected={decision === current}
+        isSelected={decision === current && !forcedKeep}
         isAriaDisabled={refused}
         description={descriptionOf(decision, partition, refused, booting)}
         onClick={refused ? undefined : () => choose(decision)}
