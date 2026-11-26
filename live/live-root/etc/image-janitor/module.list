@@ -1,0 +1,39 @@
+# This is an extension of the module.list file specially for Agama.
+
+# keep the nvmem drivers (https://bugzilla.suse.com/show_bug.cgi?id=1243350)
+kernel/drivers/nvmem/
+kernel/drivers/dma/fsl-edma.ko
+
+# The naive "kernel/sound/" wildcard pulled in ~50 MiB, almost entirely
+# because it kept kernel/sound/soc/ (Intel/AMD SOF DSP audio), which in turn
+# makes image-janitor's firmware cleanup keep the SOF firmware/topology
+# blobs under /lib/firmware/intel/sof* (~49 MiB on its own). The list below
+# is a deliberately narrow selection instead: it covers the hardware most
+# installs will actually hit (onboard HDA audio, USB audio, and VM virtio
+# audio for openQA/VM testing) without the SOF firmware tax. Modern
+# SOF-only laptops (no legacy HDA codec) and most legacy/pro-audio PCI and
+# FireWire cards are intentionally left unsupported here.
+
+# ALSA core infrastructure (snd.ko, snd-pcm, snd-timer, snd-rawmidi, ...).
+# Mandatory foundation: nothing else under kernel/sound/ works without it.
+kernel/sound/core/
+# Legacy OSS emulation layer, not used by Orca/speech-dispatcher (ALSA/
+# PulseAudio only), so drop it.
+-kernel/sound/core/oss/
+# MIDI sequencer core, irrelevant for speech output.
+-kernel/sound/core/seq/
+
+# Intel HD Audio (HDA) controller and per-vendor codec drivers (Realtek,
+# Conexant, Cirrus, IDT, VIA, HDMI, ...). This is the dominant onboard
+# audio interface on desktops/laptops since ~2005, so it covers most real
+# hardware this image will be installed on.
+kernel/sound/hda/
+
+# USB Audio Class driver (snd-usb-audio) plus a few vendor USB audio
+# devices. Small, but covers virtually all USB headsets/speakers/dongles
+# and docks, including laptops with no onboard audio jack.
+kernel/sound/usb/
+
+# virtio-snd, the paravirtualized sound device exposed by QEMU/KVM. Needed
+# for sound in VM installs and for openQA testing.
+kernel/sound/virtio/
