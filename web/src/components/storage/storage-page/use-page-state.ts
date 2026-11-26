@@ -36,10 +36,7 @@ const FIXABLE = [
   "proposal",
 ];
 
-/**
- * What the storage page is: either one of the states that take the whole page
- * as an empty state, or the page itself.
- */
+/** What the storage page shows: a state replacing it, or the page itself. */
 type PageState =
   /** There is no disk to install on. */
   | { kind: "noDevices" }
@@ -51,11 +48,10 @@ type PageState =
   | { kind: "page" };
 
 /**
- * Decides what the storage page shows. This is the only place where that is
- * decided: the first state that matches takes the whole page.
+ * Decides what the storage page shows. The first matching state wins.
  *
- * Issues and a proposal never go together, so a configuration with issues that
- * cannot be fixed here is never shown as a page, with or without a model.
+ * Issues and a proposal never come together, so a configuration with issues
+ * that cannot be fixed here never shows the page.
  */
 function usePageState(): PageState {
   const model = useConfigModel();

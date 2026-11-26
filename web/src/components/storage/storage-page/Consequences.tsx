@@ -37,13 +37,8 @@ function losesData(actions: Storage.Action[]): boolean {
 }
 
 /**
- * The sentence that sums up the result: what applying the configuration takes.
- *
- * Its subject is the act of applying the configuration, so in translation the
- * verb never has to agree with the count.
- *
- * The count comes from the calculated actions, so it states what will happen
- * rather than what the configuration asked for.
+ * The sentence summing up the result. Its subject is applying the
+ * configuration, so the verb never agrees with a count.
  */
 function summaryOf(actions: Storage.Action[]): TranslatedString {
   return losesData(actions)
@@ -51,10 +46,7 @@ function summaryOf(actions: Storage.Action[]): TranslatedString {
     : _("The configuration will be applied during installation with no expected data loss");
 }
 
-/**
- * A button opening what the current storage configuration will do to the
- * disks: the final layout and the full list of actions, in a popup.
- */
+/** A button opening the planned storage changes in a popup. */
 export default function Consequences(): React.ReactNode {
   const actions = useActions();
   const [isOpen, setIsOpen] = React.useState(false);
@@ -65,7 +57,7 @@ export default function Consequences(): React.ReactNode {
     setIsOpen(true);
   };
 
-  /* What changes while the popup is open is seen as it happens. */
+  /* Changes arriving while the popup is open are seen. */
   React.useEffect(() => {
     if (isOpen && hasUnseenChanges) markSeen();
   }, [isOpen, hasUnseenChanges, markSeen]);
@@ -74,16 +66,15 @@ export default function Consequences(): React.ReactNode {
     <>
       <span className="agm-unseen-dot-anchor">
         <Button variant="tertiary" size="sm" onClick={open}>
-          {/* TRANSLATORS: opens a popup with the layout the disks will have
-              and the actions needed to get there. */}
+          {/* TRANSLATORS: opens the planned storage changes in a dialog. Keep
+              the ellipsis: it says the button opens a dialog. */}
           {_("Preview result…")}
           {hasUnseenChanges && (
-            /* The dot is only what the eye catches; this says the same in
-               words, after the visible ones. */
+            /* The dot, in words. */
             <Text srOnly>
               {
                 // TRANSLATORS: read by screen readers after "Preview result…"
-                // when the planned changes differ from the ones last reviewed.
+                // when the planned changes differ from the last reviewed ones
                 _(" (updated)")
               }
             </Text>
@@ -94,9 +85,8 @@ export default function Consequences(): React.ReactNode {
       {isOpen && (
         <Popup
           isOpen
-          // TRANSLATORS: title of the popup with the layout the disks will have
-          // and the actions needed to get there. "Planned" because nothing is
-          // applied until the installation starts.
+          // TRANSLATORS: "Planned" since nothing is applied until the
+          // installation starts
           title={_("Planned storage changes")}
           description={summaryOf(actions)}
           variant="large"

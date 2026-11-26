@@ -40,23 +40,17 @@ function Marked({ sentence }: { sentence: string }) {
   return <Interpolate sentence={sentence}>{Array(count).fill(bold)}</Interpolate>;
 }
 
-/**
- * The sentences of the summary: an optional first one, saying that nothing
- * happens yet, and the one about what happens later.
- *
- * Whatever is in square brackets is shown in bold: the count and "with data
- * loss", never "without data loss", which needs no emphasis.
- */
+/** The summary sentence, with the count and any data loss in brackets. */
 function sentence(count: number, isLossy: boolean): string {
   return sprintf(
     isLossy
-      ? // TRANSLATORS: %d is the number of actions. Text in square brackets is shown in bold; keep the brackets.
+      ? // TRANSLATORS: %d is the number of actions. Keep the square brackets: their text is shown in bold.
         n_(
           "Applying the configuration will take [%d action] during final installation, [with potential data loss].",
           "Applying the configuration will take [%d actions] during final installation, [with potential data loss].",
           count,
         )
-      : // TRANSLATORS: %d is the number of actions. Text in square brackets is shown in bold; keep the brackets.
+      : // TRANSLATORS: %d is the number of actions. Keep the square brackets: their text is shown in bold.
         n_(
           "Applying the configuration will take [%d action] during final installation, with no expected data loss.",
           "Applying the configuration will take [%d actions] during final installation, with no expected data loss.",
@@ -67,15 +61,9 @@ function sentence(count: number, isLossy: boolean): string {
 }
 
 /**
- * Tells screen readers, in one polite message, what changed in the summary
- * that matters:
- *
- * - The setup starts or stops losing data: the summary is read.
- * - The planned changes become different from the ones last reviewed: a short
- *   notice says so, once, until they are reviewed again.
- *
- * The count alone is not announced: it changes with almost every setting,
- * and announcing it each time would talk over whatever the reader is doing.
+ * Announces when the setup starts or stops losing data, and once when the
+ * planned changes differ from the last reviewed ones. Changes of the count
+ * alone are not announced, since nearly every setting changes it.
  */
 function useAnnounceChanges(isLossy: boolean, hasUnseenChanges: boolean, summary: string) {
   const announce = useAnnounce();
@@ -88,7 +76,7 @@ function useAnnounceChanges(isLossy: boolean, hasUnseenChanges: boolean, summary
     if (wasLossy.current !== isLossy) parts.push(summary);
     if (hasUnseenChanges && !hadUnseenChanges.current) {
       // TRANSLATORS: read by screen readers when the planned storage changes
-      // differ from the ones the user last opened in "Preview result…".
+      // differ from the ones last reviewed
       parts.push(_("The planned changes are different since you last reviewed them."));
     }
 
@@ -99,12 +87,9 @@ function useAnnounceChanges(isLossy: boolean, hasUnseenChanges: boolean, summary
 }
 
 /**
- * The summary of what the installer will do to the disks, at the top of the
- * storage page, with the way to see it in full.
- *
- * Not a caution: it reports what the setup below leads to, so it reads as
- * plain text, with only the count and a data loss in bold. It changes with
- * every setting, which is what makes it worth glancing back at.
+ * The summary of the planned storage changes, with a button to see them in
+ * full. Plain text rather than an alert, with only the count and any data loss
+ * in bold.
  */
 export default function Summary(): React.ReactNode {
   const actions = useActions();
