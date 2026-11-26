@@ -27,3 +27,5 @@ include 'scripts.rnc' # autoyast2
 include 'software.rnc' # autoyast2
 include 'ssh_import.rnc' # yast2-installation
 include 'upgrade.rnc' # autoyast2
+include 'dasd.rnc' # yast2-s390
+include 'zfcp.rnc' # yast2-s390

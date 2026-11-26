@@ -23,6 +23,7 @@
 Name:           agama-autoyast-schema
 Version:        @VERSION@
 Release:        0
+BuildArch:      noarch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Source0:        agama-autoyast-schema-%{version}.tar.xz

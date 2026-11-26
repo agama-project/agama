@@ -1,0 +1,23 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace config = "http://www.suse.com/1.0/configns"
+
+include "common.rnc"
+
+dasd = element dasd {
+  MAP,
+  (
+    element devices {
+      LIST,
+      element listentry {
+        MAP,
+        (
+          element channel { STRING } &
+          element format { BOOLEAN }? &
+          element diag { BOOLEAN }?
+        )
+      }*
+    }? &
+    element format_unformatted { BOOLEAN }?
+  )
+}

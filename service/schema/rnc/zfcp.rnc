@@ -1,0 +1,20 @@
+default namespace = "http://www.suse.com/1.0/yast2ns"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace config = "http://www.suse.com/1.0/configns"
+
+include "common.rnc"
+
+zfcp = element zfcp {
+  MAP,
+  element devices {
+      LIST,
+      element listentry {
+        MAP,
+        (
+          element controller_id { STRING } &
+          element wwpn { STRING } &
+          element fcp_lun { STRING }
+        )
+      }*
+  }?
+}
