@@ -50,26 +50,18 @@ export type RelatedNamesProps = {
 export default function RelatedNames({ items }: RelatedNamesProps): React.ReactNode {
   const parts = formatListToParts(items.map((item) => item.name));
   /* Matched by position rather than by name, since two entries may share one. */
-  let at = -1;
+  let next = 0;
 
-  return (
-    <>
-      {parts.map((part, index) => {
-        if (part.type === "literal")
-          return <React.Fragment key={index}>{part.value}</React.Fragment>;
+  return parts.map((part, key) => {
+    if (part.type === "literal") return <React.Fragment key={key}>{part.value}</React.Fragment>;
 
-        at += 1;
-        const item = items[at];
+    const { name, subject } = items[next++];
+    if (!subject) return <React.Fragment key={key}>{name}</React.Fragment>;
 
-        /* Plain text when there is no panel to open. */
-        if (!item.subject) return <React.Fragment key={index}>{item.name}</React.Fragment>;
-
-        return (
-          <DetailsOpener key={index} subject={item.subject}>
-            {item.name}
-          </DetailsOpener>
-        );
-      })}
-    </>
-  );
+    return (
+      <DetailsOpener key={key} subject={subject}>
+        {name}
+      </DetailsOpener>
+    );
+  });
 }
