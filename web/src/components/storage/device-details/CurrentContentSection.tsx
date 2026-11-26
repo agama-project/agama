@@ -234,7 +234,7 @@ function statusFor(
 
   switch (decision) {
     case "keep":
-      // TRANSLATORS: action for an existing partition: leave it as is
+      // TRANSLATORS: action to leave an existing partition untouched
       return { text: _("Keep"), destroys: false };
     case "resizeIfNeeded":
       if (!canShrink) {
