@@ -89,7 +89,7 @@ export default function SpacePolicyMenuItem({
       /* Named after the current submenu, and saying it leads back. */
       upProps={{
         label: title,
-        // TRANSLATORS: goes back to the full menu. %s is the submenu title, such as "Existing partitions"
+        // TRANSLATORS: back to the full menu. %s is a submenu title, like "Existing partitions"
         "aria-label": sprintf(_("Back from %s"), title),
       }}
       description={description}

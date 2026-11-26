@@ -33,8 +33,7 @@ export default function GlobalActions() {
   return (
     <Flex>
       <ConfigureDeviceMenu
-        // TRANSLATORS: offered at the foot of the list of what the
-        // installation is made of: bring more disks into it.
+        // TRANSLATORS: adds more disks to the installation
         label={_("Add more devices")}
       />
     </Flex>

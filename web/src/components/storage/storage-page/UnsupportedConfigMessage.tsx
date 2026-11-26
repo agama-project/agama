@@ -51,9 +51,9 @@ function PreviewResult(): React.ReactNode {
       {isOpen && (
         <Popup
           isOpen
-          // TRANSLATORS: title of the popup with the layout the disks will have
-          // and the actions needed to get there. "Planned" because nothing is
-          // applied until the installation starts.
+          // TRANSLATORS: title of the popup with the layout the disks will have and the actions
+          // needed to get there. "Planned" because nothing is applied until the installation
+          // starts.
           title={_("Planned storage changes")}
           description={summaryOf(actions)}
           variant="large"

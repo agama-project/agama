@@ -73,8 +73,8 @@ export default function Consequences(): React.ReactNode {
             /* The dot, in words. */
             <Text srOnly>
               {
-                // TRANSLATORS: read by screen readers after "Preview result…"
-                // when the planned changes differ from the last reviewed ones
+                // TRANSLATORS: read by screen readers after "Preview result…" when the planned
+                // changes differ from the last reviewed ones
                 _(" (updated)")
               }
             </Text>
@@ -85,8 +85,7 @@ export default function Consequences(): React.ReactNode {
       {isOpen && (
         <Popup
           isOpen
-          // TRANSLATORS: "Planned" since nothing is applied until the
-          // installation starts
+          // TRANSLATORS: "Planned" since nothing is applied until the installation starts
           title={_("Planned storage changes")}
           description={summaryOf(actions)}
           variant="large"

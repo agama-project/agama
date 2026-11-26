@@ -44,13 +44,15 @@ function Marked({ sentence }: { sentence: string }) {
 function sentence(count: number, isLossy: boolean): string {
   return sprintf(
     isLossy
-      ? // TRANSLATORS: %d is the number of actions. Keep the square brackets: their text is shown in bold.
+      ? // TRANSLATORS: %d is the number of actions. Keep the square brackets: their text is shown
+        // in bold.
         n_(
           "Applying the configuration will take [%d action] during final installation, [with potential data loss].",
           "Applying the configuration will take [%d actions] during final installation, [with potential data loss].",
           count,
         )
-      : // TRANSLATORS: %d is the number of actions. Keep the square brackets: their text is shown in bold.
+      : // TRANSLATORS: %d is the number of actions. Keep the square brackets: their text is shown
+        // in bold.
         n_(
           "Applying the configuration will take [%d action] during final installation, with no expected data loss.",
           "Applying the configuration will take [%d actions] during final installation, with no expected data loss.",
@@ -75,8 +77,8 @@ function useAnnounceChanges(isLossy: boolean, hasUnseenChanges: boolean, summary
 
     if (wasLossy.current !== isLossy) parts.push(summary);
     if (hasUnseenChanges && !hadUnseenChanges.current) {
-      // TRANSLATORS: read by screen readers when the planned storage changes
-      // differ from the ones last reviewed
+      // TRANSLATORS: read by screen readers when the planned storage changes differ from the ones
+      // last reviewed
       parts.push(_("The planned changes are different since you last reviewed them."));
     }
 

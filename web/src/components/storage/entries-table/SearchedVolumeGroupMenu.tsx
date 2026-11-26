@@ -89,7 +89,7 @@ export default function SearchedVolumeGroupMenu({
             icon={<Icon size="md" name="article" />}
             /* Screen readers get the full name; on screen, the row says which group. */
             aria-label={sprintf(
-              // TRANSLATORS: opens the details panel of a volume group. %s is its name, such as "system"
+              // TRANSLATORS: opens a volume group panel. %s is its name, such as "system"
               _("Configure %s"),
               name,
             )}

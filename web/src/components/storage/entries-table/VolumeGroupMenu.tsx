@@ -72,8 +72,8 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
       const diskName = baseName(targetDevices[0].name, { truncate: true });
       description = sprintf(
         n_(
-          // TRANSLATORS: %1$s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
-          // single mount point in the singular case). %2$s is a disk name like sda.
+          // TRANSLATORS: %1$s is a list of formatted mount points like '"/", "/var" and "swap"' (or
+          // a single mount point in the singular case). %2$s is a disk name like sda.
           "%1$s will be created as a partition at %2$s",
           "%1$s will be created as partitions at %2$s",
           lvs.length,
@@ -105,7 +105,7 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
                    "Configure system", is ambiguous; on screen, the row says which
                    group. */
                 aria-label={sprintf(
-                  // TRANSLATORS: opens the details panel of a volume group. %s is its name, such as "system"
+                  // TRANSLATORS: opens a volume group panel. %s is its name, such as "system"
                   _("Configure %s LVM volume group"),
                   group.vgName,
                 )}

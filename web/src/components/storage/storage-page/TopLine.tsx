@@ -52,14 +52,12 @@ const phrase = (sentence: string) => <Interpolate sentence={sentence}>{bold}</In
 /** The boot setting, as a phrase and its icon. */
 function boot(config: ConfigModel.Config): { value: React.ReactNode; icon: IconProps["name"] } {
   if (!config.boot?.configure) {
-    // TRANSLATORS: no disk is set up to boot the system. Text in square
-    // brackets is shown in bold.
+    // TRANSLATORS: no disk is set up to boot the system. Text in square brackets is shown in bold.
     return { value: phrase(_("Boot disk: [not configured]")), icon: bootIcon(config) };
   }
 
   if (configModel.boot.isDefault(config)) {
-    // TRANSLATORS: the installer picks the boot disk. Text in square brackets
-    // is shown in bold.
+    // TRANSLATORS: the installer picks the boot disk. Text in square brackets is shown in bold.
     return { value: phrase(_("Boot disk: [auto]")), icon: bootIcon(config) };
   }
 
@@ -80,8 +78,8 @@ function boot(config: ConfigModel.Config): { value: React.ReactNode; icon: IconP
       </Interpolate>
     ) : (
       phrase(
-        // TRANSLATORS: a boot disk is required but not chosen yet. Text in
-        // square brackets is shown in bold.
+        // TRANSLATORS: a boot disk is required but not chosen yet. Text in square brackets is shown
+        // in bold.
         _("Boot disk: [not selected]"),
       )
     ),
@@ -95,16 +93,15 @@ function encryption(config: ConfigModel.Config): {
   icon: IconProps["name"];
 } {
   if (!config.encryption) {
-    // TRANSLATORS: the installation is not encrypted. Text in square brackets
-    // is shown in bold.
+    // TRANSLATORS: the installation is not encrypted. Text in square brackets is shown in bold.
     return { value: phrase(_("Encryption: [none]")), icon: "lock_open" };
   }
 
   return {
     value: phrase(
       config.encryption.tpm
-        ? // TRANSLATORS: TPM is the security chip releasing the key at boot.
-          // Text in square brackets is shown in bold.
+        ? // TRANSLATORS: TPM is the security chip releasing the key at boot. Text in square
+          // brackets is shown in bold.
           _("Encryption: [LUKS2 with TPM]")
         : // TRANSLATORS: text in square brackets is shown in bold
           _("Encryption: [LUKS2]"),
