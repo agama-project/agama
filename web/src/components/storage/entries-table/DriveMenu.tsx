@@ -104,7 +104,6 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
   const device = useDevice(entry.name);
   const { openDetails } = useDeviceDetails();
   const { title, open, selector } = useRetarget(entry, device);
-  const withFlyouts = true;
 
   const name = baseName(entry.name);
   // TRANSLATORS: %s is a device name, such as "sda"
@@ -148,7 +147,6 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
         collection={subject.collection}
         index={subject.index}
         policy={entry.spacePolicy}
-        isFlyout={withFlyouts}
       />,
     );
   } else {
@@ -177,7 +175,7 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
         menuProps={{
           "aria-label": label,
           popperProps: { position: "end", minWidth: "26rem" },
-          hasFlyouts: withFlyouts,
+          hasFlyouts: true,
         }}
         customToggle={<RowMenuToggle label={label} />}
         items={items}

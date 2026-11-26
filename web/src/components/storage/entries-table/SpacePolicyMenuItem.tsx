@@ -21,7 +21,6 @@
  */
 
 import React from "react";
-import { sprintf } from "sprintf-js";
 import { MenuButtonItem } from "~/components/core/MenuButton";
 import { useSetSpacePolicy } from "~/hooks/model/storage/config-model";
 import { _, TranslatedString } from "~/i18n";
@@ -49,14 +48,12 @@ export type SpacePolicyMenuItemProps = {
   index: number;
   /** What the device allows its partitions today. */
   policy: ConfigModel.SpacePolicy;
-  isFlyout?: boolean;
 };
 
 export default function SpacePolicyMenuItem({
   collection,
   index,
   policy,
-  isFlyout = false,
 }: SpacePolicyMenuItemProps) {
   const setSpacePolicy = useSetSpacePolicy();
   const isVolumeGroup = collection === "volumeGroups";
@@ -86,14 +83,8 @@ export default function SpacePolicyMenuItem({
     <MenuButtonItem
       key="space-policy"
       icon={<Icon size="md" name="home_storage" />}
-      /* Named after the current submenu, and saying it leads back. */
-      upProps={{
-        label: title,
-        // TRANSLATORS: back to the full menu. %s is a submenu title, like "Existing partitions"
-        "aria-label": sprintf(_("Back from %s"), title),
-      }}
       description={description}
-      {...(isFlyout ? { flyoutItems: choices } : { items: choices })}
+      flyoutItems={choices}
     >
       {title}
     </MenuButtonItem>

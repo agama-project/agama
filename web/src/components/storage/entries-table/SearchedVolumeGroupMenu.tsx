@@ -74,7 +74,6 @@ export default function SearchedVolumeGroupMenu({
 }: SearchedVolumeGroupMenuProps): React.ReactNode {
   const config = useConfigModel();
   const { openDetails } = useDeviceDetails();
-  const withFlyouts = true;
 
   const name = baseName(entry.name);
   // TRANSLATORS: %s is a volume group name, such as "system"
@@ -110,7 +109,6 @@ export default function SearchedVolumeGroupMenu({
         collection={subject.collection}
         index={subject.index}
         policy={entry.spacePolicy}
-        isFlyout={withFlyouts}
       />,
     );
   }
@@ -128,7 +126,7 @@ export default function SearchedVolumeGroupMenu({
       menuProps={{
         "aria-label": label,
         popperProps: { position: "end", minWidth: "26rem" },
-        hasFlyouts: withFlyouts,
+        hasFlyouts: true,
       }}
       customToggle={<RowMenuToggle label={label} />}
       items={items}

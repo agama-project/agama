@@ -35,10 +35,19 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
   useSetSpacePolicy: () => mockSetSpacePolicy,
 }));
 
+/* Fly-outs watch their size, which jsdom cannot report. */
+beforeAll(() => {
+  window.ResizeObserver = class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  } as unknown as typeof ResizeObserver;
+});
+
 const renderIn = (collection: "drives" | "volumeGroups", policy: ConfigModel.SpacePolicy) =>
   installerRender(
     <MenuButton
-      menuProps={{ "aria-label": _("Actions") }}
+      menuProps={{ "aria-label": _("Actions"), hasFlyouts: true }}
       items={[
         <SpacePolicyMenuItem key="policy" collection={collection} index={1} policy={policy} />,
       ]}
@@ -49,9 +58,7 @@ const renderIn = (collection: "drives" | "volumeGroups", policy: ConfigModel.Spa
 
 const openChoices = async (user) => {
   await user.click(screen.getByRole("button", { name: "Actions" }));
-  /* The drill-down also renders the title as its way back, so take the item itself. */
-  const [item] = screen.getAllByRole("menuitem", { name: /Actions on current content/ });
-  await user.click(item);
+  await user.click(screen.getByRole("menuitem", { name: /Actions on current content/ }));
 };
 
 describe("SpacePolicyMenuItem", () => {
@@ -80,12 +87,5 @@ describe("SpacePolicyMenuItem", () => {
     const group = renderIn("volumeGroups", "keep");
     await openChoices(group.user);
     screen.getByText("Some logical volumes may be reduced if needed");
-  });
-
-  it("leads back to the full menu", async () => {
-    const { user } = renderIn("drives", "keep");
-    await openChoices(user);
-
-    screen.getByRole("menuitem", { name: "Back from Actions on current content" });
   });
 });
