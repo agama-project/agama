@@ -1002,6 +1002,27 @@ describe("config-model hooks", () => {
 
       expect(mockPutStorageModel).toHaveBeenCalled();
     });
+
+    it("releases a reused entry in the same request", () => {
+      const config: ConfigModel.Config = {
+        drives: [{ name: "/dev/sda", partitions: [{ name: "/dev/sda2", mountPath: "/home" }] }],
+      };
+
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
+
+      const { result } = renderHook(() => useSetSpacePolicy(), { wrapper });
+
+      result.current("drives", 0, {
+        type: "custom",
+        actions: [{ deviceName: "/dev/sda2", value: "delete" }],
+        release: "/dev/sda2",
+      });
+
+      expect(mockPutStorageModel).toHaveBeenCalledTimes(1);
+      expect(mockPutStorageModel.mock.calls[0][0].drives[0].partitions).toEqual([
+        { name: "/dev/sda2", delete: true, resizeIfNeeded: false },
+      ]);
+    });
   });
 
   describe("useConvertDevice", () => {

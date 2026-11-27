@@ -52,6 +52,12 @@ type SpacePolicyAction = {
 type SpacePolicy = {
   type: ConfigModel.SpacePolicy;
   actions?: SpacePolicyAction[];
+  /**
+   * Name of a partition or logical volume that the new system uses and stops using with this
+   * policy. Its entry is removed from the configuration before the actions are applied, so it can
+   * be given an action.
+   */
+  release?: string;
 };
 
 type Formattable = {

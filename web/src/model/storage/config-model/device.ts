@@ -123,6 +123,24 @@ function addSpaceActions(volumes: Volume[], actions: Data.SpacePolicyAction[]): 
   return volumes;
 }
 
+/**
+ * Removes the partition or logical volume with the given device name from the configuration of
+ * the device, so the new system stops using it.
+ *
+ * Entries are matched by device name, not by mount path.
+ */
+function releaseEntry(deviceConfig: Device, deviceName: string) {
+  if ("partitions" in deviceConfig) {
+    deviceConfig.partitions = (deviceConfig.partitions || []).filter((p) => p.name !== deviceName);
+  }
+
+  if ("logicalVolumes" in deviceConfig) {
+    deviceConfig.logicalVolumes = (deviceConfig.logicalVolumes || []).filter(
+      (l) => l.name !== deviceName,
+    );
+  }
+}
+
 function setSpacePolicy(
   config: ConfigModel.Config,
   collection: "drives" | "mdRaids" | "volumeGroups",
@@ -133,6 +151,8 @@ function setSpacePolicy(
   const deviceConfig: Device = config[collection]?.at(index);
 
   if (!deviceConfig) return config;
+
+  if (data.release) releaseEntry(deviceConfig, data.release);
 
   deviceConfig.spacePolicy = data.type;
   if (data.type !== "custom") return config;
