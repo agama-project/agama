@@ -20,7 +20,9 @@
 
 use std::{process::exit, time::Duration};
 
-use agama_autoinstall::{ConfigAutoLoader, ScriptsRunner};
+use agama_autoinstall::{ConfigAutoLoader, ScriptsRunner, UserQuestions};
+use agama_lib::http::BaseHTTPClientError;
+use agama_lib::manager::http_client::ManagerHTTPClientError;
 use agama_lib::{auth::AuthToken, http::BaseHTTPClient, manager::ManagerHTTPClient};
 use agama_utils::{
     api::{status::Stage, FinishMethod},
@@ -93,7 +95,19 @@ async fn run() -> anyhow::Result<()> {
     }
 
     tracing::info!("Starting the auto-installation");
-    manager_client.install().await?;
+    if let Err(e) = manager_client.install().await {
+        match e {
+            ManagerHTTPClientError::HTTP(BaseHTTPClientError::Problem(_status, problem)) => {
+                let questions = UserQuestions::new(http.clone());
+                questions
+                    .autoinstall_start_failed(&problem.details())
+                    .await?;
+            }
+            _ => {
+                tracing::info!("manager client returned unexpected error")
+            }
+        }
+    }
 
     // wait till install is done.
     loop {
@@ -104,6 +118,7 @@ async fn run() -> anyhow::Result<()> {
         }
         if status.stage == Stage::Failed {
             tracing::error!("Installation failed");
+
             exit(1);
         }
     }
