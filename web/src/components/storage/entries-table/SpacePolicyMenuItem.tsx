@@ -143,7 +143,7 @@ export default function SpacePolicyMenuItem({ subject }: SpacePolicyMenuItemProp
       key="space-policy"
       icon={<Icon size="md" name="home_storage" />}
       description={disabledDesc || enabledDesc}
-      isDisabled={!!disabledDesc}
+      isAriaDisabled={!!disabledDesc}
       flyoutItems={choices}
     >
       {title}
