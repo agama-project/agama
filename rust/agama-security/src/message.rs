@@ -30,7 +30,7 @@ define_message!(
         /// X509 certificate.
         certificate: X509,
         /// Certificate name. It is used as the filename (without the extension) when
-        ///   importing the certificate.
+        /// importing the certificate.
         name: String,
     } -> bool
 );
