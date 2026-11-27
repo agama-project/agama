@@ -44,16 +44,16 @@ function Marked({ sentence }: { sentence: string }) {
 function sentence(count: number, isLossy: boolean): string {
   return sprintf(
     isLossy
-      ? // TRANSLATORS: %d is the number of actions. Keep the square brackets: their text is shown
-        // in bold.
-        n_(
+      ? n_(
+          // TRANSLATORS: %d is the number of actions. Keep the square brackets: their text is shown
+          // in bold.
           "Applying the configuration will take [%d action] during final installation, [with potential data loss].",
           "Applying the configuration will take [%d actions] during final installation, [with potential data loss].",
           count,
         )
-      : // TRANSLATORS: %d is the number of actions. Keep the square brackets: their text is shown
-        // in bold.
-        n_(
+      : n_(
+          // TRANSLATORS: %d is the number of actions. Keep the square brackets: their text is shown
+          // in bold.
           "Applying the configuration will take [%d action] during final installation, with no expected data loss.",
           "Applying the configuration will take [%d actions] during final installation, with no expected data loss.",
           count,

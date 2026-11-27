@@ -23,13 +23,16 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { useSearchParams } from "react-router";
-import { installerRender, mockRoutes } from "~/test-utils";
+import { installerRender, mockNavigateFn, mockRoutes } from "~/test-utils";
+import { STORAGE as PATHS } from "~/routes/paths";
+import { generateEncodedPath } from "~/utils";
 import type { Storage as System } from "~/model/system";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 import type { Entry } from "~/components/storage/device-details/entry";
 import CurrentContentSection from "~/components/storage/device-details/CurrentContentSection";
 
 const mockAnnounce = jest.fn();
+const mockDeleteLogicalVolume = jest.fn();
 
 jest.mock("~/context/announcer", () => ({
   ...jest.requireActual("~/context/announcer"),
@@ -44,6 +47,7 @@ jest.mock("~/components/storage/device-details/partition-space", () => ({
 jest.mock("~/hooks/model/storage/config-model", () => ({
   ...jest.requireActual("~/hooks/model/storage/config-model"),
   useDeletePartition: () => jest.fn(),
+  useDeleteLogicalVolume: () => mockDeleteLogicalVolume,
   useSetSpacePolicy: () => jest.fn(),
 }));
 
@@ -169,6 +173,101 @@ describe("CurrentContentSection", () => {
 
     screen.getByRole("columnheader", { name: "Logical volume" });
     expect(screen.queryByRole("columnheader", { name: "Partition" })).toBeNull();
+  });
+
+  describe("on the logical volumes of a volume group", () => {
+    const group = (logicalVolumes: ConfigModel.LogicalVolume[] = []): Entry => ({
+      config: {
+        vgName: "system",
+        name: "/dev/system",
+        spacePolicy: "keep",
+        logicalVolumes,
+      } as ConfigModel.VolumeGroup,
+      device: {
+        sid: 20,
+        name: "/dev/system",
+        class: "volumeGroup",
+        logicalVolumes: [
+          { ...partition(1), name: "/dev/system/root" },
+          { ...partition(2), name: "/dev/system/home" },
+        ],
+      } as System.Device,
+      name: "system",
+      isVolumeGroup: true,
+    });
+    const groupSubject = { collection: "volumeGroups" as const, index: 0 };
+    const showLogicalVolumes = async (ui: React.ReactElement) => {
+      const rendered = installerRender(ui);
+      await rendered.user.click(
+        screen.getByRole("button", { name: "Show details of the existing logical volumes" }),
+      );
+      return rendered;
+    };
+
+    beforeEach(() => {
+      mockDeleteLogicalVolume.mockClear();
+      mockNavigateFn.mockClear();
+    });
+
+    it("offers to assign a mount point to one that is not used, in terms of logical volumes", async () => {
+      const { user } = await showLogicalVolumes(
+        <CurrentContentSection entry={group()} subject={groupSubject} />,
+      );
+      await user.click(screen.getByRole("button", { name: "Actions for root" }));
+
+      await user.click(screen.getByRole("menuitem", { name: /^Assign a mount point/ }));
+
+      expect(mockNavigateFn).toHaveBeenCalledWith({
+        pathname: generateEncodedPath(PATHS.volumeGroup.logicalVolume.reuse, {
+          id: "0",
+          deviceName: "/dev/system/root",
+        }),
+        search: expect.any(String),
+      });
+    });
+
+    it("does not mention partitions in the menu", async () => {
+      const { user } = await showLogicalVolumes(
+        <CurrentContentSection entry={group()} subject={groupSubject} />,
+      );
+      await user.click(screen.getByRole("button", { name: "Actions for root" }));
+
+      expect(within(screen.getByRole("menu")).queryByText(/partition/i)).toBeNull();
+    });
+
+    it("offers to modify or stop using one the new system uses", async () => {
+      const used = group([{ name: "/dev/system/home", mountPath: "/home" }]);
+      const { user } = await showLogicalVolumes(
+        <CurrentContentSection entry={used} subject={groupSubject} />,
+      );
+      await user.click(screen.getByRole("button", { name: "Actions for home" }));
+
+      await user.click(
+        screen.getByRole("menuitem", { name: "Modify how the logical volume is used" }),
+      );
+
+      expect(mockNavigateFn).toHaveBeenCalledWith({
+        pathname: generateEncodedPath(PATHS.volumeGroup.logicalVolume.edit, {
+          id: "0",
+          logicalVolumeId: "/home",
+        }),
+        search: expect.any(String),
+      });
+      await user.click(screen.getByRole("button", { name: "Actions for home" }));
+      screen.getByRole("menuitem", { name: "Stop using" });
+      expect(screen.queryByRole("menuitem", { name: /^Assign a mount point/ })).toBeNull();
+    });
+
+    it("stops using it by its mount point, in its volume group", async () => {
+      const used = group([{ name: "/dev/system/home", mountPath: "/home" }]);
+      const { user } = await showLogicalVolumes(
+        <CurrentContentSection entry={used} subject={groupSubject} />,
+      );
+      await user.click(screen.getByRole("button", { name: "Actions for home" }));
+      await user.click(screen.getByRole("menuitem", { name: "Stop using" }));
+
+      expect(mockDeleteLogicalVolume).toHaveBeenCalledWith("system", "/home");
+    });
   });
 
   it("speaks of one partition in the singular", () => {

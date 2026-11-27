@@ -86,12 +86,6 @@ export default function SearchedVolumeGroupMenu({
           <MenuButtonItem
             key="open"
             icon={<Icon size="md" name="article" />}
-            /* Screen readers get the full name; on screen, the row says which group. */
-            aria-label={sprintf(
-              // TRANSLATORS: opens a volume group panel. %s is its name, such as "system"
-              _("Configure %s"),
-              name,
-            )}
             description={_("Customize how the volume group will be used")}
             onClick={() => openDetails(subject)}
           >

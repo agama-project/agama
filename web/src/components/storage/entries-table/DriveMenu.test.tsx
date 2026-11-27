@@ -81,7 +81,7 @@ describe("DriveMenu", () => {
   it("opens the panel of the device from its row", async () => {
     const { user } = installerRender(<DriveMenu entry={vda} subject={subject} />);
     await openMenu(user);
-    await user.click(screen.getByRole("menuitem", { name: "Configure vda" }));
+    await user.click(screen.getByRole("menuitem", { name: /^Details/ }));
 
     expect(mockOpenDetails).toHaveBeenCalledWith(subject);
   });
@@ -96,7 +96,7 @@ describe("DriveMenu", () => {
     const panel = installerRender(<DriveMenu entry={vda} />);
     await openMenu(panel.user);
     screen.getByText("new volume group");
-    expect(screen.queryByRole("menuitem", { name: "Configure vda" })).toBeNull();
+    expect(screen.queryByRole("menuitem", { name: /^Details/ })).toBeNull();
   });
 
   it("drops the device when there is another one to install on", async () => {

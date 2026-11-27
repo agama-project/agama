@@ -71,7 +71,7 @@ describe("VolumeGroupMenu", () => {
     it("opens its panel from its row", async () => {
       const { user } = installerRender(<VolumeGroupMenu group={newGroup()} subject={subject} />);
       await openMenu(user);
-      await user.click(screen.getByRole("menuitem", { name: "Configure system LVM volume group" }));
+      await user.click(screen.getByRole("menuitem", { name: /^Details/ }));
 
       expect(mockOpenDetails).toHaveBeenCalledWith(subject);
     });
@@ -127,7 +127,7 @@ describe("VolumeGroupMenu", () => {
       const { user } = installerRender(<VolumeGroupMenu group={existing} subject={subject} />);
       await openMenu(user);
       screen.getByText("space policy");
-      await user.click(screen.getByRole("menuitem", { name: "Configure system" }));
+      await user.click(screen.getByRole("menuitem", { name: /^Details/ }));
 
       expect(mockOpenDetails).toHaveBeenCalledWith(subject);
     });

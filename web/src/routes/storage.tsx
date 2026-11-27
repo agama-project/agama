@@ -87,6 +87,10 @@ const routes = (): Route => ({
       element: <LogicalVolumeForm />,
     },
     {
+      path: PATHS.volumeGroup.logicalVolume.reuse,
+      element: <LogicalVolumeForm />,
+    },
+    {
       path: PATHS.volumeGroup.logicalVolume.edit,
       element: <LogicalVolumeForm />,
     },

@@ -61,13 +61,10 @@ function decisionUnder(policy: ConfigModel.SpacePolicy): Decision | undefined {
 function decisionLabel(decision: Decision): TranslatedString {
   switch (decision) {
     case "keep":
-      // TRANSLATORS: leave an existing partition untouched
       return _("Do not modify");
     case "resizeIfNeeded":
-      // TRANSLATORS: allow making an existing partition smaller if room is needed
       return _("Shrink if needed");
     case "delete":
-      // TRANSLATORS: remove an existing partition
       return _("Delete");
   }
 }
@@ -78,13 +75,24 @@ const DECISION_ICONS = {
   delete: "delete_sweep",
 } as const;
 
-function meaning(decision: Decision, partition: System.Device): TranslatedString {
+/** What the decisions are about: a partition of a disk or a logical volume of a volume group. */
+type Kind = "partition" | "logicalVolume";
+
+function meaning(decision: Decision, partition: System.Device, kind: Kind): TranslatedString {
   switch (decision) {
     case "keep":
       return _("Data will be kept, not used by the new system.");
     case "delete":
-      // TRANSLATORS: %s is a size, such as "45 GiB".
+      if (kind === "logicalVolume") {
+        return sprintf(
+          // TRANSLATORS: %s is a size, such as "45 GiB".
+          _("Data will be lost, %s will be freed for new logical volumes."),
+          deviceSize(partition.block?.size),
+        );
+      }
+
       return sprintf(
+        // TRANSLATORS: %s is a size, such as "45 GiB".
         _("Data will be lost, %s will be freed for new partitions."),
         deviceSize(partition.block?.size),
       );
@@ -120,11 +128,21 @@ function shrinkReason(partition: System.Device): string | undefined {
  * Why a partition cannot be shrunk: the first reason the system gives, already
  * translated, or a generic sentence when it gives none.
  */
-function ShrinkRefusal({ partition }: { partition: System.Device }): React.ReactNode {
+function ShrinkRefusal({
+  partition,
+  kind = "partition",
+}: {
+  partition: System.Device;
+  kind?: Kind;
+}): React.ReactNode {
   const reasons = partition.block?.shrinking?.reasons || [];
+  if (reasons[0]) return reasons[0];
 
-  // TRANSLATORS: why a partition cannot be shrunk, when no reason is known
-  return reasons[0] || _("This partition cannot be made smaller.");
+  if (kind === "logicalVolume") {
+    return _("This logical volume cannot be made smaller.");
+  }
+
+  return _("This partition cannot be made smaller.");
 }
 
 /** The current decision of a partition, from its configuration entry. */
@@ -140,8 +158,9 @@ function descriptionOf(
   partition: System.Device,
   refused: boolean,
   booting: boolean,
+  kind: Kind,
 ): React.ReactNode {
-  if (refused) return <ShrinkRefusal partition={partition} />;
+  if (refused) return <ShrinkRefusal partition={partition} kind={kind} />;
 
   if (decision === "keep" && booting && isExistingBootPartition(partition)) {
     // TRANSLATORS: explains keeping a partition the new system may need to boot
@@ -150,14 +169,22 @@ function descriptionOf(
 
   const recoverable = decision === "resizeIfNeeded" && recoverableBy(partition);
   if (recoverable) {
-    // TRANSLATORS: %s is the most space shrinking can free, such as "45 GiB"
+    if (kind === "logicalVolume") {
+      return sprintf(
+        // TRANSLATORS: %s is a size, such as "45 GiB".
+        _("Data will be kept, up to %s may be freed for new logical volumes."),
+        deviceSize(recoverable),
+      );
+    }
+
     return sprintf(
+      // TRANSLATORS: %s is a size, such as "45 GiB".
       _("Data will be kept, up to %s may be freed for new partitions."),
       deviceSize(recoverable),
     );
   }
 
-  return meaning(decision, partition);
+  return meaning(decision, partition, kind);
 }
 
 export type PartitionSpaceItemsProps = {
@@ -194,6 +221,7 @@ function usePartitionSpaceItems({
   const setSpacePolicy = useSetSpacePolicy();
   const config = useConfigModel();
   const booting = isBootDevice(config, collection, index);
+  const kind: Kind = collection === "volumeGroups" ? "logicalVolume" : "partition";
 
   const entryFor = (device: System.Device) => entries.find((entry) => entry.name === device.name);
   const decisionFor = (device: System.Device) => rule || decisionOf(entryFor(device));
@@ -226,7 +254,7 @@ function usePartitionSpaceItems({
         key={decision}
         icon={<Icon size="md" name={DECISION_ICONS[decision]} />}
         isAriaDisabled={refused}
-        description={descriptionOf(decision, partition, refused, booting)}
+        description={descriptionOf(decision, partition, refused, booting, kind)}
         onClick={refused ? undefined : () => choose(decision)}
       >
         {decisionLabel(decision)}

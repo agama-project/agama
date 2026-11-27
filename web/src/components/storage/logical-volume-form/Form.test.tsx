@@ -166,6 +166,38 @@ describe("LogicalVolumeForm", () => {
     });
   });
 
+  describe("when arriving to reuse a logical volume already on the volume group", () => {
+    it("starts with that logical volume chosen, rather than asking for it again", () => {
+      mockParams({ id: "0", deviceName: "/dev/system/data" });
+      installerRender(<LogicalVolumeForm />);
+
+      expect(screen.getByLabelText("Logical volume")).toHaveTextContent(/data/);
+      expect(screen.getByLabelText("File system")).toHaveTextContent(/Current/);
+      expect(screen.queryByLabelText("Name")).not.toBeInTheDocument();
+    });
+
+    it("reuses it when accepted", async () => {
+      mockParams({ id: "0", deviceName: "/dev/system/data" });
+      const { user } = installerRender(<LogicalVolumeForm />);
+      await user.type(screen.getByLabelText("Mount point"), "/home");
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+
+      await waitFor(() =>
+        expect(mockAddLogicalVolume).toHaveBeenCalledWith(
+          0,
+          expect.objectContaining({ name: "/dev/system/data", mountPath: "/home" }),
+        ),
+      );
+    });
+
+    it("starts with a new logical volume when the one named cannot be reused", () => {
+      mockParams({ id: "0", deviceName: "/dev/system/other" });
+      installerRender(<LogicalVolumeForm />);
+
+      expect(screen.getByLabelText("Logical volume")).toHaveTextContent(/New logical volume/);
+    });
+  });
+
   describe("logical volume selection", () => {
     it("switches filesystem to Current when selecting a logical volume with data", async () => {
       const { user } = installerRender(<LogicalVolumeForm />);
