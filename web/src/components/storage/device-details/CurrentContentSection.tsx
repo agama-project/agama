@@ -80,7 +80,7 @@ function rowsOf(entry: Entry): Row[] {
 /**
  * Whether the device will contain partitions or logical volumes.
  *
- * TODO: this is COMPLETELY misplaced here.
+ * TODO: move to the model.
  */
 export function hasCurrentContent(entry: Entry): boolean {
   return rowsOf(entry).length > 0;
@@ -130,40 +130,41 @@ function PartitionMenu({
     rule,
   });
 
+  let reuseItems: React.ReactNode[] = [];
   /* Only on disks: logical volumes cannot be reused. */
-  const reuseItems =
-    collection === "volumeGroups"
-      ? []
-      : reusedAs
-        ? [
-            <MenuButtonItem
-              key="edit"
-              icon={<Icon size="md" name="edit_square" />}
-              to={generateEncodedPath(PATHS.editPartition, { ...at, partitionId: reusedAs })}
-              keepQuery
-            >
-              {_("Modify how the partition is used")}
-            </MenuButtonItem>,
-            <MenuButtonItem
-              key="stop"
-              icon={<Icon size="md" name="link_off" />}
-              onClick={() => deletePartition(collection, index, reusedAs)}
-            >
-              {/* TRANSLATORS: on a partition the new system reuses: stop reusing it */}
-              {_("Stop using")}
-            </MenuButtonItem>,
-          ]
-        : [
-            <MenuButtonItem
-              key="reuse"
-              icon={<Icon size="md" name="create_new_folder" />}
-              to={generateEncodedPath(PATHS.reusePartition, { ...at, deviceName: part.name })}
-              keepQuery
-              description={_("Used by the new system, keeping or deleting data.")}
-            >
-              {_("Assign a mount point…")}
-            </MenuButtonItem>,
-          ];
+  if (collection !== "volumeGroups") {
+    reuseItems = reusedAs
+      ? [
+          <MenuButtonItem
+            key="edit"
+            icon={<Icon size="md" name="edit_square" />}
+            to={generateEncodedPath(PATHS.editPartition, { ...at, partitionId: reusedAs })}
+            keepQuery
+          >
+            {_("Modify how the partition is used")}
+          </MenuButtonItem>,
+          <MenuButtonItem
+            key="stop"
+            icon={<Icon size="md" name="link_off" />}
+            onClick={() => deletePartition(collection, index, reusedAs)}
+          >
+            {/* TRANSLATORS: on a partition the new system reuses: stop reusing it */}
+            {_("Stop using")}
+          </MenuButtonItem>,
+        ]
+      : [
+          <MenuButtonItem
+            key="reuse"
+            icon={<Icon size="md" name="create_new_folder" />}
+            to={generateEncodedPath(PATHS.reusePartition, { ...at, deviceName: part.name })}
+            keepQuery
+            description={_("Used by the new system, keeping or deleting data.")}
+          >
+            {/* TRANSLATORS: keep the ellipsis: it says a form follows */}
+            {_("Assign a mount point…")}
+          </MenuButtonItem>,
+        ];
+  }
 
   /* The space decision first, as the row says it. */
   const decisions = reusedAs || !canDecide ? [] : spaceItems;
@@ -243,8 +244,8 @@ function statusFor(
       }
 
       return {
-        // TRANSLATORS: action for an existing partition: make it smaller if room is
-        // needed, keeping its data
+        // TRANSLATORS: action for an existing partition: make it smaller if room is needed, keeping
+        // its data
         text: _("Shrink if needed"),
         destroys: false,
         note: recoverable
@@ -426,7 +427,7 @@ export default function CurrentContentSection({
   );
 
   const someReused = entries.some((e) => e.name && e.mountPath);
-  /* Only where the partitions are the reader's to decide. */
+  /* Only where each partition has its own decision. */
   const isDecidable = !fixedDecision && governed.length > 0;
 
   /* Kept in the URL, so reload, Back and shared links keep it. Closed by

@@ -39,9 +39,9 @@ import {
 import { useRetarget } from "~/components/storage/shared/use-retarget";
 import { _ } from "~/i18n";
 import { useDevice } from "~/hooks/model/system/storage";
+import Icon from "~/components/layout/Icon";
 import type { Partitionable } from "~/model/storage/config-model";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
-import Icon from "~/components/layout/Icon";
 
 type RemoveDeviceMenuItemProps = {
   device: Partitionable.Device;
@@ -75,9 +75,9 @@ const RemoveDeviceMenuItem = ({ device, onClick }: RemoveDeviceMenuItemProps): R
       key="delete"
       icon={<Icon size="md" name="do_not_disturb_on" />}
       isDanger
-      isDisabled={isDisabled}
+      isAriaDisabled={isDisabled}
       description={description}
-      onClick={() => onClick(device)}
+      onClick={isDisabled ? undefined : () => onClick(device)}
     >
       {_("Do not use")}
     </MenuButtonItem>
@@ -85,27 +85,17 @@ const RemoveDeviceMenuItem = ({ device, onClick }: RemoveDeviceMenuItemProps): R
 };
 
 export type DriveMenuProps = {
-  /** The disk or RAID as the configuration describes it. */
+  /** The disk or RAID in the configuration. */
   entry: Partitionable.Device;
-  /** Where it is written. Given only where opening it is one of the offers. */
+  /** Where it is in the configuration. Without it, the menu offers no way to open its panel. */
   subject?: DetailsSubject;
 };
 
 /**
- * What can be done to a disk or a software RAID, from its row.
+ * The menu of a disk or a software RAID.
  *
- * Everything the row offers is named the way the rest of the page names it, so
- * a reader meets one name per act wherever they meet it. An act keeps its name
- * even where it cannot be carried out: an offer renamed into its own refusal is
- * an offer a reader looking for it cannot find.
- *
- * Dropping the only device leaves the installation nowhere to go, so that is
- * offered only where there is somewhere else for it to live.
- *
- * An act that cannot be carried out is still offered and still called what it
- * is called, with the reason where its description goes. It stays reachable by
- * keyboard: a control the browser disables is skipped, and the explanation
- * printed beside it is then never met by the reader it was written for.
+ * An action that cannot be carried out is still listed, with the reason as its
+ * description, and stays reachable by keyboard.
  */
 export default function DriveMenu({ entry, subject }: DriveMenuProps): React.ReactNode {
   const config = useConfigModel();
@@ -114,11 +104,9 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
   const device = useDevice(entry.name);
   const { openDetails } = useDeviceDetails();
   const { title, open, selector } = useRetarget(entry, device);
-  const withFlyouts = true;
 
   const name = baseName(entry.name);
-  // TRANSLATORS: names the menu of things that can be done to one device of the
-  // installation. %s is a device name, such as "sda".
+  // TRANSLATORS: %s is a device name, such as "sda"
   const label = sprintf(_("Actions for %s"), name);
   const location = configModel.partitionable.findLocation(config, entry.name);
 
@@ -127,20 +115,16 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
         <MenuButtonItem
           key="open"
           icon={<Icon size="md" name="article" />}
-          /* Named in full only for a reader who is told the item rather than
-             shown it. On screen the menu hangs off the row it belongs to, and
-             a name the reader can see beside the item is a name repeated. */
+          /* Screen readers get the full name; on screen, the row says which device. */
           aria-label={sprintf(
-            // TRANSLATORS: opens the panel where one entry of the installation
-            // is read and changed. %s is its name, such as "sda".
+            // TRANSLATORS: opens the details panel of a device. %s is its name, such as "sda"
             _("Configure %s"),
             name,
           )}
           description={_("Customize how the disk will be used")}
           onClick={() => openDetails(subject)}
         >
-          {/* TRANSLATORS: opens the panel where one entry of the installation
-              is read and changed. */}
+          {/* TRANSLATORS: opens the details panel of a device */}
           {_("Details")}
         </MenuButtonItem>,
       ]
@@ -163,15 +147,13 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
         collection={subject.collection}
         index={subject.index}
         policy={entry.spacePolicy}
-        isFlyout={withFlyouts}
       />,
     );
   } else {
     items.push(<NewVgMenuOption key="volume-group" device={entry} />);
   }
 
-  // When no additional drives has been added, the "Do not use" button can be confusing so it is
-  // omitted for all drives.
+  // "Do not use" is offered only when there is another device to install on.
   if (configModel.hasAdditionalDevices(config) && location) {
     items.push(
       <Divider key="before-remove" />,
@@ -193,7 +175,7 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
         menuProps={{
           "aria-label": label,
           popperProps: { position: "end", minWidth: "26rem" },
-          hasFlyouts: withFlyouts,
+          hasFlyouts: true,
         }}
         customToggle={<RowMenuToggle label={label} />}
         items={items}

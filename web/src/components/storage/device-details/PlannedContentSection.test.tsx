@@ -23,9 +23,9 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
+import DetailsSection from "~/components/storage/device-details/DetailsSection";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { Entry } from "~/components/storage/device-details/entry";
-import DetailsSection from "~/components/storage/device-details/DetailsSection";
 import PlannedContentSection from "~/components/storage/device-details/PlannedContentSection";
 
 jest.mock("~/hooks/model/storage/config-model", () => ({

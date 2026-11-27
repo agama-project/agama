@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import SidePanel from "~/components/core/SidePanel";
 import DeviceDetailsHeading from "~/components/storage/device-details/DeviceDetailsHeading";
 import DeviceDetailsBody from "~/components/storage/device-details/DeviceDetailsBody";
@@ -32,11 +32,7 @@ import { useDeviceDetails, DETAILS_PANEL_ID } from "~/components/storage/shared/
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 import type { Entry } from "~/components/storage/device-details/entry";
 
-/**
- * What the entry is, under its name, as its row says it under the name: a
- * disk's model or kind, or for a volume group its kind or that it is to be
- * created.
- */
+/** The line under the panel title, matching the one under the row name. */
 function entryDescription(entry: Entry): string | undefined {
   if (entry.isVolumeGroup) {
     return volumeGroupFacts(entry.config as ConfigModel.VolumeGroup, entry.device).description;
@@ -48,30 +44,16 @@ function entryDescription(entry: Entry): string | undefined {
 export type DeviceDetailsPanelProps = {
   /** The page the panel opens over. */
   page: React.ReactNode;
-  /**
-   * Where the panel stays pinned below the top of the page as it scrolls, if
-   * the page scrolls as a whole. See `SidePanel`.
-   */
+  /** How far below the top of the page the panel stays as it scrolls. See `SidePanel`. */
   pinnedOffset?: number;
 };
 
 /**
- * The one panel the storage page opens, on whichever entry the reader picked.
+ * The panel with the details of the storage entry named in the address.
  *
- * It holds the details of that entry and nothing else. What the whole
- * configuration does is reported above the page, not here.
- *
- * One panel and not several, because the reader only ever has one open and the
- * address only ever names one thing. What changes with the entry is what the
- * panel says it is about and what it holds; how it behaves does not, which is
- * why that part is settled once in `core/SidePanel`.
- *
- * An address naming an entry the configuration no longer has reads as a shut
- * panel, and the name leaves the address, so the two always agree. Addresses
- * outlive plans: one can be written down, shared, or reloaded after the entry
- * it named has gone. The same goes for a change made from the panel itself
- * that takes its entry away: the panel closes rather than moving on to another
- * entry, since going from one entry to another is always the reader's doing.
+ * An address naming an entry that no longer exists, because it was shared,
+ * reloaded or removed from the panel itself, closes the panel and clears the
+ * address.
  */
 export default function DeviceDetailsPanel({
   page,
@@ -82,15 +64,13 @@ export default function DeviceDetailsPanel({
 
   const isOpen = entry !== null;
 
-  /* Replaced rather than pushed, as every change of the panel is, so Back does
-     not lead to the address of an entry that is gone. */
-  React.useEffect(() => {
+  /* Replaces the address, so Back does not lead to an entry that is gone. */
+  useEffect(() => {
     if (isStale) close();
   }, [isStale, close]);
 
-  /* The menu of the entry's row, wherever the panel was opened from: after
-     adding a device or moving to another one inside the panel, the reader
-     lands on the entry they were last looking at. */
+  /* Focus returns to the row menu of the entry, also when the panel moved to
+     another entry. */
   const key = subject && keyOf(subject);
   const rowMenu = () =>
     key
@@ -107,8 +87,7 @@ export default function DeviceDetailsPanel({
       onClose={close}
       title={entry && <DeviceDetailsHeading entry={entry} />}
       description={entry && entryDescription(entry)}
-      /* The same acts the entry's row offers, so a reader meets one menu per
-         entry wherever they open it from. */
+      /* The same menu as the entry row. */
       actions={
         entry &&
         (entry.isVolumeGroup ? (

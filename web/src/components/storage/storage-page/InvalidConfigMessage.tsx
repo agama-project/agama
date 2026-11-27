@@ -36,7 +36,7 @@ import { _, n_ } from "~/i18n";
 import type { Issue } from "~/model/issue";
 
 export type InvalidConfigMessageProps = {
-  /** What is wrong with the configuration, listed for the reader. */
+  /** What is wrong with the configuration. */
   issues: Issue[];
 };
 

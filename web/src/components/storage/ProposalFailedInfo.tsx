@@ -28,8 +28,8 @@ import { useAvailableDevices, useVolumeTemplates } from "~/hooks/model/system/st
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { _, n_, formatList } from "~/i18n";
 import { formattedPath } from "~/components/storage/utils";
-import type { TranslatedString } from "~/i18n";
 import { sprintf } from "sprintf-js";
+import type { TranslatedString } from "~/i18n";
 
 function snapshotsRelevant(volumes, partitions) {
   const rootOutline = volumes.find((v) => v.mountPath === "/")?.outline;
@@ -228,12 +228,11 @@ export default function ProposalFailedInfo() {
     <AlertWithDetailsPopup
       variant="warning"
       title={proposalFailedTitle()}
-      // TRANSLATORS: opens a popup explaining why no storage layout can be
-      // calculated.
+      // TRANSLATORS: opens a dialog explaining why no storage layout can be
+      // calculated. Keep the ellipsis: it says the button opens a dialog.
       actionLabel={_("Show details…")}
-      // TRANSLATORS: the full name of the "Show more" action, read by screen
-      // readers. It must start with the same words as the translation of "Show
-      // more", so that people using speech input can say what they see.
+      // TRANSLATORS: full name of "Show details…" for screen readers. It must
+      // start with the same words, so speech input users can say what they see.
       actionAriaLabel={_("Show details about the failed storage calculation.")}
       // TRANSLATORS: title of the popup explaining why no storage layout can be
       // calculated.

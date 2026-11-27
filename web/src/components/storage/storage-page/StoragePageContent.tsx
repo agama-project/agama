@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { Divider, PageSection, Stack } from "@patternfly/react-core";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import EntriesTable from "~/components/storage/entries-table/EntriesTable";
@@ -33,27 +33,22 @@ import { usePageState } from "~/components/storage/storage-page/use-page-state";
 import DeviceDetailsPanel from "~/components/storage/storage-page/DeviceDetailsPanel";
 
 /**
- * What the storage page shows, and where everything it needs is read.
+ * The content of the storage page.
  *
- * The page has three states that replace it entirely, so they are picked before
- * anything else is arranged: no disk to install on, settings this interface
- * cannot read, and a configuration it knows nothing about.
+ * Some states replace the whole page: no disk to install on, a configuration
+ * with issues that cannot be fixed here, and one this interface cannot
+ * represent.
  *
- * Everything else is the page: the result, then the settings that apply to
- * the whole installation, and then the devices it uses and the controls that
- * apply to all of them. The page scrolls as a whole, as every Agama page does,
- * with the result kept in sight at its top, as the software patterns page
- * keeps its filter. The panel the page opens covers everything under the
- * result, stays in view as the page scrolls, and scrolls on its own.
+ * Otherwise, the result stays in view at the top while the rest scrolls: the
+ * installation settings, the devices and the actions on all of them. The
+ * device panel opens below the result.
  */
 export default function StoragePageContent(): React.ReactNode {
-  const [resultNode, setResultNode] = React.useState<HTMLDivElement | null>(null);
+  const [resultNode, setResultNode] = useState<HTMLDivElement | null>(null);
   const { height: resultHeight = 0 } = useElementSize(resultNode);
   const state = usePageState();
   useAnnounceResult();
 
-  /* Where a state takes the whole page, the page is only that. Without a
-     model there is always such a state. */
   if (state.kind !== "page") return <StorageEmptyState state={state} />;
 
   const devices = (
@@ -61,8 +56,6 @@ export default function StoragePageContent(): React.ReactNode {
       pinnedOffset={resultHeight}
       page={
         <Stack hasGutter>
-          {/* Inside what the panel opens over, so the panel covers everything
-              but the result kept in sight above it. */}
           <TopLine />
           <Divider />
           <EntriesTable />
@@ -74,17 +67,13 @@ export default function StoragePageContent(): React.ReactNode {
 
   return (
     <>
-      {/* Kept in sight while the rest of the page scrolls: what every setting
-          leads to. The same sticky section the software patterns page keeps
-          its filter in. */}
       <PageSection
         component="div"
         stickyOnBreakpoint={{ default: "top" }}
         padding={{ default: "noPadding" }}
       >
         <div ref={setResultNode}>
-          {/* Room under it, so what scrolls under it does not run into its
-              last line. Inside what is measured, so the panel starts below. */}
+          {/* Measured with its bottom room, so the panel starts below it. */}
           <div className={spacingStyles.pbMd}>
             <TopResult />
           </div>

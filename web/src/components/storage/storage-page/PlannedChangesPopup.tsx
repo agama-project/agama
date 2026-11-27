@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { Tab, Tabs, TabTitleText } from "@patternfly/react-core";
 import ProposalActions from "~/components/storage/ProposalActions";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
@@ -31,21 +31,14 @@ import { useActions } from "~/hooks/model/proposal/storage";
 import { _ } from "~/i18n";
 
 /**
- * The whole picture, which the page's summary reports one clause of.
- *
- * Two halves of the same answer: every change the installer carries out, and
- * what the machine looks like once it has. Tabs rather than one under the
- * other, so both headings stay visible whatever the length of the list under
- * them, and a reader deciding whether they can afford the changes is not made
- * to scroll past all of them to see the result.
+ * The planned storage changes in two tabs: the actions the installer performs
+ * and the final layout they lead to.
  */
 export default function PlannedChangesPopup(): React.ReactNode {
   const actions = useActions();
   const manager = useDevicesManager();
-  /* Not in the address, as the popup holding it is not: a reload closes both. */
-  /* The actions first: what will be done is what the reader came for, and the
-     final layout, a long table, is built only when asked for. */
-  const [tab, setTab] = React.useState("actions");
+  /* Not kept in the address, like the popup itself. */
+  const [tab, setTab] = useState("actions");
   const { containerProps, tabProps } = useTablistKeyboard(["actions", "layout"], tab, setTab);
 
   return (
@@ -55,12 +48,9 @@ export default function PlannedChangesPopup(): React.ReactNode {
         activeKey={tab}
         onSelect={(_event, key) => setTab(String(key))}
         mountOnEnter
-        // TRANSLATORS: names the pair of tabs offering the changes the installer
-        // will make and the layout they leave behind.
+        // TRANSLATORS: names the tabs with the planned actions and the final layout
         aria-label={_("What will happen")}
       >
-        {/* The same word the page's own line uses, since that line is what opens
-            this. Two vocabularies for one fact is worse than either. */}
         <Tab
           eventKey="actions"
           {...tabProps("actions")}

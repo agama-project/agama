@@ -20,71 +20,12 @@
  * find current contact information at www.suse.com.
  */
 
-import { baseName } from "~/components/storage/utils";
 import configModel from "~/model/storage/config-model";
 import type { IconProps } from "~/components/layout/Icon";
 import type { ConfigModel } from "~/model/storage/config-model";
-import type { Storage as Proposal } from "~/model/proposal";
-import type { Storage as System } from "~/model/system";
-
-/** Where a partition set aside for booting is mounted, where it is mounted at all. */
-const BOOT_PATHS = ["/boot", "/boot/efi", "/boot/zipl"];
 
 /**
- * What the backend calls a partition set aside for booting. A partition with no
- * file system describes itself by its partition id in words, "BIOS Boot
- * Partition", "EFI System Partition", and that description is the only place the
- * id reaches the page.
- */
-const BOOT_DESCRIPTIONS = /boot|efi|prep|zipl/i;
-
-/** Whether a partition is there to start the machine. */
-function isBootPartition(device: Proposal.Device): boolean {
-  return (
-    device.partition?.efi === true ||
-    BOOT_PATHS.includes(device.filesystem?.mountPath || "") ||
-    BOOT_DESCRIPTIONS.test(device.description || "")
-  );
-}
-
-/** One partition the machine will start from, and whether it is there yet. */
-export type BootPartition = { name: string; size?: number; isNew: boolean };
-
-/**
- * What booting costs a device, read from the plan rather than the configuration.
- *
- * Nothing in the configuration asks for boot partitions: the installer adds
- * them, so they appear in no view of what was asked for, and a device would look
- * as though it hosted the boot loader for free. Comparing the plan against the
- * machine says which are new and which the device already had.
- *
- * A BIOS boot or PReP partition carries no file system and nothing to mount, so
- * nothing about it says "boot" except that the plan adds it and the
- * configuration never asked for it.
- */
-function bootPartitionsOf(
-  deviceName: string,
-  device: System.Device | null,
-  staging: Proposal.Device[],
-): BootPartition[] {
-  const planned = staging.find((candidate) => candidate.name === deviceName);
-  const known = new Set((device?.partitions || []).map((partition) => partition.sid));
-
-  return (planned?.partitions || [])
-    .filter(
-      (partition) =>
-        isBootPartition(partition) || (!known.has(partition.sid) && !partition.filesystem),
-    )
-    .map((partition) => ({
-      name: baseName(partition.name),
-      size: partition.block?.size,
-      isNew: !known.has(partition.sid),
-    }));
-}
-
-/**
- * The icon for how the machine is set to boot, so every place that shows the
- * boot setting marks it the same way.
+ * The icon of the boot setting, the same wherever it is shown:
  *
  * - Not configured: a blocked sign.
  * - Chosen by the installer: a turning arrow with an A.
@@ -96,4 +37,4 @@ function bootIcon(config: ConfigModel.Config): IconProps["name"] {
   return "settings_backup_restore";
 }
 
-export { bootIcon, bootPartitionsOf };
+export { bootIcon };

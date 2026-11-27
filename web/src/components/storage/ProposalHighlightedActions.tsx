@@ -52,21 +52,9 @@ function deletion(systems: string[], partitions: number): TranslatedString | nul
 }
 
 /**
- * What the plan makes smaller, in the words for the things it makes smaller.
- *
- * Shrinking a partition and shrinking a logical volume are the same act on two
- * different kinds of thing, and a reader looking for theirs knows it by its
- * kind. Only where both are shrunk are they named together, because that is the
- * only case where neither word alone is true.
- *
- * The count is of everything shrunk, not of the kind named. Where the kinds are
- * mixed the clause names both, so the number has to cover both; and where they
- * are not, there is only one kind to count.
- *
- * Anything that is neither falls in with the mixed case rather than inventing a
- * third wording for it. A shrunken RAID is not a partition, but it is sharing
- * the sentence with things that are, and "partitions and logical volumes" is
- * the phrase this already has for a plan whose parts do not go by one word.
+ * The sentence about what the plan shrinks: partitions, logical volumes, or
+ * both when mixed, which also covers other devices such as a RAID. The count
+ * always covers everything shrunk.
  */
 function resize(systems: string[], devices: System.Device[]): TranslatedString | null {
   if (!devices.length) return null;
@@ -78,8 +66,8 @@ function resize(systems: string[], devices: System.Device[]): TranslatedString |
     return systems.length
       ? sprintf(
           n_(
-            // TRANSLATORS: %1$d is the number of partitions being made smaller,
-            // %2$s a list of the operating systems installed on them.
+            // TRANSLATORS: %1$d is the number of partitions being made smaller, %2$s a list of the
+            // operating systems installed on them.
             "Includes a non-destructive reduction of %1$d partition affecting %2$s.",
             "Includes non-destructive reductions of %1$d partitions affecting at least %2$s.",
             count,
@@ -102,8 +90,8 @@ function resize(systems: string[], devices: System.Device[]): TranslatedString |
     return systems.length
       ? sprintf(
           n_(
-            // TRANSLATORS: %1$d is the number of logical volumes being made
-            // smaller, %2$s a list of the operating systems installed on them.
+            // TRANSLATORS: %1$d is the number of logical volumes being made smaller, %2$s a list of
+            // the operating systems installed on them.
             "Includes a non-destructive reduction of %1$d logical volume affecting %2$s.",
             "Includes non-destructive reductions of %1$d logical volumes affecting at least %2$s.",
             count,
@@ -122,14 +110,12 @@ function resize(systems: string[], devices: System.Device[]): TranslatedString |
         );
   }
 
-  /* Both kinds at once, which takes two or more of them: the singular is here
-     for the languages that still need a form for it, not because it can show. */
+  /* Mixed kinds mean two or more; the singular is for languages that need it. */
   return systems.length
     ? sprintf(
         n_(
-          // TRANSLATORS: %1$d is the number of partitions and logical volumes
-          // being made smaller, counted together, %2$s a list of the operating
-          // systems installed on them.
+          // TRANSLATORS: %1$d is the number of partitions and logical volumes being made smaller,
+          // counted together, %2$s a list of the operating systems installed on them.
           "Includes a non-destructive reduction of %1$d partition and logical volume affecting %2$s.",
           "Includes non-destructive reductions of %1$d partitions and logical volumes affecting at least %2$s.",
           count,
@@ -139,8 +125,8 @@ function resize(systems: string[], devices: System.Device[]): TranslatedString |
       )
     : sprintf(
         n_(
-          // TRANSLATORS: %d is the number of partitions and logical volumes
-          // being made smaller, counted together.
+          // TRANSLATORS: %d is the number of partitions and logical volumes being made smaller,
+          // counted together.
           "Includes a non-destructive reduction of %d partition and logical volume.",
           "Includes a non-destructive reduction of %d partitions and logical volumes.",
           count,

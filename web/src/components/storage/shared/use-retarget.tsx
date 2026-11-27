@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { sprintf } from "sprintf-js";
 import DeviceSelectorModal from "~/components/storage/DeviceSelectorModal";
 import { deviceBaseName, formattedPath } from "~/components/storage/utils";
@@ -38,21 +38,16 @@ type Retarget = {
   title: React.ReactNode;
   /** Further details about the consequences. */
   description: React.ReactNode;
-  /** Offers the reader the choice of device. */
+  /** Opens the device selector. */
   open: () => void;
-  /** The choice itself, rendered by whatever offered it. */
+  /** The device selector, for the caller to render. */
   selector: React.ReactNode;
 };
 
 /**
- * Returns a string describing what will be created as logical volumes when
- * reusing a volume group, or `undefined` when no new partitions are being
- * added.
- *
- * A plain function (not a component) because a React element's emptiness cannot
- * be checked without rendering it, making it difficult for callers to decide
- * whether to render anything at all (e.g. {@link Annotation} guards against no
- * children to avoid displaying just an icon with no text)
+ * What will be created as logical volumes when reusing a volume group, or
+ * undefined when nothing is. A string rather than a component, so callers can
+ * tell whether there is anything to render.
  */
 const reuseVgSideEffect = (
   deviceConfig: ConfigModel.Drive | ConfigModel.MdRaid,
@@ -185,17 +180,9 @@ const targetDevices = (
 };
 
 /**
- * Moving everything planned for one device to another one.
- *
- * The page offers this act in more than one place, and the old interface let
- * two of them disagree about what it would do: one dialog listed devices the
- * other had already given away. Everything that offers it asks here instead, so
- * the act itself is written once.
- *
- * What is left to the caller is the control and when to close it. Those are
- * where the offers genuinely differ: the page is offering a different disk for
- * the installation, the panel a different home for part of it, and the two are
- * named differently, weighted differently and refused on different grounds.
+ * Moves everything planned for one device to another one. Every place offering
+ * it uses this hook, so they cannot disagree on which devices are available.
+ * The caller renders the control and the selector.
  *
  * @example
  * const { open, selector } = useRetarget(entry, device);
@@ -208,7 +195,7 @@ function useRetarget(entry: Partitionable.Device, device: Storage.Device): Retar
   const convertDevice = useConvertDevice();
   const vgSelectionSideEffect = reuseVgSideEffect(entry);
   const targets = targetDevices(entry, config, useAvailableDevices());
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const vgEmptyStateTitle = (): TranslatedString | undefined => {
     return entry.filesystem ? _("Volume groups cannot be formatted") : undefined;

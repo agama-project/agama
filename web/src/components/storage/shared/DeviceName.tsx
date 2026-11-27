@@ -24,26 +24,16 @@ import React from "react";
 import { deviceSize } from "~/components/storage/utils";
 
 export type DeviceNameProps = {
-  /** What it is called, as the page shows names: `vdd`, not `/dev/vdd`. */
+  /** The device name without `/dev/`, such as `vdd`. */
   name: React.ReactNode;
-  /** How big it is, in bytes, where the page has a size to give. */
+  /** The device size in bytes, if known. */
   size?: number;
 };
 
 /**
- * A device named inside a sentence: what it is called, and how big it is.
- *
- * The name is set as a value and the size follows it in brackets, both smaller
- * and lighter than the sentence around them. At a heading's own weight a
- * monospaced name reads as something to press; smaller and at body weight it
- * reads as what it is, a value quoted inside the words about it, without a
- * border or a color doing the work.
- *
- * The size is one node with the name rather than a placeholder of its own,
- * since the brackets are punctuation around a value rather than part of the
- * sentence, and a translator has no decision to make about them. It is left out
- * where there is no size to show, which is how a volume group being defined is
- * named.
+ * A device name inside a sentence, with its size in brackets when known. Both
+ * are smaller and lighter than the sentence, so the name reads as a quoted
+ * value rather than as something to press.
  *
  * @example
  * <Interpolate sentence={_("Use disk %s as installation device")}>

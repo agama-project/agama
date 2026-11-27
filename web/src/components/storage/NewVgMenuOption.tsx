@@ -31,8 +31,8 @@ import {
   useConvertPartitionableToVolumeGroup,
 } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
-import type { ConfigModel } from "~/model/storage/config-model";
 import Icon from "~/components/layout/Icon";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 export type NewVgMenuOptionProps = { device: ConfigModel.Drive | ConfigModel.MdRaid };
 

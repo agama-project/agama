@@ -33,24 +33,16 @@ import configModel from "~/model/storage/config-model";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 
 export type DriveRowProps = {
-  /** The device the configuration names, as the model spells it. */
+  /** The device name in the configuration. */
   name: string;
-  /** Where it is written, which is how the panel is opened on it. */
+  /** Where it is in the configuration. */
   subject: DetailsSubject;
 };
 
 /**
- * A disk or a software RAID, as a row of the list.
- *
- * Split from the volume group's row rather than switched inside one component.
- * Both read the machine, and a single row deciding what it is looking at would
- * call a different number of hooks depending on the answer.
- *
- * How big it is is read beside the name, and what it is under it: the vendor
- * model where the machine reports one, and the kind of device where it does
- * not. A configuration can name a device the machine does not have, a
- * profile written elsewhere or a disk since unplugged, so both are left out
- * where there is nothing to say.
+ * The row of a disk or a software RAID. The line under the name is the model,
+ * or the kind of device when there is no model. A device missing from the
+ * system, such as an unplugged disk, shows neither size nor description.
  */
 export default function DriveRow({ name, subject }: DriveRowProps): React.ReactNode {
   const config = useConfigModel();

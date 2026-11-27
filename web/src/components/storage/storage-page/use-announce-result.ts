@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import { useEffect, useRef } from "react";
 import { proposalFailedTitle } from "~/components/storage/ProposalFailedInfo";
 import { fixableConfigTitle } from "~/components/storage/FixableConfigInfo";
 import { summaryOf } from "~/components/storage/storage-page/Consequences";
@@ -34,19 +34,15 @@ import type { TranslatedString } from "~/i18n";
 type AlertKind = "success" | "problem";
 
 /**
- * Says the alert to screen readers when it turns from a plan into a problem or
- * back, but not on the first render, and not when only its numbers change.
- *
- * A change made in the panel below can flip the alert, which a sighted reader
- * sees and a screen reader user working in the panel does not. New counts are
- * left unsaid: they would talk over the summary the panel itself announces on
- * every change.
+ * Announces the alert when it turns from a plan into a problem or back, so
+ * screen reader users working in the panel learn about it. Not on the first
+ * render, and not when only its numbers change.
  */
 function useAnnounceKind(kind: AlertKind | null, title: TranslatedString) {
   const announce = useAnnounce();
-  const announcedKind = React.useRef(kind);
+  const announcedKind = useRef(kind);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (announcedKind.current === kind) return;
 
     const previous = announcedKind.current;
@@ -56,9 +52,8 @@ function useAnnounceKind(kind: AlertKind | null, title: TranslatedString) {
 }
 
 /**
- * Says to screen readers what the page's top line reports when that turns from
- * a plan into a problem or back. Only the states where the page is shown have
- * such a line; the ones that replace the page are not a kind of alert.
+ * Announces the result at the top of the storage page when it turns from a
+ * plan into a problem or back.
  */
 export default function useAnnounceResult() {
   const proposal = useProposal();

@@ -27,25 +27,21 @@ import { CURRENT_CONTENT, EXPANDED, DEVICE_DETAILS } from "~/components/storage/
 import type { To } from "react-router";
 import type { ConfigModel } from "~/model/storage/config-model";
 
-/**
- * The identity of the one panel the storage page opens, so that a control can
- * point at what it opens.
- */
+/** The id of the storage page panel, for the `aria-controls` of what opens it. */
 const DETAILS_PANEL_ID = "device-details-panel";
 
-/** Where an entry of the configuration is written, which is how it is addressed. */
+/** The configuration collection an entry belongs to. */
 type DetailsCollection = "drives" | "mdRaids" | "volumeGroups";
 
-/** One entry of the configuration, as the address names it. */
+/** An entry of the configuration, by collection and position. */
 type DetailsSubject = { collection: DetailsCollection; index: number };
 
 const COLLECTIONS: DetailsCollection[] = ["drives", "mdRaids", "volumeGroups"];
 
 /**
- * What an entry of the configuration is called in the address: a disk or a
- * RAID by its device name without the leading `/dev/` (`vdb`, `md0`), a
- * volume group by its name (`system`). Nothing where the configuration has no
- * such entry.
+ * The name of an entry in the address: the device name without `/dev/` for a
+ * disk or a RAID (`vdb`, `md0`), the name of a volume group (`system`).
+ * Undefined when the configuration has no such entry.
  */
 function nameOf(config: ConfigModel.Config | null, entry: DetailsSubject): string | undefined {
   const item = config?.[entry.collection]?.[entry.index];
@@ -55,19 +51,11 @@ function nameOf(config: ConfigModel.Config | null, entry: DetailsSubject): strin
 }
 
 /**
- * The address form of an entry: "drives.vdb", "volumeGroups.system".
+ * The address form of an entry, such as "drives.vdb" or "volumeGroups.system".
  *
- * Readable and editable by hand, which is the point of keeping it in the
- * address at all. An entry is named by where it is written and by its name,
- * not by its position there: a position names whatever entry is at that place
- * now, so a change that adds or removes entries would leave the address
- * naming another one, and the panel showing it without the reader asking.
- * Names are unique within each collection: a device is in the configuration
- * once, and a volume group name is refused when it is taken.
- *
- * A full stop rather than a colon between the two, although a colon is legal in
- * a query value: the encoder the browser gives us escapes it to `%3A`, and an
- * address nobody can read by eye is not one anybody will edit by hand.
+ * Entries are named by collection and name rather than by position, so adding
+ * or removing entries never makes the address point at another one. A full
+ * stop separates the two, since the browser escapes a colon to `%3A`.
  */
 function toParam(config: ConfigModel.Config | null, entry: DetailsSubject): string | undefined {
   const name = nameOf(config, entry);
@@ -75,16 +63,11 @@ function toParam(config: ConfigModel.Config | null, entry: DetailsSubject): stri
 }
 
 /**
- * The entry an address names, or nothing where it names none.
+ * The entry an address names, or null when it names none.
  *
- * Split at the first full stop only, since device names can hold full stops
- * of their own.
- *
- * Anything the page cannot make sense of reads as a shut panel rather than as
- * an error: the address is editable by hand, and a typo in it should leave the
- * reader on the page rather than on a broken one. So does an address naming an
- * entry the configuration no longer has, and one written in an older form,
- * by position (`drives.0`) or for the whole result (`result`).
+ * Splits at the first full stop only, since device names can contain them.
+ * Anything it cannot parse, including older forms such as `drives.0` or
+ * `result`, means a closed panel rather than an error.
  */
 function fromParam(config: ConfigModel.Config | null, value: string | null): DetailsSubject | null {
   if (!value) return null;
@@ -103,12 +86,10 @@ function fromParam(config: ConfigModel.Config | null, value: string | null): Det
 }
 
 /**
- * The address with the panel showing `param`, or shut where `param` is nothing.
+ * The address with the panel showing `param`, or closed when `param` is null.
  *
- * What the panel keeps of its own in the address, such as an open list,
- * belongs to the device it was showing: it goes when the panel closes or moves
- * to another device, so every device starts as it first shows. It stays when
- * the panel is pointed again at the device it already shows.
+ * Panel state kept in the address, such as an expanded list, is dropped when
+ * the panel closes or moves to another device.
  */
 function withDetails(params: URLSearchParams, param: string | undefined): URLSearchParams {
   if (param && params.get(DEVICE_DETAILS) === param) return params;
@@ -130,12 +111,8 @@ function withDetails(params: URLSearchParams, param: string | undefined): URLSea
 }
 
 /**
- * The query of an address, with a renamed volume group's panel following it.
- *
- * Renaming a group changes the name its panel is addressed by. Whoever renames
- * one passes the address it is leaving through this, so a panel open on the
- * group reopens under the new name: the reader asked for the change, so it is
- * the same group to them. Any other address is returned as it was.
+ * The query of an address, updated so a panel open on a renamed volume group
+ * follows the new name. Any other address is returned unchanged.
  *
  * @example
  * renamedGroupSearch("?device=volumeGroups.system", "system", "data");
@@ -150,40 +127,25 @@ function renamedGroupSearch(search: string, from: string, to: string): string {
 }
 
 /**
- * The open state of the storage page's panel, which lives in the address.
- *
- * Several places on the page open the same panel, and putting what it shows in
- * the address rather than in a component means they do not have to agree about
- * anything: each is a link to a page in a particular state, the reader can
- * reload or share that address and get it back, and a test can arrive at an
- * open panel without clicking its way there first.
- *
- * The address is replaced rather than pushed, so the back button steps between
- * pages instead of between individual openings of the same panel.
+ * The storage page panel state, kept in the address so it survives reloads and
+ * can be shared. Changes replace the address rather than pushing to the
+ * history, so Back leaves the page instead of stepping through panels.
  */
 function useDeviceDetails(): {
-  /** What the panel is showing, or nothing where it is shut. */
+  /** What the panel shows, or null when closed. */
   subject: DetailsSubject | null;
-  /** Where a control that opens the panel on something should point. */
+  /** The address opening the panel on the given entry. */
   addressOf: (subject: DetailsSubject) => To;
-  /**
-   * The name the address gives an entry, such as `drives.vdb`. Unique on the
-   * page, so it also tells where an entry is drawn.
-   */
+  /** The address name of an entry, such as `drives.vdb`, unique on the page. */
   keyOf: (subject: DetailsSubject) => string | undefined;
-  /**
-   * Opens it, for a control that cannot carry an address. A menu item is one:
-   * it is a menu item wherever it appears, so it acts rather than links, and
-   * the address it writes is the same one a link would have carried.
-   */
+  /** Opens the panel, for controls that cannot be links, such as menu items. */
   openDetails: (subject: DetailsSubject) => void;
   /**
-   * Whether the address names an entry the panel cannot show, such as one the
-   * configuration no longer has. The panel reads as shut then, and whoever
-   * owns it takes the name out of the address so the two agree.
+   * Whether the address names an entry the panel cannot show, such as a removed
+   * one. The panel is closed then, and its owner should clear the address.
    */
   isStale: boolean;
-  /** Shuts it. */
+  /** Closes the panel. */
   close: () => void;
 } {
   const config = useConfigModel();
@@ -191,7 +153,7 @@ function useDeviceDetails(): {
   const value = params.get(DEVICE_DETAILS);
   const subject = fromParam(config, value);
 
-  /* An entry the configuration cannot name leaves the address as it is. */
+  /* An entry without a name leaves the address unchanged. */
   const addressOf = (subject: DetailsSubject): To => {
     const param = toParam(config, subject);
     const next = new URLSearchParams(params);

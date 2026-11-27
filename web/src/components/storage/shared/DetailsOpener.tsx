@@ -26,23 +26,16 @@ import { useDeviceDetails, DETAILS_PANEL_ID } from "~/components/storage/shared/
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 
 export type DetailsOpenerProps = {
-  /** What the panel shows once this is followed. */
+  /** The entry the panel opens on. */
   subject: DetailsSubject;
-  /** What the control says, which has to name where it goes on its own. */
+  /** The link text, which must name the entry on its own. */
   children: React.ReactNode;
 };
 
 /**
- * The way into the storage page's panel, wherever it is offered.
- *
- * The page offers it from several places, and they are one control rather than
- * several: a real link to the same page showing a different thing. So it is an
- * anchor with an address a reader can copy, open in a second tab, or come back
- * to after a reload, and never a button that says it goes somewhere.
- *
- * It carries no chrome of its own. What opens the panel sits inside a sentence
- * or a table row, and a button's box drawn around it would break the line it is
- * being read as part of.
+ * A link opening the storage page panel on an entry. A real link, so it can be
+ * copied, opened in another tab or reloaded, and inline, since it sits inside
+ * sentences and table rows.
  *
  * @example
  * <DetailsOpener subject={{ collection: "drives", index: 0 }}>{name}</DetailsOpener>

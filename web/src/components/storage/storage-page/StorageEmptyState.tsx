@@ -28,17 +28,13 @@ import UnknownConfigMessage from "~/components/storage/storage-page/UnknownConfi
 import type { PageState } from "~/components/storage/storage-page/use-page-state";
 
 export type StorageEmptyStateProps = {
-  /** Why the page is not shown: any state of the page but the page itself. */
+  /** The state replacing the page. */
   state: Exclude<PageState, { kind: "page" }>;
 };
 
 /**
- * What takes the whole storage page when it cannot be shown: no disk to
- * install on, a configuration with problems that cannot be fixed here, or one
- * this interface cannot represent, either with a layout that can be installed
- * or without one.
- *
- * All the actions they offer are tertiary buttons: none is the one to take.
+ * The message replacing the storage page when it cannot be shown. Its actions
+ * are all tertiary buttons, since none of them is the expected one.
  */
 export default function StorageEmptyState({ state }: StorageEmptyStateProps): React.ReactNode {
   switch (state.kind) {

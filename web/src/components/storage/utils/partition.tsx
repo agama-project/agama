@@ -28,7 +28,7 @@
 
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { filesystemType, formattedPath, sizeDescription } from "~/components/storage/utils";
+import { formattedPath, sizeDescription } from "~/components/storage/utils";
 import type { ConfigModel } from "~/model/storage/config-model";
 
 /**
@@ -44,41 +44,4 @@ const pathWithSize = (partition: ConfigModel.Partition): string => {
   );
 };
 
-/**
- * String to identify the type of device to be created (or used).
- */
-const typeDescription = (partition: ConfigModel.Partition | ConfigModel.LogicalVolume): string => {
-  const fsType = partition.filesystem ? filesystemType(partition.filesystem) : undefined;
-  if (partition.name) {
-    if (partition.filesystem?.reuse) {
-      // FIXME: the following "if (fsType)" line is commented out as a hotfix for bsc#1271008.
-      // Turns out fsType is not the current filesystem type, but the one that would be used if
-      // reusing the current one would not be possible. Commenting out the line is a cheap
-      // mitigation that avoids displaying wrong information while we design a better mechanism.
-
-      // TRANSLATORS: %1$s is a filesystem type (eg. Btrfs), %2$s is a device name (eg. /dev/sda3).
-      //if (fsType) return sprintf(_("Current %1$s at %2$s"), fsType, partition.name);
-
-      // TRANSLATORS: %s is a device name (eg. /dev/sda3).
-      return sprintf(_("Current %s"), partition.name);
-    }
-    // TRANSLATORS: %1$s is a filesystem type (eg. Btrfs), %2$s is a device name (eg. /dev/sda3).
-    return sprintf(_("%1$s at %2$s"), fsType, partition.name);
-  }
-  return fsType || "";
-};
-
-/**
- * Combination of {@link typeDescription} and the size of the target partition.
- */
-const typeWithSize = (partition: ConfigModel.Partition | ConfigModel.LogicalVolume): string => {
-  return sprintf(
-    // TRANSLATORS: %1$s is a filesystem type description (eg. "Btrfs with snapshots"),
-    // %2$s is a description of the size or the size limits (eg. "at least 10 GiB")
-    _("%1$s (%2$s)"),
-    typeDescription(partition),
-    sizeDescription(partition.size),
-  );
-};
-
-export { pathWithSize, typeDescription, typeWithSize };
+export { pathWithSize };

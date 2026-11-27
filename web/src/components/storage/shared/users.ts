@@ -25,21 +25,12 @@ import type { ConfigModel } from "~/model/storage/config-model";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 import type { Storage } from "~/model/system";
 
-/**
- * Another device, named, and reachable where it is an entry of the plan.
- *
- * A RAID can be built from disks the configuration says nothing else about, and
- * those have no panel of their own to lead to.
- */
+/** A related device, with its place in the configuration when it has one. */
 export type Related = { name: string; subject?: DetailsSubject };
 
 /**
- * The entries built on this device, which is what the device is for.
- *
- * A disk given to a volume group holds nothing of its own, and what it does
- * hold is decided in the panel of whatever it is a member of. Saying which,
- * and offering the way there, is what stops a reader hunting through the list
- * for the other end of a relationship they have just been told about.
+ * The entries built on this device, such as the volume groups taking room from
+ * it, so its panel can link to them.
  *
  * FIXME: this seems to mix two things that have very little to do. On the one hand, an LVM VG is a
  * user of a disk if the VG is configured to automatically create partitions on that disk to serve
@@ -77,28 +68,4 @@ function usersOf(
   return [...groups, ...raids];
 }
 
-/**
- * The devices a software RAID is built from.
- *
- * The configuration does not record them: a RAID it reuses is described only by
- * its name. The machine does, so they are read from what it reports, which is
- * the only place a reader can learn which disks a RAID stands on.
- */
-function membersOf(
-  config: ConfigModel.Config | null,
-  systemDevices: Storage.Device[],
-  device: Storage.Device | null,
-): Related[] {
-  return (device?.md?.devices || [])
-    .map((sid) => systemDevices.find((candidate) => candidate.sid === sid)?.name)
-    .filter((name): name is string => Boolean(name))
-    .map((name) => {
-      const at = (config?.drives || []).findIndex((drive) => drive.name === name);
-      return {
-        name: baseName(name),
-        subject: at === -1 ? undefined : { collection: "drives" as const, index: at },
-      };
-    });
-}
-
-export { usersOf, membersOf };
+export { usersOf };

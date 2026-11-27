@@ -49,8 +49,7 @@ const action = (device: number, values: Partial<Proposal.Action> = {}): Proposal
   ...values,
 });
 
-/** The summary sentence, read as a whole. */
-const details = () => screen.getByRole("button", { name: "Details…" });
+const details = () => screen.getByRole("button", { name: "Preview result…" });
 const openPopup = async (user) => {
   await user.click(details());
   return screen.getByRole("dialog", { name: "Planned storage changes" });
@@ -72,16 +71,9 @@ describe("Consequences", () => {
 
   it("says when the planned changes differ from the ones last seen", () => {
     mockHasUnseenChanges.mockReturnValue(true);
-    installerRender(<Consequences aria-label="Details of the planned storage changes" />);
+    installerRender(<Consequences />);
 
-    screen.getByRole("button", { name: "Details of the planned storage changes (updated)" });
-  });
-
-  it("takes the words it is given", () => {
-    installerRender(<Consequences label="Preview result…" aria-label="Preview the result" />);
-
-    screen.getByRole("button", { name: "Preview the result" });
-    screen.getByText("Preview result…");
+    screen.getByRole("button", { name: "Preview result… (updated)" });
   });
 
   it("shows the planned changes in a popup", async () => {

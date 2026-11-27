@@ -31,9 +31,9 @@ import configModel from "~/model/storage/config-model";
 import SpacePolicyMenuItem from "~/components/storage/entries-table/SpacePolicyMenuItem";
 import { useConfigModel, useDeleteVolumeGroup } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
+import Icon from "~/components/layout/Icon";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
-import Icon from "~/components/layout/Icon";
 
 type RemoveVolumeGroupMenuItemProps = {
   deviceConfig: ConfigModel.VolumeGroup;
@@ -61,67 +61,41 @@ const RemoveVolumeGroupMenuItem = ({
 };
 
 export type SearchedVolumeGroupMenuProps = {
-  /** The disk or RAID as the configuration describes it. */
+  /** The volume group in the configuration. */
   entry: ConfigModel.VolumeGroup;
-  /** Where it is written. Given only where opening it is one of the offers. */
+  /** Where it is in the configuration. Without it, the menu offers no way to open its panel. */
   subject?: DetailsSubject;
 };
 
-/**
- * What can be done to a disk or a software RAID, from its row.
- *
- * Everything the row offers is named the way the rest of the page names it, so
- * a reader meets one name per act wherever they meet it. An act keeps its name
- * even where it cannot be carried out: an offer renamed into its own refusal is
- * an offer a reader looking for it cannot find.
- *
- * Dropping the only device leaves the installation nowhere to go, so that is
- * offered only where there is somewhere else for it to live.
- *
- * An act that cannot be carried out is still offered and still called what it
- * is called, with the reason where its description goes. It stays reachable by
- * keyboard: a control the browser disables is skipped, and the explanation
- * printed beside it is then never met by the reader it was written for.
- */
+/** The menu of an LVM volume group that already exists on the system. */
 export default function SearchedVolumeGroupMenu({
   entry,
   subject,
 }: SearchedVolumeGroupMenuProps): React.ReactNode {
   const config = useConfigModel();
   const { openDetails } = useDeviceDetails();
-  const withFlyouts = true;
 
   const name = baseName(entry.name);
-  // TRANSLATORS: names the menu of things that can be done to one device of the
-  // installation. %s is a device name, such as "sda".
+  // TRANSLATORS: %s is a volume group name, such as "system"
   const label = sprintf(_("Actions for %s"), name);
 
   const items = [
-    /* First, because it is what clicking the row does. A menu whose first item
-       is the row's own act says what the row does, for a reader who never
-       discovers that rows can be opened and for one who cannot click.
-
-       Left out in the panel's own header, where the reader is already inside
-       what it would open. */
+    /* First, as the main action of the row. Not in the panel itself. */
     ...(subject
       ? [
           <MenuButtonItem
             key="open"
             icon={<Icon size="md" name="article" />}
-            /* Named in full only for a reader who is told the item rather than
-               shown it. On screen the menu hangs off the row it belongs to, and
-               a name the reader can see beside the item is a name repeated. */
+            /* Screen readers get the full name; on screen, the row says which group. */
             aria-label={sprintf(
-              // TRANSLATORS: opens the panel where one entry of the installation
-              // is read and changed. %s is its name, such as "sda".
+              // TRANSLATORS: opens a volume group panel. %s is its name, such as "system"
               _("Configure %s"),
               name,
             )}
             description={_("Customize how the volume group will be used")}
             onClick={() => openDetails(subject)}
           >
-            {/* TRANSLATORS: opens the panel where one entry of the installation
-                is read and changed. */}
+            {/* TRANSLATORS: opens the details panel of a volume group */}
             {_("Details")}
           </MenuButtonItem>,
         ]
@@ -135,13 +109,11 @@ export default function SearchedVolumeGroupMenu({
         collection={subject.collection}
         index={subject.index}
         policy={entry.spacePolicy}
-        isFlyout={withFlyouts}
       />,
     );
   }
 
-  // When no additional drives has been added, the "Do not use" button can be confusing so it is
-  // omitted for all drives.
+  // "Do not use" is offered only when there is another device to install on.
   if (configModel.hasAdditionalDevices(config)) {
     items.push(
       <Divider key="before-remove" />,
@@ -154,7 +126,7 @@ export default function SearchedVolumeGroupMenu({
       menuProps={{
         "aria-label": label,
         popperProps: { position: "end", minWidth: "26rem" },
-        hasFlyouts: withFlyouts,
+        hasFlyouts: true,
       }}
       customToggle={<RowMenuToggle label={label} />}
       items={items}

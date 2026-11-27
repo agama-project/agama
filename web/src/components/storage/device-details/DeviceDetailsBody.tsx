@@ -46,11 +46,15 @@ export type DeviceDetailsBodyProps = {
   subject: DetailsSubject;
 };
 
-function Intro({ children }): React.ReactNode {
-  return <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{children}</Text>;
+function Intro({ children }: React.PropsWithChildren) {
+  return (
+    <p>
+      <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{children}</Text>
+    </p>
+  );
 }
 
-function Body({ children }): React.ReactNode {
+function Body({ children }: React.PropsWithChildren) {
   return (
     <Flex direction={{ default: "column" }} gap={{ default: "gapLg" }}>
       {children}
@@ -185,8 +189,7 @@ export default function DeviceDetailsBody({
     );
   }
 
-  // If the workflow reached this point, then no usage is defined yet
-  // (not used for booting, for creating partitions neither for mounting/formatting
+  // Not used yet: neither for booting, partitions nor a file system.
 
   if (isCurrentlyPartitioned || entry.device?.filesystem) {
     return (

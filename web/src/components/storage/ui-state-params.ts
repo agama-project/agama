@@ -40,19 +40,15 @@
  * tells them apart here, and does not reach the URL.
  */
 
-/** Proposal page: sections currently expanded, as a set of tokens. */
+/** Storage page: expanded sections, as a set of tokens. */
 const EXPANDED = "expanded";
 
-/** Proposal page: selected tab of the settings section. */
-const SETTINGS_TAB = "settingsTab";
-
-/** Storage page: what the panel beside the page is showing. */
+/** Storage page: the entry the panel shows. */
 const DEVICE_DETAILS = "device";
 
 /**
- * Storage page: the token of {@link EXPANDED} saying the panel's list of what
- * its device holds today is open. Belongs to the panel: it goes whenever the
- * panel closes or moves to another device.
+ * Storage page: the {@link EXPANDED} token for the expanded current content of
+ * the panel device, dropped when the panel closes or changes device.
  */
 const CURRENT_CONTENT = "content";
 
@@ -65,37 +61,4 @@ const ZFCP_SORT = "sortBy";
 /** iSCSI page: sorted column and direction. */
 const ISCSI_SORT = "sortBy";
 
-/**
- * Token identifying an expandable section of a device.
- *
- * Built from the collection and the position of the device, which is how the
- * storage pages already address a device.
- *
- * @example
- * expandedToken("drives", 0); // "d0"
- */
-function expandedToken(collection: "drives" | "mdRaids", index: number): string {
-  return `${collection[0]}${index}`;
-}
-
-/**
- * Token identifying the logical volumes section of a volume group.
- *
- * @example
- * volumeGroupToken("system"); // "vgsystem"
- */
-function volumeGroupToken(vgName: string): string {
-  return `vg${vgName}`;
-}
-
-export {
-  EXPANDED,
-  SETTINGS_TAB,
-  DEVICE_DETAILS,
-  CURRENT_CONTENT,
-  DASD_SORT,
-  ZFCP_SORT,
-  ISCSI_SORT,
-  expandedToken,
-  volumeGroupToken,
-};
+export { EXPANDED, DEVICE_DETAILS, CURRENT_CONTENT, DASD_SORT, ZFCP_SORT, ISCSI_SORT };

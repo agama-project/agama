@@ -21,22 +21,23 @@
  */
 
 import React from "react";
-import CurrentContentSection, {
-  hasCurrentContent,
-} from "~/components/storage/device-details/CurrentContentSection";
-import { _ } from "~/i18n";
-import type { DeviceDetailsBodyProps } from "~/components/storage/device-details/DeviceDetailsBody";
+import { screen } from "@testing-library/react";
+import { plainRender } from "~/test-utils";
+import CellValues from "~/components/storage/entries-table/CellValues";
 
-/**
- * What a volume group the machine already has holds today: its logical
- * volumes, read like a disk's partitions, or a line saying it holds none.
- *
- * A group being created has nothing on it today; what defines it is said by
- * the Properties section instead.
- */
-export default function VolumeGroupCurrent({ entry, subject }: DeviceDetailsBodyProps) {
-  if (hasCurrentContent(entry)) return <CurrentContentSection entry={entry} subject={subject} />;
+describe("CellValues", () => {
+  it("lists two or more values", () => {
+    plainRender(<CellValues values={["Installing the system", "Booting the system"]} />);
 
-  // TRANSLATORS: said of an existing LVM volume group with nothing in it.
-  return <p>{_("No logical volumes detected.")}</p>;
-}
+    const list = screen.getByRole("list");
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
+    expect(list).toHaveTextContent("Installing the systemBooting the system");
+  });
+
+  it("renders a single value as plain text", () => {
+    plainRender(<CellValues values={["Nothing yet"]} />);
+
+    screen.getByText("Nothing yet");
+    expect(screen.queryByRole("list")).toBeNull();
+  });
+});

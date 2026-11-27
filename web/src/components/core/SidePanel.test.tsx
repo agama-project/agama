@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { createPortal } from "react-dom";
 import { screen } from "@testing-library/react";
 import { Button } from "@patternfly/react-core";
@@ -32,7 +32,7 @@ import SidePanel from "~/components/core/SidePanel";
  * closing it has somewhere to put the focus back.
  */
 function Example() {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <SidePanel

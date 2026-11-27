@@ -27,24 +27,19 @@ import Icon from "~/components/layout/Icon";
 import type { IconProps } from "~/components/layout/Icon";
 
 export type DetailsItemProps = {
-  /** A mark for the kind of thing the item is about. Left out where the words carry it alone. */
+  /** An optional icon. */
   icon?: IconProps["name"];
-  /** What the item is about, such as "LVM". Left out where the value says it all. */
+  /** An optional bold name, such as "LVM". */
   name?: React.ReactNode;
-  /** A short value read right after the name, on the same line. */
+  /** A short value after the name, on the same line. */
   value?: React.ReactNode;
-  /** Lines and controls under the name, each on its own line. */
+  /** Content under the name, such as explanations or controls. */
   children?: React.ReactNode;
 };
 
 /**
- * One fact in a device details section: an optional icon, a bold name with an
- * optional value beside it, and whatever explains or changes it underneath.
- *
- * Every single fact in the panel takes this shape, so a reader learns it once.
- * Lists of things, such as the partitions to create, are tables of their own
- * and do not need it. Controls go on their own line under the name, so they
- * are always found in the same place.
+ * A fact in a device details section: an optional icon, a bold name with an
+ * optional value, and content under them.
  *
  * @example
  * <DetailsItem icon="rotate_auto" name={_("Boot")} value={_("partitions configured here")}>

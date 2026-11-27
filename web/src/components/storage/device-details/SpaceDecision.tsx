@@ -25,8 +25,8 @@ import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/core/RowMenuToggle";
 import { useSetSpacePolicy } from "~/hooks/model/storage/config-model";
 import { _, TranslatedString } from "~/i18n";
-import type { ConfigModel, DeviceCollection } from "~/model/storage/config-model";
 import Icon from "~/components/layout/Icon";
+import type { ConfigModel, DeviceCollection } from "~/model/storage/config-model";
 
 const POLICIES: ConfigModel.SpacePolicy[] = ["delete", "resize", "keep"];
 
@@ -40,13 +40,12 @@ function label(
 ): TranslatedString {
   switch (policy) {
     case "delete":
-      return someReused
-        ? isVolumeGroup
+      if (someReused) {
+        return isVolumeGroup
           ? _("Delete all logical volumes with no mount point")
-          : _("Delete all partitions with no mount point")
-        : isVolumeGroup
-          ? _("Delete all logical volumes")
-          : _("Delete all partitions");
+          : _("Delete all partitions with no mount point");
+      }
+      return isVolumeGroup ? _("Delete all logical volumes") : _("Delete all partitions");
     case "resize":
       return isVolumeGroup
         ? _("Shrink logical volumes if needed and possible")
@@ -56,16 +55,12 @@ function label(
   }
 }
 
-/**
- * Read under each item before it is taken, which is when it is worth knowing.
- * What it ends up doing to the device is said by the sentence beside the
- * menu.
- */
+/** The description of each item. */
 function meaning(policy: ConfigModel.SpacePolicy, isVg: boolean): TranslatedString {
   switch (policy) {
     case "delete":
-      // TRANSLATORS: description of "Delete all partitions". "Their" means the
-      // partitions or logical volumes (must fit both nouns).
+      // TRANSLATORS: description of "Delete all partitions". "Their" means the partitions or
+      // logical volumes (must fit both nouns).
       return _("Their data will be lost and their space will be freed.");
     case "resize":
       return isVg
@@ -87,20 +82,17 @@ export type SpaceDecisionProps = {
   index: number;
   /** What the device allows its partitions today. */
   policy: ConfigModel.SpacePolicy;
-  /** Whether any of the partitions or logical volumes have an assigned mount point */
+  /** Whether any partition or logical volume has a mount point. */
   someReused?: boolean;
-  /** The element saying what happens to the partitions today. */
+  /** Id of the element saying what happens to the partitions. */
   describedBy?: string;
 };
 
 /**
- * Gives every part of a device the new system does not use the same action at
- * once: keep, shrink if needed and possible, or delete.
- *
- * A menu of actions, like the menu on each row of the partitions list. Its
- * items act when chosen and mark none as taken: what each part ends up with is
- * read in the sentence beside the menu and in the list. Parts the new system
- * uses keep what it does with them.
+ * A menu giving the same action to every partition or logical volume the new
+ * system does not use: keep, shrink if needed and possible, or delete. Its
+ * items act at once and none is marked as checked: the sentence beside it and
+ * the table say the result.
  */
 export default function SpaceDecision({
   collection,
@@ -112,19 +104,14 @@ export default function SpaceDecision({
   const setSpacePolicy = useSetSpacePolicy();
   const isVolumeGroup = collection === "volumeGroups";
 
-  /* Choosing what the device already allows changes nothing, so nothing is
-     written. */
+  /* Choosing the current policy changes nothing. */
   const choose = (next: ConfigModel.SpacePolicy) => {
     if (next !== policy) setSpacePolicy(collection, index, { type: next });
   };
 
   const name = isVolumeGroup
-    ? // TRANSLATORS: names a menu of actions applied to every logical volume
-      // of a volume group at once, to make room for the new system.
-      _("Actions for all logical volumes")
-    : // TRANSLATORS: names a menu of actions applied to every partition of a
-      // disk at once, to make room for the new system.
-      _("Actions for all partitions");
+    ? _("Actions for all logical volumes")
+    : _("Actions for all partitions");
 
   return (
     <MenuButton

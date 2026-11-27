@@ -23,9 +23,9 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockNavigateFn, mockParams, mockRoutes } from "~/test-utils";
+import { gib } from "./utils";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
-import { gib } from "./utils";
 import LvmPage from "./LvmPage";
 
 const sda1: Storage.Device = {

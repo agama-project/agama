@@ -55,44 +55,6 @@ const SIZE_METHODS = Object.freeze({
 const DEFAULT_SIZE_UNIT = "GiB";
 
 /**
- * Returns the translated label for a partitionable device space policy.
- *
- * @param policy - Space policy identifier
- * @returns Translated policy label
- */
-const partitionableSpacePolicyLabel = (policy: ConfigModel.SpacePolicy): TranslatedString => {
-  switch (policy) {
-    case "delete":
-      return _("Delete current content");
-    case "resize":
-      return _("Shrink existing partitions");
-    case "keep":
-      return _("Use available space");
-    case "custom":
-      return _("Custom");
-  }
-};
-
-/**
- * Returns the translated label for a volume group space policy.
- *
- * @param policy - Space policy identifier
- * @returns Translated policy label
- */
-const volumeGroupSpacePolicyLabel = (policy: ConfigModel.SpacePolicy): TranslatedString => {
-  switch (policy) {
-    case "delete":
-      return _("Delete current content");
-    case "resize":
-      return _("Shrink existing logical volumes");
-    case "keep":
-      return _("Use available space");
-    case "custom":
-      return _("Custom");
-  }
-};
-
-/**
  * Returns the equivalent in bytes resulting from parsing given input
  *
  * @example
@@ -371,15 +333,8 @@ const filesystemLabel = (fstype: ConfigModel.FilesystemType): TranslatedString =
 };
 
 /**
- * Generates a translated label for a partition asked for by what it is for.
- *
- * A partition with nowhere to mount is still asked for by id, and the id is the
- * name the machine uses: "bios_boot" is what the configuration says, not what a
- * reader calls the thing. Each id is answered with the words for it here, in one
- * place, so the vocabulary can be read as a set and changed as a set.
- *
- * Adapting it is editing a line. Dropping it is dropping the call: what is left
- * without these words is the id itself, which is worse but not broken.
+ * The translated purpose of a partition requested by id rather than by mount
+ * point, such as "bios_boot", in one place so the wording stays consistent.
  *
  * @param id - Partition id from ConfigModel
  * @returns Translated name for what the partition is for
@@ -401,11 +356,8 @@ const partitionIdLabel = (id: ConfigModel.PartitionId): TranslatedString => {
     case "swap":
       return _("Swap partition");
     default:
-      /* An id this page has no words for yet. Said as the kind of thing it is
-         rather than as the id: a reader who cannot act on the name gains
-         nothing from being shown it. */
-      // TRANSLATORS: said of a partition of the installation whose purpose this
-      // page has no words for.
+      /* An unknown id: a generic label, since the id itself means nothing to users. */
+      // TRANSLATORS: a partition with an unknown purpose
       return _("Partition");
   }
 };
@@ -492,8 +444,6 @@ function isExistingBootPartition(partition: System.Device): boolean {
 export {
   DEFAULT_SIZE_UNIT,
   SIZE_METHODS,
-  partitionableSpacePolicyLabel,
-  volumeGroupSpacePolicyLabel,
   baseName,
   deviceBaseName,
   deviceLabel,
