@@ -96,7 +96,7 @@ pub enum ProblemDetails {
     )]
     InternalError { title: String, detail: String },
 
-    /// Internal server error (HTTP 500)
+    /// Unprocessable Content (HTTP 422)
     #[serde(
         rename = "tag:agama.opensuse.org,2026:problems/pending-issues`",
         rename_all = "camelCase"
