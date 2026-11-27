@@ -68,8 +68,8 @@ function SizeExplanations() {
     return (
       <Content component="p">
         {sprintf(
-          // TRANSLATORS: %s is the formatted mount point for root, '"/"
           _(
+            // TRANSLATORS: %s is the formatted mount point for root, '"/"
             "Bear in mind the automatically calculated sizes of the partition for %s is influenced by the usage of Btrfs snapshots and the amount of RAM in the system.",
           ),
           formattedPath("/"),
@@ -82,8 +82,8 @@ function SizeExplanations() {
     return (
       <Content component="p">
         {sprintf(
-          // TRANSLATORS: %s is the formatted mount point for root, '"/"
           _(
+            // TRANSLATORS: %s is the formatted mount point for root, '"/"
             "Bear in mind the automatically calculated sizes of some partitions are influenced by the amount of RAM in the system and, in the case of %s, by the usage of Btrfs snapshots.",
           ),
           formattedPath("/"),
@@ -96,8 +96,8 @@ function SizeExplanations() {
     return (
       <Content component="p">
         {sprintf(
-          // TRANSLATORS: %s is the formatted mount point for root, '"/"
           _(
+            // TRANSLATORS: %s is the formatted mount point for root, '"/"
             "Bear in mind that using Btrfs snapshots results in a bigger auto-calculated size of the partition for %s.",
           ),
           formattedPath("/"),
@@ -109,8 +109,8 @@ function SizeExplanations() {
   return (
     <Content component="p">
       {sprintf(
-        // TRANSLATORS: %s (used only in the singular case) is a formatted mount point like "/home"
         n_(
+          // TRANSLATORS: %s (used only in the singular case) is a formatted mount point like "/home"
           "Bear in mind the automatically calculated sizes of the partition for '%s' is influenced by the amount of RAM in the system",
           "Bear in mind the automatically calculated sizes of some partitions are influenced by the amount of RAM in the system",
           ramPaths.length,

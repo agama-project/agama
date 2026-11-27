@@ -82,9 +82,9 @@ export default function ExistingContent({ entry, isDeleted = false }: ExistingCo
       return (
         <Deleted
           sentence={sprintf(
-            // TRANSLATORS: %s is an LVM volume group name, like "system". Keep the brackets around
-            // the words about the data loss.
             _(
+              // TRANSLATORS: %s is an LVM volume group name, like "system". Keep the brackets around
+              // the words about the data loss.
               "LVM physical volume: [the whole volume group %s will be deleted and its data lost].",
             ),
             formattedPath(baseName(group.name)),

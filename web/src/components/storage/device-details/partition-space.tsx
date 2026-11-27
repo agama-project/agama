@@ -83,8 +83,8 @@ function meaning(decision: Decision, partition: System.Device): TranslatedString
     case "keep":
       return _("Data will be kept, not used by the new system.");
     case "delete":
-      // TRANSLATORS: %s is a size, such as "45 GiB".
       return sprintf(
+        // TRANSLATORS: %s is a size, such as "45 GiB".
         _("Data will be lost, %s will be freed for new partitions."),
         deviceSize(partition.block?.size),
       );
@@ -150,8 +150,8 @@ function descriptionOf(
 
   const recoverable = decision === "resizeIfNeeded" && recoverableBy(partition);
   if (recoverable) {
-    // TRANSLATORS: %s is the most space shrinking can free, such as "45 GiB"
     return sprintf(
+      // TRANSLATORS: %s is the most space shrinking can free, such as "45 GiB"
       _("Data will be kept, up to %s may be freed for new partitions."),
       deviceSize(recoverable),
     );

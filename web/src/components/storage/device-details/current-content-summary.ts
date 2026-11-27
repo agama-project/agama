@@ -85,8 +85,8 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
   if (!d && !f && !s && !m) {
     return filled(
       isLV
-        ? // TRANSLATORS: %1$d is the total. Keep the brackets, which mark bold text.
-          n_(
+        ? n_(
+            // TRANSLATORS: %1$d is the total. Keep the brackets, which mark bold text.
             "[%1$d logical volume]: it will be kept.",
             "[%1$d logical volumes]: all will be kept.",
             total,
@@ -102,14 +102,14 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
     if (d === total) {
       return filled(
         isLV
-          ? // TRANSLATORS: %1$d is the total. Keep the brackets, which mark bold text.
-            n_(
+          ? n_(
+              // TRANSLATORS: %1$d is the total. Keep the brackets, which mark bold text.
               "[%1$d logical volume]: it will be deleted.",
               "[%1$d logical volumes]: all will be deleted.",
               total,
             )
-          : // TRANSLATORS: %1$d is the total. Keep the brackets, which mark bold text.
-            n_(
+          : n_(
+              // TRANSLATORS: %1$d is the total. Keep the brackets, which mark bold text.
               "[%1$d partition]: it will be deleted.",
               "[%1$d partitions]: all will be deleted.",
               total,
@@ -120,16 +120,16 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
 
     return filled(
       isLV
-        ? // TRANSLATORS: %1$d is the total, %2$d the deleted ones. Keep the brackets, which mark
-          // bold text.
-          n_(
+        ? n_(
+            // TRANSLATORS: %1$d is the total, %2$d the deleted ones. Keep the brackets, which mark
+            // bold text.
             "[%1$d logical volume]: %2$d will be deleted.",
             "[%1$d logical volumes]: %2$d will be deleted.",
             total,
           )
-        : // TRANSLATORS: %1$d is the total, %2$d the deleted ones. Keep the brackets, which mark
-          // bold text.
-          n_(
+        : n_(
+            // TRANSLATORS: %1$d is the total, %2$d the deleted ones. Keep the brackets, which mark
+            // bold text.
             "[%1$d partition]: %2$d will be deleted.",
             "[%1$d partitions]: %2$d will be deleted.",
             total,
@@ -142,14 +142,14 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
     if (f === total) {
       return filled(
         isLV
-          ? // TRANSLATORS: %1$d is the total. Keep the brackets, which mark bold text.
-            n_(
+          ? n_(
+              // TRANSLATORS: %1$d is the total. Keep the brackets, which mark bold text.
               "[%1$d logical volume]: it will be formatted.",
               "[%1$d logical volumes]: all will be formatted.",
               total,
             )
-          : // TRANSLATORS: %1$d is the total. Keep the brackets, which mark bold text.
-            n_(
+          : n_(
+              // TRANSLATORS: %1$d is the total. Keep the brackets, which mark bold text.
               "[%1$d partition]: it will be formatted.",
               "[%1$d partitions]: all will be formatted.",
               total,
@@ -160,16 +160,16 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
 
     return filled(
       isLV
-        ? // TRANSLATORS: %1$d is the total, %2$d the formatted ones. Keep the brackets, which mark
-          // bold text.
-          n_(
+        ? n_(
+            // TRANSLATORS: %1$d is the total, %2$d the formatted ones. Keep the brackets, which mark
+            // bold text.
             "[%1$d logical volume]: %2$d will be formatted.",
             "[%1$d logical volumes]: %2$d will be formatted.",
             total,
           )
-        : // TRANSLATORS: %1$d is the total, %2$d the formatted ones. Keep the brackets, which mark
-          // bold text.
-          n_(
+        : n_(
+            // TRANSLATORS: %1$d is the total, %2$d the formatted ones. Keep the brackets, which mark
+            // bold text.
             "[%1$d partition]: %2$d will be formatted.",
             "[%1$d partitions]: %2$d will be formatted.",
             total,
@@ -182,14 +182,14 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
     if (s === total) {
       return filled(
         isLV
-          ? // TRANSLATORS: %1$d is the total. Keep the brackets, which mark bold text.
-            n_(
+          ? n_(
+              // TRANSLATORS: %1$d is the total. Keep the brackets, which mark bold text.
               "[%1$d logical volume]: it may be shrunk.",
               "[%1$d logical volumes]: all may be shrunk.",
               total,
             )
-          : // TRANSLATORS: %1$d is the total. Keep the brackets, which mark bold text.
-            n_(
+          : n_(
+              // TRANSLATORS: %1$d is the total. Keep the brackets, which mark bold text.
               "[%1$d partition]: it may be shrunk.",
               "[%1$d partitions]: all may be shrunk.",
               total,
@@ -200,16 +200,16 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
 
     return filled(
       isLV
-        ? // TRANSLATORS: %1$d is the total, %2$d the shrinkable ones. Keep the brackets, which mark
-          // bold text.
-          n_(
+        ? n_(
+            // TRANSLATORS: %1$d is the total, %2$d the shrinkable ones. Keep the brackets, which mark
+            // bold text.
             "[%1$d logical volume]: %2$d may be shrunk.",
             "[%1$d logical volumes]: %2$d may be shrunk.",
             total,
           )
-        : // TRANSLATORS: %1$d is the total, %2$d the shrinkable ones. Keep the brackets, which mark
-          // bold text.
-          n_(
+        : n_(
+            // TRANSLATORS: %1$d is the total, %2$d the shrinkable ones. Keep the brackets, which mark
+            // bold text.
             "[%1$d partition]: %2$d may be shrunk.",
             "[%1$d partitions]: %2$d may be shrunk.",
             total,
@@ -222,16 +222,16 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
     if (m === total) {
       return filled(
         isLV
-          ? // TRANSLATORS: %1$d is the total. Keep the brackets, which mark bold text. "Mounted"
-            // means used as is, keeping its data.
-            n_(
+          ? n_(
+              // TRANSLATORS: %1$d is the total. Keep the brackets, which mark bold text. "Mounted"
+              // means used as is, keeping its data.
               "[%1$d logical volume]: it will be mounted.",
               "[%1$d logical volumes]: all will be mounted.",
               total,
             )
-          : // TRANSLATORS: %1$d is the total. Keep the brackets, which mark bold text. "Mounted"
-            // means used as is, keeping its data.
-            n_(
+          : n_(
+              // TRANSLATORS: %1$d is the total. Keep the brackets, which mark bold text. "Mounted"
+              // means used as is, keeping its data.
               "[%1$d partition]: it will be mounted.",
               "[%1$d partitions]: all will be mounted.",
               total,
@@ -242,16 +242,16 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
 
     return filled(
       isLV
-        ? // TRANSLATORS: %1$d is the total, %2$d the mounted ones. Keep the brackets, which mark
-          // bold text. "Mounted" means used as is, keeping its data.
-          n_(
+        ? n_(
+            // TRANSLATORS: %1$d is the total, %2$d the mounted ones. Keep the brackets, which mark
+            // bold text. "Mounted" means used as is, keeping its data.
             "[%1$d logical volume]: %2$d will be mounted.",
             "[%1$d logical volumes]: %2$d will be mounted.",
             total,
           )
-        : // TRANSLATORS: %1$d is the total, %2$d the mounted ones. Keep the brackets, which mark
-          // bold text. "Mounted" means used as is, keeping its data.
-          n_(
+        : n_(
+            // TRANSLATORS: %1$d is the total, %2$d the mounted ones. Keep the brackets, which mark
+            // bold text. "Mounted" means used as is, keeping its data.
             "[%1$d partition]: %2$d will be mounted.",
             "[%1$d partitions]: %2$d will be mounted.",
             total,
@@ -264,16 +264,16 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
   if (d && f && !s && !m) {
     return filled(
       isLV
-        ? // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the formatted ones. Keep
-          // the brackets, which mark bold text.
-          n_(
+        ? n_(
+            // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the formatted ones. Keep
+            // the brackets, which mark bold text.
             "[%1$d logical volume]: %2$d will be deleted and %3$d will be formatted.",
             "[%1$d logical volumes]: %2$d will be deleted and %3$d will be formatted.",
             total,
           )
-        : // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the formatted ones. Keep
-          // the brackets, which mark bold text.
-          n_(
+        : n_(
+            // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the formatted ones. Keep
+            // the brackets, which mark bold text.
             "[%1$d partition]: %2$d will be deleted and %3$d will be formatted.",
             "[%1$d partitions]: %2$d will be deleted and %3$d will be formatted.",
             total,
@@ -285,16 +285,16 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
   if (d && !f && s && !m) {
     return filled(
       isLV
-        ? // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the shrinkable ones. Keep
-          // the brackets, which mark bold text.
-          n_(
+        ? n_(
+            // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the shrinkable ones. Keep
+            // the brackets, which mark bold text.
             "[%1$d logical volume]: %2$d will be deleted and %3$d may be shrunk.",
             "[%1$d logical volumes]: %2$d will be deleted and %3$d may be shrunk.",
             total,
           )
-        : // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the shrinkable ones. Keep
-          // the brackets, which mark bold text.
-          n_(
+        : n_(
+            // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the shrinkable ones. Keep
+            // the brackets, which mark bold text.
             "[%1$d partition]: %2$d will be deleted and %3$d may be shrunk.",
             "[%1$d partitions]: %2$d will be deleted and %3$d may be shrunk.",
             total,
@@ -306,16 +306,16 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
   if (d && !f && !s && m) {
     return filled(
       isLV
-        ? // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the mounted ones. Keep the
-          // brackets, which mark bold text. "Mounted" means used as is, keeping its data.
-          n_(
+        ? n_(
+            // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the mounted ones. Keep the
+            // brackets, which mark bold text. "Mounted" means used as is, keeping its data.
             "[%1$d logical volume]: %2$d will be deleted and %3$d will be mounted.",
             "[%1$d logical volumes]: %2$d will be deleted and %3$d will be mounted.",
             total,
           )
-        : // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the mounted ones. Keep the
-          // brackets, which mark bold text. "Mounted" means used as is, keeping its data.
-          n_(
+        : n_(
+            // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the mounted ones. Keep the
+            // brackets, which mark bold text. "Mounted" means used as is, keeping its data.
             "[%1$d partition]: %2$d will be deleted and %3$d will be mounted.",
             "[%1$d partitions]: %2$d will be deleted and %3$d will be mounted.",
             total,
@@ -327,16 +327,16 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
   if (!d && f && s && !m) {
     return filled(
       isLV
-        ? // TRANSLATORS: %1$d is the total, %2$d the formatted ones, %3$d the shrinkable ones. Keep
-          // the brackets, which mark bold text.
-          n_(
+        ? n_(
+            // TRANSLATORS: %1$d is the total, %2$d the formatted ones, %3$d the shrinkable ones. Keep
+            // the brackets, which mark bold text.
             "[%1$d logical volume]: %2$d will be formatted and %3$d may be shrunk.",
             "[%1$d logical volumes]: %2$d will be formatted and %3$d may be shrunk.",
             total,
           )
-        : // TRANSLATORS: %1$d is the total, %2$d the formatted ones, %3$d the shrinkable ones. Keep
-          // the brackets, which mark bold text.
-          n_(
+        : n_(
+            // TRANSLATORS: %1$d is the total, %2$d the formatted ones, %3$d the shrinkable ones. Keep
+            // the brackets, which mark bold text.
             "[%1$d partition]: %2$d will be formatted and %3$d may be shrunk.",
             "[%1$d partitions]: %2$d will be formatted and %3$d may be shrunk.",
             total,
@@ -348,16 +348,16 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
   if (!d && f && !s && m) {
     return filled(
       isLV
-        ? // TRANSLATORS: %1$d is the total, %2$d the formatted ones, %3$d the mounted ones. Keep
-          // the brackets, which mark bold text. "Mounted" means used as is, keeping its data.
-          n_(
+        ? n_(
+            // TRANSLATORS: %1$d is the total, %2$d the formatted ones, %3$d the mounted ones. Keep
+            // the brackets, which mark bold text. "Mounted" means used as is, keeping its data.
             "[%1$d logical volume]: %2$d will be formatted and %3$d will be mounted.",
             "[%1$d logical volumes]: %2$d will be formatted and %3$d will be mounted.",
             total,
           )
-        : // TRANSLATORS: %1$d is the total, %2$d the formatted ones, %3$d the mounted ones. Keep
-          // the brackets, which mark bold text. "Mounted" means used as is, keeping its data.
-          n_(
+        : n_(
+            // TRANSLATORS: %1$d is the total, %2$d the formatted ones, %3$d the mounted ones. Keep
+            // the brackets, which mark bold text. "Mounted" means used as is, keeping its data.
             "[%1$d partition]: %2$d will be formatted and %3$d will be mounted.",
             "[%1$d partitions]: %2$d will be formatted and %3$d will be mounted.",
             total,
@@ -369,16 +369,16 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
   if (!d && !f && s && m) {
     return filled(
       isLV
-        ? // TRANSLATORS: %1$d is the total, %2$d the shrinkable ones, %3$d the mounted ones. Keep
-          // the brackets, which mark bold text. "Mounted" means used as is, keeping its data.
-          n_(
+        ? n_(
+            // TRANSLATORS: %1$d is the total, %2$d the shrinkable ones, %3$d the mounted ones. Keep
+            // the brackets, which mark bold text. "Mounted" means used as is, keeping its data.
             "[%1$d logical volume]: %2$d may be shrunk and %3$d will be mounted.",
             "[%1$d logical volumes]: %2$d may be shrunk and %3$d will be mounted.",
             total,
           )
-        : // TRANSLATORS: %1$d is the total, %2$d the shrinkable ones, %3$d the mounted ones. Keep
-          // the brackets, which mark bold text. "Mounted" means used as is, keeping its data.
-          n_(
+        : n_(
+            // TRANSLATORS: %1$d is the total, %2$d the shrinkable ones, %3$d the mounted ones. Keep
+            // the brackets, which mark bold text. "Mounted" means used as is, keeping its data.
             "[%1$d partition]: %2$d may be shrunk and %3$d will be mounted.",
             "[%1$d partitions]: %2$d may be shrunk and %3$d will be mounted.",
             total,
@@ -391,16 +391,16 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
   if (d && f && s && !m) {
     return filled(
       isLV
-        ? // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the formatted ones, %4$d
-          // the shrinkable ones. Keep the brackets, which mark bold text.
-          n_(
+        ? n_(
+            // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the formatted ones, %4$d
+            // the shrinkable ones. Keep the brackets, which mark bold text.
             "[%1$d logical volume]: %2$d will be deleted, %3$d will be formatted and %4$d may be shrunk.",
             "[%1$d logical volumes]: %2$d will be deleted, %3$d will be formatted and %4$d may be shrunk.",
             total,
           )
-        : // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the formatted ones, %4$d
-          // the shrinkable ones. Keep the brackets, which mark bold text.
-          n_(
+        : n_(
+            // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the formatted ones, %4$d
+            // the shrinkable ones. Keep the brackets, which mark bold text.
             "[%1$d partition]: %2$d will be deleted, %3$d will be formatted and %4$d may be shrunk.",
             "[%1$d partitions]: %2$d will be deleted, %3$d will be formatted and %4$d may be shrunk.",
             total,
@@ -412,18 +412,18 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
   if (d && f && !s && m) {
     return filled(
       isLV
-        ? // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the formatted ones, %4$d
-          // the mounted ones. Keep the brackets, which mark bold text. "Mounted" means used as is,
-          // keeping its data.
-          n_(
+        ? n_(
+            // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the formatted ones, %4$d
+            // the mounted ones. Keep the brackets, which mark bold text. "Mounted" means used as is,
+            // keeping its data.
             "[%1$d logical volume]: %2$d will be deleted, %3$d will be formatted and %4$d will be mounted.",
             "[%1$d logical volumes]: %2$d will be deleted, %3$d will be formatted and %4$d will be mounted.",
             total,
           )
-        : // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the formatted ones, %4$d
-          // the mounted ones. Keep the brackets, which mark bold text. "Mounted" means used as is,
-          // keeping its data.
-          n_(
+        : n_(
+            // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the formatted ones, %4$d
+            // the mounted ones. Keep the brackets, which mark bold text. "Mounted" means used as is,
+            // keeping its data.
             "[%1$d partition]: %2$d will be deleted, %3$d will be formatted and %4$d will be mounted.",
             "[%1$d partitions]: %2$d will be deleted, %3$d will be formatted and %4$d will be mounted.",
             total,
@@ -435,18 +435,18 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
   if (d && !f && s && m) {
     return filled(
       isLV
-        ? // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the shrinkable ones, %4$d
-          // the mounted ones. Keep the brackets, which mark bold text. "Mounted" means used as is,
-          // keeping its data.
-          n_(
+        ? n_(
+            // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the shrinkable ones, %4$d
+            // the mounted ones. Keep the brackets, which mark bold text. "Mounted" means used as is,
+            // keeping its data.
             "[%1$d logical volume]: %2$d will be deleted, %3$d may be shrunk and %4$d will be mounted.",
             "[%1$d logical volumes]: %2$d will be deleted, %3$d may be shrunk and %4$d will be mounted.",
             total,
           )
-        : // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the shrinkable ones, %4$d
-          // the mounted ones. Keep the brackets, which mark bold text. "Mounted" means used as is,
-          // keeping its data.
-          n_(
+        : n_(
+            // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the shrinkable ones, %4$d
+            // the mounted ones. Keep the brackets, which mark bold text. "Mounted" means used as is,
+            // keeping its data.
             "[%1$d partition]: %2$d will be deleted, %3$d may be shrunk and %4$d will be mounted.",
             "[%1$d partitions]: %2$d will be deleted, %3$d may be shrunk and %4$d will be mounted.",
             total,
@@ -458,18 +458,18 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
   if (!d && f && s && m) {
     return filled(
       isLV
-        ? // TRANSLATORS: %1$d is the total, %2$d the formatted ones, %3$d the shrinkable ones, %4$d
-          // the mounted ones. Keep the brackets, which mark bold text. "Mounted" means used as is,
-          // keeping its data.
-          n_(
+        ? n_(
+            // TRANSLATORS: %1$d is the total, %2$d the formatted ones, %3$d the shrinkable ones, %4$d
+            // the mounted ones. Keep the brackets, which mark bold text. "Mounted" means used as is,
+            // keeping its data.
             "[%1$d logical volume]: %2$d will be formatted, %3$d may be shrunk and %4$d will be mounted.",
             "[%1$d logical volumes]: %2$d will be formatted, %3$d may be shrunk and %4$d will be mounted.",
             total,
           )
-        : // TRANSLATORS: %1$d is the total, %2$d the formatted ones, %3$d the shrinkable ones, %4$d
-          // the mounted ones. Keep the brackets, which mark bold text. "Mounted" means used as is,
-          // keeping its data.
-          n_(
+        : n_(
+            // TRANSLATORS: %1$d is the total, %2$d the formatted ones, %3$d the shrinkable ones, %4$d
+            // the mounted ones. Keep the brackets, which mark bold text. "Mounted" means used as is,
+            // keeping its data.
             "[%1$d partition]: %2$d will be formatted, %3$d may be shrunk and %4$d will be mounted.",
             "[%1$d partitions]: %2$d will be formatted, %3$d may be shrunk and %4$d will be mounted.",
             total,
@@ -481,18 +481,18 @@ function mainSentence(kind: ContentKind, counts: Counts): TranslatedString {
   /* All four outcomes. */
   return filled(
     isLV
-      ? // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the formatted ones, %4$d the
-        // shrinkable ones, %5$d the mounted ones. Keep the brackets, which mark bold text.
-        // "Mounted" means used as is, keeping its data.
-        n_(
+      ? n_(
+          // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the formatted ones, %4$d the
+          // shrinkable ones, %5$d the mounted ones. Keep the brackets, which mark bold text.
+          // "Mounted" means used as is, keeping its data.
           "[%1$d logical volume]: %2$d will be deleted, %3$d will be formatted, %4$d may be shrunk and %5$d will be mounted.",
           "[%1$d logical volumes]: %2$d will be deleted, %3$d will be formatted, %4$d may be shrunk and %5$d will be mounted.",
           total,
         )
-      : // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the formatted ones, %4$d the
-        // shrinkable ones, %5$d the mounted ones. Keep the brackets, which mark bold text.
-        // "Mounted" means used as is, keeping its data.
-        n_(
+      : n_(
+          // TRANSLATORS: %1$d is the total, %2$d the deleted ones, %3$d the formatted ones, %4$d the
+          // shrinkable ones, %5$d the mounted ones. Keep the brackets, which mark bold text.
+          // "Mounted" means used as is, keeping its data.
           "[%1$d partition]: %2$d will be deleted, %3$d will be formatted, %4$d may be shrunk and %5$d will be mounted.",
           "[%1$d partitions]: %2$d will be deleted, %3$d will be formatted, %4$d may be shrunk and %5$d will be mounted.",
           total,

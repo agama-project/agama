@@ -150,8 +150,7 @@ const Title = ({ modelDevice }: TitleProps) => {
   }
 
   return sprintf(
-    // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
-    // single mount point in the singular case).
+    // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"'
     _("Choose a different device to create %s"),
     formatList(newMountPaths.map((p) => formattedPath(p))),
   );
