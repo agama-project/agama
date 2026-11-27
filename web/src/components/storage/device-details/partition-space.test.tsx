@@ -32,10 +32,12 @@ import {
   usePartitionSpaceItems,
 } from "~/components/storage/device-details/partition-space";
 
+const mockSetSpacePolicy = jest.fn();
+
 jest.mock("~/hooks/model/storage/config-model", () => ({
   ...jest.requireActual("~/hooks/model/storage/config-model"),
   useConfigModel: () => null,
-  useSetSpacePolicy: () => jest.fn(),
+  useSetSpacePolicy: () => mockSetSpacePolicy,
 }));
 
 const GiB = 1024 ** 3;
@@ -137,19 +139,27 @@ describe("usePartitionSpaceItems", () => {
   const shrinkable = { ...partition({ supported: true, minSize: 20 * GiB }), name: "/dev/vda2" };
   const unshrinkable = partition({ supported: false });
 
+  beforeEach(() => {
+    mockSetSpacePolicy.mockClear();
+  });
+
   function Items({
     part,
     rule,
     collection = "drives",
+    governed = [unshrinkable, shrinkable],
+    entries = [],
   }: {
     part: System.Device;
     rule?: Decision;
     collection?: "drives" | "volumeGroups";
+    governed?: System.Device[];
+    entries?: React.ComponentProps<typeof usePartitionSpaceItems>["entries"];
   }) {
     const items = usePartitionSpaceItems({
       partition: part,
-      governed: [unshrinkable, shrinkable],
-      entries: [],
+      governed,
+      entries,
       collection,
       index: 0,
       rule,
@@ -217,6 +227,100 @@ describe("usePartitionSpaceItems", () => {
       expect(screen.getByRole("menuitem", { name: /^Shrink if needed/ })).toHaveTextContent(
         "may be freed for new partitions",
       );
+    });
+  });
+
+  describe("choosing for a partition the new system does not use", () => {
+    it("writes the decisions of the governed partitions, releasing nothing", async () => {
+      const { user } = installerRender(<Items part={shrinkable} />);
+      await user.click(screen.getByRole("menuitem", { name: /^Delete/ }));
+
+      expect(mockSetSpacePolicy).toHaveBeenCalledWith("drives", 0, {
+        type: "custom",
+        actions: [{ deviceName: "/dev/vda2", value: "delete" }],
+        release: undefined,
+      });
+    });
+  });
+
+  describe.each([
+    ["partition", "drives", "/dev/vda2"],
+    ["logical volume", "volumeGroups", "/dev/vda2"],
+  ] as const)("choosing for a reused %s", (_kind, collection, name) => {
+    /* Reused ones are not governed: the configuration stores their use. */
+    const entries = [{ name, mountPath: "/home" }];
+    const other = { ...unshrinkable, name: "/dev/vda3" };
+    const others = [other];
+
+    it("releases it and deletes it", async () => {
+      const { user } = installerRender(
+        <Items part={shrinkable} collection={collection} governed={others} entries={entries} />,
+      );
+      await user.click(screen.getByRole("menuitem", { name: /^Delete/ }));
+
+      expect(mockSetSpacePolicy).toHaveBeenCalledWith(collection, 0, {
+        type: "custom",
+        actions: [{ deviceName: name, value: "delete" }],
+        release: name,
+      });
+    });
+
+    it("releases it and shrinks it if needed", async () => {
+      const { user } = installerRender(
+        <Items part={shrinkable} collection={collection} governed={others} entries={entries} />,
+      );
+      await user.click(screen.getByRole("menuitem", { name: /^Shrink if needed/ }));
+
+      expect(mockSetSpacePolicy).toHaveBeenCalledWith(collection, 0, {
+        type: "custom",
+        actions: [{ deviceName: name, value: "resizeIfNeeded" }],
+        release: name,
+      });
+    });
+
+    it("releases it and keeps it, with no action of its own", async () => {
+      const { user } = installerRender(
+        <Items part={shrinkable} collection={collection} governed={others} entries={entries} />,
+      );
+      await user.click(screen.getByRole("menuitem", { name: /^Do not modify/ }));
+
+      expect(mockSetSpacePolicy).toHaveBeenCalledWith(collection, 0, {
+        type: "custom",
+        actions: [],
+        release: name,
+      });
+    });
+
+    it("keeps the decisions of the other partitions", async () => {
+      const decided = [{ name: other.name, delete: true }];
+      const { user } = installerRender(
+        <Items
+          part={shrinkable}
+          collection={collection}
+          governed={others}
+          entries={[...entries, ...decided]}
+        />,
+      );
+      await user.click(screen.getByRole("menuitem", { name: /^Shrink if needed/ }));
+
+      expect(mockSetSpacePolicy).toHaveBeenCalledWith(collection, 0, {
+        type: "custom",
+        actions: [
+          { deviceName: other.name, value: "delete" },
+          { deviceName: name, value: "resizeIfNeeded" },
+        ],
+        release: name,
+      });
+    });
+
+    it("marks nothing as taken", () => {
+      installerRender(
+        <Items part={shrinkable} collection={collection} governed={others} entries={entries} />,
+      );
+
+      screen.getAllByRole("menuitem").forEach((item) => {
+        expect(item).not.toHaveClass("pf-m-selected");
+      });
     });
   });
 });

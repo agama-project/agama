@@ -35,7 +35,6 @@ import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import RowMenuToggle from "~/components/core/RowMenuToggle";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { generateEncodedPath } from "~/utils";
-import { useDeleteLogicalVolume, useDeletePartition } from "~/hooks/model/storage/config-model";
 import { useAnnounce } from "~/context/announcer";
 import {
   decisionOf,
@@ -90,6 +89,9 @@ export function hasCurrentContent(entry: Entry): boolean {
  * Everything that can be done to one partition or logical volume already on the
  * device: its space decision and whether the new system reuses it, with a
  * divider between the two. Empty when there is nothing to offer.
+ *
+ * One that the new system already uses has the same decisions, since choosing
+ * one stops that use, and an item to change how it is used.
  */
 function PartitionMenu({
   part,
@@ -100,7 +102,6 @@ function PartitionMenu({
   index,
   canDecide = true,
   rule,
-  vgName,
 }: {
   part: System.Device;
   /** Whether what happens to it can be decided here, or is fixed for it. */
@@ -114,11 +115,7 @@ function PartitionMenu({
   entries: (ConfigModel.Partition | ConfigModel.LogicalVolume)[];
   collection: DeviceCollection;
   index: number;
-  /** The name of the volume group, when the row is one of its logical volumes. */
-  vgName?: string;
 }) {
-  const deletePartition = useDeletePartition();
-  const deleteLogicalVolume = useDeleteLogicalVolume();
   const isLogicalVolume = collection === "volumeGroups";
   const name = baseName(part.name);
   const menuLabel = sprintf(
@@ -151,10 +148,6 @@ function PartitionMenu({
         deviceName: part.name,
       })
     : generateEncodedPath(PATHS.reusePartition, { ...at, deviceName: part.name });
-  const stopUsing = () =>
-    isLogicalVolume
-      ? deleteLogicalVolume(vgName, reusedAs)
-      : deletePartition(collection, index, reusedAs);
 
   const reuseItems = reusedAs
     ? [
@@ -163,13 +156,13 @@ function PartitionMenu({
           icon={<Icon size="md" name="edit_square" />}
           to={editPath}
           keepQuery
+          description={
+            isLogicalVolume
+              ? _("Modify how the logical volume is used")
+              : _("Modify how the partition is used")
+          }
         >
-          {isLogicalVolume
-            ? _("Modify how the logical volume is used")
-            : _("Modify how the partition is used")}
-        </MenuButtonItem>,
-        <MenuButtonItem key="stop" icon={<Icon size="md" name="link_off" />} onClick={stopUsing}>
-          {_("Stop using")}
+          {_("Edit")}
         </MenuButtonItem>,
       ]
     : [
@@ -185,7 +178,7 @@ function PartitionMenu({
       ];
 
   /* The space decision first, as the row says it. */
-  const decisions = reusedAs || !canDecide ? [] : spaceItems;
+  const decisions = canDecide ? spaceItems : [];
   const items = [
     ...decisions,
     ...(decisions.length && reuseItems.length ? [<Divider key="rule" component="li" />] : []),
@@ -611,7 +604,6 @@ export default function CurrentContentSection({
                           index={subject.index}
                           canDecide={!fixedDecision}
                           rule={rule}
-                          vgName={(entry.config as ConfigModel.VolumeGroup).vgName}
                         />
                       )
                     }

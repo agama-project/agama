@@ -234,12 +234,12 @@ export default function PlannedContentSection({
                       </MenuButtonItem>,
                       <MenuButtonItem
                         key="delete"
-                        icon={<Icon size="md" name={source ? "link_off" : "delete"} />}
-                        /* For a reused partition, only the plan goes away. */
-                        isDanger={!source}
+                        icon={<Icon size="md" name="delete" />}
+                        isDanger
                         onClick={() => remove(vol.mountPath)}
                       >
-                        {source ? _("Stop reusing") : _("Delete")}
+                        {/* For a reused partition, only the plan goes away. */}
+                        {source ? _("Stop using") : _("Delete")}
                       </MenuButtonItem>,
                     ]}
                   />

@@ -21,17 +21,21 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import DetailsSection from "~/components/storage/device-details/DetailsSection";
+import type { Storage as System } from "~/model/system";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { Entry } from "~/components/storage/device-details/entry";
 import PlannedContentSection from "~/components/storage/device-details/PlannedContentSection";
 
+const mockDeletePartition = jest.fn();
+const mockDeleteLogicalVolume = jest.fn();
+
 jest.mock("~/hooks/model/storage/config-model", () => ({
   ...jest.requireActual("~/hooks/model/storage/config-model"),
-  useDeletePartition: () => jest.fn(),
-  useDeleteLogicalVolume: () => jest.fn(),
+  useDeletePartition: () => mockDeletePartition,
+  useDeleteLogicalVolume: () => mockDeleteLogicalVolume,
 }));
 
 const group = (logicalVolumes: ConfigModel.LogicalVolume[]): Entry => ({
@@ -43,12 +47,33 @@ const group = (logicalVolumes: ConfigModel.LogicalVolume[]): Entry => ({
 
 const subject = { collection: "volumeGroups" as const, index: 0 };
 
+const size = { default: false, min: 5 * 1024 ** 3 };
+
 const home: ConfigModel.LogicalVolume = {
   mountPath: "/home",
-  size: { default: false, min: 5 * 1024 ** 3 },
+  size,
 };
 
+const disk = (partitions: ConfigModel.Partition[]): Entry => ({
+  config: { name: "/dev/vda", partitions },
+  device: {
+    sid: 1,
+    name: "/dev/vda",
+    class: "drive",
+    partitions: [{ sid: 2, name: "/dev/vda2", class: "partition", filesystem: { type: "xfs" } }],
+  } as System.Device,
+  name: "vda",
+  isVolumeGroup: false,
+});
+
+const diskSubject = { collection: "drives" as const, index: 0 };
+
 describe("PlannedContentSection", () => {
+  beforeEach(() => {
+    mockDeletePartition.mockClear();
+    mockDeleteLogicalVolume.mockClear();
+  });
+
   it("lists what is planned, with a generic name outside a section", () => {
     installerRender(<PlannedContentSection entry={group([home])} subject={subject} />);
 
@@ -64,5 +89,91 @@ describe("PlannedContentSection", () => {
     );
 
     screen.getByRole("table", { name: "Logical volumes for the new system" });
+  });
+
+  describe("in the menu of a row", () => {
+    const reusedPartition: ConfigModel.Partition = {
+      name: "/dev/vda2",
+      mountPath: "/data",
+      filesystem: { default: false, reuse: true },
+      size,
+    };
+    const newPartition: ConfigModel.Partition = { mountPath: "/home", size };
+
+    const items = () =>
+      within(screen.getByRole("menu"))
+        .getAllByRole("menuitem")
+        .map((item) => item.textContent);
+
+    it("offers to edit and to delete a new partition", async () => {
+      const { user } = installerRender(
+        <PlannedContentSection entry={disk([newPartition])} subject={diskSubject} />,
+      );
+      await user.click(screen.getByRole("button", { name: "Actions for /home" }));
+
+      expect(items()).toEqual(["Edit", "Delete"]);
+      expect(screen.getByRole("menuitem", { name: "Delete" }).closest("li")).toHaveClass(
+        "pf-m-danger",
+      );
+
+      await user.click(screen.getByRole("menuitem", { name: "Delete" }));
+      expect(mockDeletePartition).toHaveBeenCalledWith("drives", 0, "/home");
+    });
+
+    it("offers to edit and to stop using a reused partition, as a danger", async () => {
+      const { user } = installerRender(
+        <PlannedContentSection entry={disk([reusedPartition])} subject={diskSubject} />,
+      );
+      await user.click(screen.getByRole("button", { name: "Actions for /data" }));
+
+      expect(items()).toEqual(["Edit", "Stop using"]);
+      expect(screen.getByRole("menuitem", { name: "Stop using" }).closest("li")).toHaveClass(
+        "pf-m-danger",
+      );
+
+      await user.click(screen.getByRole("menuitem", { name: "Stop using" }));
+      expect(mockDeletePartition).toHaveBeenCalledWith("drives", 0, "/data");
+    });
+
+    it("offers to edit and to delete a new logical volume", async () => {
+      const { user } = installerRender(
+        <PlannedContentSection entry={group([home])} subject={subject} />,
+      );
+      await user.click(screen.getByRole("button", { name: "Actions for /home" }));
+
+      expect(items()).toEqual(["Edit", "Delete"]);
+      expect(screen.getByRole("menuitem", { name: "Delete" }).closest("li")).toHaveClass(
+        "pf-m-danger",
+      );
+    });
+
+    it("offers to edit and to stop using a reused logical volume, as a danger", async () => {
+      const reused: ConfigModel.LogicalVolume = {
+        name: "/dev/system/data",
+        lvName: "data",
+        mountPath: "/data",
+        filesystem: { default: false, reuse: true },
+        size,
+      };
+      const entry = group([reused]);
+      entry.device = {
+        sid: 3,
+        name: "/dev/system",
+        class: "volumeGroup",
+        logicalVolumes: [
+          { sid: 4, name: "/dev/system/data", class: "logicalVolume", filesystem: { type: "xfs" } },
+        ],
+      } as System.Device;
+      const { user } = installerRender(<PlannedContentSection entry={entry} subject={subject} />);
+      await user.click(screen.getByRole("button", { name: "Actions for /data" }));
+
+      expect(items()).toEqual(["Edit", "Stop using"]);
+      expect(screen.getByRole("menuitem", { name: "Stop using" }).closest("li")).toHaveClass(
+        "pf-m-danger",
+      );
+
+      await user.click(screen.getByRole("menuitem", { name: "Stop using" }));
+      expect(mockDeleteLogicalVolume).toHaveBeenCalledWith("system", "/data");
+    });
   });
 });
