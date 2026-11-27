@@ -116,6 +116,9 @@ impl ServerState {
         Self { manager, questions }
     }
 
+    /// Sends a message to the manager actor, mapping any failure to an internal server error response.
+    ///
+    /// * `message`: Actor message to send to the manager service.
     async fn call_manager<M: Message>(&self, message: M) -> Result<M::Reply, Response>
     where
         manager::Service: MessageHandler<M>,
@@ -126,6 +129,9 @@ impl ServerState {
             .map_err(|e| Error::from(e).internal_server_error())
     }
 
+    /// Queries the manager actor and wraps the successful reply into an Axum [`Json`] response.
+    ///
+    /// * `message`: Actor message to send to the manager service.
     async fn query<M: Message>(&self, message: M) -> Result<Json<M::Reply>, Response>
     where
         manager::Service: MessageHandler<M>,

@@ -681,7 +681,9 @@ impl MessageHandler<progress::message::GetStatus> for Service {
 }
 
 impl MessageHandler<message::GetSystem> for Service {
-    /// It returns the information of the underlying system.
+    /// Returns the information of the underlying system.
+    ///
+    /// Subsystem worker queries are executed concurrently using [`tokio::try_join!`].
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         let status = self.status().await?;
         let storage_available = !Self::is_storage_busy(&status);
@@ -741,9 +743,9 @@ impl MessageHandler<message::GetSystem> for Service {
 }
 
 impl MessageHandler<message::GetExtendedConfig> for Service {
-    /// Gets the current configuration.
+    /// Gets the current configuration (user and default values).
     ///
-    /// It includes user and default values.
+    /// Subsystem configuration queries are executed concurrently using [`tokio::try_join!`].
     async fn handle(&mut self, _message: message::GetExtendedConfig) -> Result<Config, Error> {
         let status = self.status().await?;
         let storage_available = !Self::is_storage_busy(&status);
@@ -858,7 +860,9 @@ impl MessageHandler<message::UpdateConfig> for Service {
 }
 
 impl MessageHandler<message::GetProposal> for Service {
-    /// It returns the current proposal, if any.
+    /// Returns the current configuration proposal, if any.
+    ///
+    /// Subsystem proposal queries are executed concurrently using [`tokio::try_join!`].
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         let status = self.status().await?;
         let storage_available = !Self::is_storage_busy(&status);
