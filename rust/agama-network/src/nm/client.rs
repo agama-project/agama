@@ -43,7 +43,7 @@ use crate::types::{
 use agama_utils::dbus::get_optional_property;
 use semver::Version;
 use uuid::Uuid;
-use zbus::zvariant::{ObjectPath, OwnedObjectPath};
+use zbus::zvariant::{ObjectPath, OwnedObjectPath, OwnedValue};
 
 /// Simplified NetworkManager D-Bus client.
 ///
@@ -234,7 +234,7 @@ impl<'a> NetworkManagerClient<'a> {
                         connection.state = *state;
                     }
 
-                    Self::add_secrets(&mut connection.config, &proxy).await?;
+                    Self::add_secrets(&mut connection, &proxy).await?;
                     connection.flags = flags;
                     connection.persistent = flags == 0;
 
@@ -519,26 +519,53 @@ impl<'a> NetworkManagerClient<'a> {
     ///
     /// TODO: add support for more security protocols.
     pub async fn add_secrets(
-        config: &mut ConnectionConfig,
+        connection: &mut Connection,
         proxy: &ConnectionProxy<'_>,
     ) -> Result<(), NmError> {
-        let ConnectionConfig::Wireless(ref mut wireless) = config else {
-            return Ok(());
-        };
-
-        if wireless.security == SecurityProtocol::WPA2 {
-            match proxy.get_secrets("802-11-wireless-security").await {
-                Ok(secrets) => {
-                    if let Some(secret) = secrets.get("802-11-wireless-security") {
-                        wireless.password = get_optional_property(secret, "psk")?;
-                    }
-                }
-                Err(_) => {
-                    tracing::error!("Could not read connection secrets");
+        if let ConnectionConfig::Wireless(ref mut wireless) = connection.config {
+            if matches!(
+                wireless.security,
+                SecurityProtocol::WPA2 | SecurityProtocol::WPA3Personal
+            ) {
+                if let Some(secrets) =
+                    Self::get_setting_secrets(proxy, "802-11-wireless-security").await
+                {
+                    wireless.password = get_optional_property(&secrets, "psk")?;
                 }
             }
         }
+
+        if let Some(ref mut ieee_8021x) = connection.ieee_8021x_config {
+            if let Some(secrets) = Self::get_setting_secrets(proxy, "802-1x").await {
+                ieee_8021x.password = get_optional_property(&secrets, "password")?;
+                ieee_8021x.ca_cert_password = get_optional_property(&secrets, "ca-cert-password")?;
+                ieee_8021x.client_cert_password =
+                    get_optional_property(&secrets, "client-cert-password")?;
+                ieee_8021x.private_key_password =
+                    get_optional_property(&secrets, "private-key-password")?;
+            }
+        }
         Ok(())
+    }
+
+    /// Reads the secrets of the given setting of a connection.
+    ///
+    /// * `proxy`: connection proxy.
+    /// * `setting`: name of the setting holding the secrets.
+    async fn get_setting_secrets(
+        proxy: &ConnectionProxy<'_>,
+        setting: &str,
+    ) -> Option<HashMap<String, OwnedValue>> {
+        match proxy.get_secrets(setting).await {
+            Ok(mut secrets) => secrets.remove(setting),
+            Err(e) => {
+                tracing::warn!(
+                    "Could not read the '{setting}' secrets of {}: {e}",
+                    proxy.inner().path()
+                );
+                None
+            }
+        }
     }
 }
 
