@@ -1,8 +1,9 @@
 -------------------------------------------------------------------
 Wed Nov 25 17:52:17 UTC 2026 - Balsa Asanovic <balsaasanovic95@gmail.com>
 
-- Read the password of 802.1X connections (e.g., WPA2-Enterprise)
-  from NetworkManager, so it is not lost when Agama writes the
+- Read the secrets of 802.1X connections (e.g., WPA2-Enterprise)
+  and the password of WPA3 Personal connections from
+  NetworkManager, so they are not lost when Agama writes the
   connection again (gh#agama-project/agama#4306).
 - Do not set the "phase1-peaplabel" 802.1X property when it is
   disabled, as NetworkManager refuses to activate the connection
