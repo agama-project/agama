@@ -472,7 +472,7 @@ pub fn should_trust_certificate(
         security_srv
             .call(security::message::CheckCertificate::new(
                 certificate,
-                "registration_server",
+                "registration_server".to_string(),
             ))
             .await
     });

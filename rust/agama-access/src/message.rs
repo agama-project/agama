@@ -21,77 +21,45 @@
 //! Defines the messages that can be handled by the remote access service.
 
 use agama_utils::{
-    actor::Message,
     api::access::{Config, ExtendedConfig},
+    define_message,
 };
 
-/// Message to retrieve the current user-provided remote access configuration.
-#[derive(Clone)]
-pub struct GetConfig;
+define_message!(
+    /// Message to retrieve the current user-provided remote access configuration.
+    GetConfig -> Config
+);
 
-impl Message for GetConfig {
-    type Reply = Config;
-}
+define_message!(
+    /// Message to set the user-provided remote access configuration.
+    SetConfig<T> {
+        /// The configuration payload to apply.
+        config: Option<T>
+    } -> ()
+);
 
-/// Message to set the user-provided remote access configuration.
-pub struct SetConfig<T> {
-    /// The configuration payload to apply.
-    pub config: Option<T>,
-}
-
-impl<T: Send + 'static> Message for SetConfig<T> {
-    type Reply = ();
-}
-
-impl<T> SetConfig<T> {
-    /// Creates a new `SetConfig` message.
+define_message!(
+    /// Message to set remote access requirements from other parts of Agama.
     ///
-    /// * `config`: The optional configuration to set.
-    pub fn new(config: Option<T>) -> Self {
-        Self { config }
-    }
-}
+    /// Other components (like the `agama-users` module) use this message to ensure
+    /// that a specific remote access mechanism (like SSH) gets enabled when needed.
+    SetAccess {
+        /// Module identifier (e.g., `"users"`).
+        id: String,
+        /// The requested remote access configuration from the module.
+        config: Config,
+    } -> ()
+);
 
-/// Message to set remote access requirements from other parts of Agama.
-///
-/// Other components (like the `agama-users` module) use this message to ensure
-/// that a specific remote access mechanism (like SSH) gets enabled when needed.
-pub struct SetAccess {
-    /// Module identifier (e.g., `"users"`).
-    pub id: String,
-    /// The requested remote access configuration from the module.
-    pub config: Config,
-}
-
-impl Message for SetAccess {
-    type Reply = ();
-}
-
-impl SetAccess {
-    /// Creates a new `SetAccess` message.
+define_message!(
+    /// Message to retrieve the resolved remote access configuration proposal.
     ///
-    /// * `id`: String identifier for the requesting module.
-    /// * `config`: The configuration requested by the module.
-    pub fn new(id: String, config: Config) -> Self {
-        Self { id, config }
-    }
-}
+    /// The proposal is the resolved configuration computed from internal Agama needs
+    /// and the explicit user configuration.
+    GetProposal -> ExtendedConfig
+);
 
-/// Message to retrieve the resolved remote access configuration proposal.
-///
-/// The proposal is the resolved configuration computed from internal Agama needs
-/// and the explicit user configuration.
-#[derive(Clone)]
-pub struct GetProposal;
-
-impl Message for GetProposal {
-    type Reply = ExtendedConfig;
-}
-
-/// Execute actions at the end of the installation.
-#[derive(Clone)]
-pub struct Finish;
-
-impl Message for Finish {
-    type Reply = ();
-}
+define_message!(
+    /// Execute actions at the end of the installation.
+    Finish -> ()
+);

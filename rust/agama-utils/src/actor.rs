@@ -289,3 +289,211 @@ pub fn spawn<A: Actor>(mut actor: A) -> Handler<A> {
 
     handler
 }
+
+/// Declarative macro to define actor messages with minimal boilerplate.
+#[macro_export]
+macro_rules! define_message {
+    // Generic message with Option<$inner> (generates .new() and .with())
+    (
+        $(#[$meta:meta])*
+        $name:ident < $gen:ident > {
+            $(#[$field_meta:meta])*
+            $field:ident : Option<$inner:ident> $(,)?
+        } -> $reply:ty $(;)?
+    ) => {
+        $(#[$meta])*
+        #[derive(Clone, Debug)]
+        pub struct $name<$gen> {
+            $(#[$field_meta])*
+            pub $field: Option<$gen>,
+        }
+
+        impl<$gen: Send + 'static> $crate::actor::Message for $name<$gen> {
+            type Reply = $reply;
+        }
+
+        impl<$gen> $name<$gen> {
+            pub fn new($field: Option<$gen>) -> Self {
+                Self { $field }
+            }
+
+            pub fn with($field: $gen) -> Self {
+                Self {
+                    $field: Some($field),
+                }
+            }
+        }
+    };
+
+    // Generic message with single field (generates .new())
+    (
+        $(#[$meta:meta])*
+        $name:ident < $gen:ident > {
+            $(#[$field_meta:meta])*
+            $field:ident : $type:ty $(,)?
+        } -> $reply:ty $(;)?
+    ) => {
+        $(#[$meta])*
+        #[derive(Clone, Debug)]
+        pub struct $name<$gen> {
+            $(#[$field_meta])*
+            pub $field: $type,
+        }
+
+        impl<$gen: Send + 'static> $crate::actor::Message for $name<$gen> {
+            type Reply = $reply;
+        }
+
+        impl<$gen> $name<$gen> {
+            pub fn new($field: $type) -> Self {
+                Self { $field }
+            }
+        }
+    };
+
+    // Non-generic message with single Option field (generates .new() and .with())
+    (
+        $(#[$meta:meta])*
+        $name:ident {
+            $(#[$field_meta:meta])*
+            $field:ident : Option<$inner:ty> $(,)?
+        } -> $reply:ty $(;)?
+    ) => {
+        $(#[$meta])*
+        #[derive(Clone, Debug)]
+        pub struct $name {
+            $(#[$field_meta])*
+            pub $field: Option<$inner>,
+        }
+
+        impl $crate::actor::Message for $name {
+            type Reply = $reply;
+        }
+
+        impl $name {
+            pub fn new($field: Option<$inner>) -> Self {
+                Self { $field }
+            }
+
+            pub fn with($field: $inner) -> Self {
+                Self {
+                    $field: Some($field),
+                }
+            }
+        }
+    };
+
+    // Struct with named fields (generates .new())
+    (
+        $(#[$meta:meta])*
+        $name:ident {
+            $(
+                $(#[$field_meta:meta])*
+                $field:ident : $type:ty
+            ),* $(,)?
+        } -> $reply:ty $(;)?
+    ) => {
+        $(#[$meta])*
+        #[derive(Clone, Debug)]
+        pub struct $name {
+            $(
+                $(#[$field_meta])*
+                pub $field: $type,
+            )*
+        }
+
+        impl $crate::actor::Message for $name {
+            type Reply = $reply;
+        }
+
+        impl $name {
+            pub fn new($($field: $type),*) -> Self {
+                Self {
+                    $($field),*
+                }
+            }
+        }
+    };
+
+    // Unit struct message
+    (
+        $(#[$meta:meta])*
+        $name:ident -> $reply:ty $(;)?
+    ) => {
+        $(#[$meta])*
+        #[derive(Clone, Debug, Default)]
+        pub struct $name;
+
+        impl $crate::actor::Message for $name {
+            type Reply = $reply;
+        }
+    };
+}
+
+pub use crate::define_message;
+
+#[cfg(test)]
+mod tests {
+    define_message!(
+        /// A test ping message
+        Ping -> String
+    );
+
+    define_message!(SetConfig<T> { config: Option<T> } -> ());
+    define_message!(SetSystem<T> { config: T } -> ());
+    define_message!(UpdateUser { id: u32, name: String } -> bool);
+    define_message!(
+        /// A documented message
+        DocumentedMsg {
+            /// The user ID
+            id: u32,
+            /// The user name
+            name: String,
+        } -> bool
+    );
+
+    #[test]
+    fn test_define_message_unit() {
+        let _msg = Ping;
+        let _cloned = _msg.clone();
+    }
+
+    #[test]
+    fn test_define_message_generic_option() {
+        let msg: SetConfig<u32> = SetConfig::new(Some(42));
+        assert_eq!(msg.config, Some(42));
+
+        let msg2: SetConfig<u32> = SetConfig::with(100);
+        assert_eq!(msg2.config, Some(100));
+
+        let msg3: SetConfig<u32> = SetConfig::new(None);
+        assert_eq!(msg3.config, None);
+    }
+
+    #[test]
+    fn test_define_message_generic() {
+        let msg: SetSystem<String> = SetSystem::new("my-system".to_string());
+        assert_eq!(msg.config, "my-system");
+    }
+
+    #[test]
+    fn test_define_message_fields() {
+        let msg = UpdateUser::new(1, "Alice".to_string());
+        assert_eq!(msg.id, 1);
+        assert_eq!(msg.name, "Alice");
+
+        let msg2 = UpdateUser {
+            id: 2,
+            name: "Bob".to_string(),
+        };
+        assert_eq!(msg2.id, 2);
+        assert_eq!(msg2.name, "Bob");
+    }
+
+    #[test]
+    fn test_define_message_doc_comments() {
+        let msg = DocumentedMsg::new(10, "Bob".to_string());
+        assert_eq!(msg.id, 10);
+        assert_eq!(msg.name, "Bob");
+    }
+}

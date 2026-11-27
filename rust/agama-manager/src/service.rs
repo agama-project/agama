@@ -515,13 +515,13 @@ impl Service {
             .await?;
         if let Some(locale) = config.locale {
             self.software
-                .cast(software::message::SetLocale::new(locale.as_str()))?;
+                .cast(software::message::SetLocale::new(locale.clone()))?;
             self.storage
-                .cast(storage::message::SetLocale::new(locale.as_str()))?;
+                .cast(storage::message::SetLocale::new(locale.clone()))?;
             self.users
-                .cast(users::message::SetLocale::new(locale.as_str()))?;
+                .cast(users::message::SetLocale::new(locale.clone()))?;
             if let Some(s390) = &self.s390 {
-                s390.cast(s390::message::SetLocale::new(locale.as_str()))?;
+                s390.cast(s390::message::SetLocale::new(locale.clone()))?;
             }
 
             let lang: LanguageTag = locale.as_str().try_into().map_err(licenses::Error::from)?;
@@ -616,27 +616,24 @@ impl Service {
     /// version of these actions are already reporting the D-Bus result.
     ///
     /// All these action calls will be improved for 16.2, making this method unnecessary.
-    async fn is_storage_available(&self) -> Result<bool, Error> {
-        let status = self.status().await?;
+    fn is_storage_available(status: &Status) -> bool {
         let is_installing = status.stage == Stage::Installing;
         let has_progress = status.progresses.iter().any(|p| p.scope == Scope::Storage);
         let has_tasks = status.tasks.iter().any(|p| p.scope == Scope::Storage);
-        let is_busy = is_installing && (has_progress || has_tasks);
-        Ok(!is_busy)
+        !(is_installing && (has_progress || has_tasks))
     }
 
     /// Determines whether the software service is available.
     ///
     /// Consider the service as available if there is no pending progress or task.
-    async fn is_software_available(&self) -> Result<bool, Error> {
-        let status = self.status().await?;
+    fn is_software_available(status: &Status) -> bool {
         if status.stage == Stage::Installing {
-            return Ok(false);
+            return false;
         }
 
         let is_busy = status.progresses.iter().any(|p| p.scope == Scope::Software)
             || status.tasks.iter().any(|p| p.scope == Scope::Software);
-        Ok(!is_busy)
+        !is_busy
     }
 
     /// Returns the installation status, including the pending tasks.
@@ -683,10 +680,42 @@ impl MessageHandler<progress::message::GetStatus> for Service {
 }
 
 impl MessageHandler<message::GetSystem> for Service {
-    /// It returns the information of the underlying system.
+    /// Returns the information of the underlying system.
+    ///
+    /// Subsystem worker queries are executed concurrently using [`tokio::try_join!`].
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
-        let hostname = self.hostname.call(hostname::message::GetSystem).await?;
-        let l10n = self.l10n.call(l10n::message::GetSystem).await?;
+        let status = self.status().await?;
+        let storage_available = Self::is_storage_available(&status);
+        let software_available = Self::is_software_available(&status);
+
+        let (hostname, l10n, iscsi, bootloader, network, storage, s390, software) = tokio::try_join!(
+            async { Ok::<_, Error>(self.hostname.call(hostname::message::GetSystem).await?) },
+            async { Ok::<_, Error>(self.l10n.call(l10n::message::GetSystem).await?) },
+            async { Ok::<_, Error>(self.iscsi.call(iscsi::message::GetSystem).await?) },
+            async { Ok::<_, Error>(self.bootloader.call(bootloader::message::GetSystem).await?) },
+            async { Ok::<_, Error>(self.network.call(network::message::GetSystem).await?) },
+            async {
+                if storage_available {
+                    Ok::<_, Error>(self.storage.call(storage::message::GetSystem).await?)
+                } else {
+                    Ok(Default::default())
+                }
+            },
+            async {
+                if let Some(s390) = &self.s390 {
+                    Ok::<_, Error>(Some(s390.call(s390::message::GetSystem).await?))
+                } else {
+                    Ok(None)
+                }
+            },
+            async {
+                if software_available {
+                    Ok::<_, Error>(self.software.call(software::message::GetSystem).await?)
+                } else {
+                    Ok(Default::default())
+                }
+            },
+        )?;
 
         let lang = &l10n.locale.language;
         tracing::debug!("Filtering products for language: {}", lang);
@@ -697,30 +726,6 @@ impl MessageHandler<message::GetSystem> for Service {
         manager.hardware = self.hardware.to_hardware_info();
         manager.products = self.products.products_for_lang(lang);
         manager.licenses = self.licenses.licenses();
-
-        // If the storage service is busy, it will not answer.
-        let storage = if self.is_storage_available().await? {
-            self.storage.call(storage::message::GetSystem).await?
-        } else {
-            Default::default()
-        };
-
-        let iscsi = self.iscsi.call(iscsi::message::GetSystem).await?;
-        let bootloader = self.bootloader.call(bootloader::message::GetSystem).await?;
-        let network = self.network.call(network::message::GetSystem).await?;
-
-        let s390 = if let Some(s390) = &self.s390 {
-            Some(s390.call(s390::message::GetSystem).await?)
-        } else {
-            None
-        };
-
-        // If the software service is busy, it will not answer.
-        let software = if self.is_software_available().await? {
-            self.software.call(software::message::GetSystem).await?
-        } else {
-            Default::default()
-        };
 
         Ok(SystemInfo {
             hostname,
@@ -737,49 +742,75 @@ impl MessageHandler<message::GetSystem> for Service {
 }
 
 impl MessageHandler<message::GetExtendedConfig> for Service {
-    /// Gets the current configuration.
+    /// Gets the current configuration (user and default values).
     ///
-    /// It includes user and default values.
+    /// Subsystem configuration queries are executed concurrently using [`tokio::try_join!`].
     async fn handle(&mut self, _message: message::GetExtendedConfig) -> Result<Config, Error> {
-        let bootloader = self
-            .bootloader
-            .call(bootloader::message::GetConfig)
-            .await?
-            .to_option();
-        let hostname = self.hostname.call(hostname::message::GetConfig).await?;
-        let iscsi = self.iscsi.call(iscsi::message::GetConfig).await?;
-        let l10n = self.l10n.call(l10n::message::GetConfig).await?;
+        let status = self.status().await?;
+        let storage_available = Self::is_storage_available(&status);
+        let software_available = Self::is_software_available(&status);
+
+        let (
+            bootloader,
+            hostname,
+            iscsi,
+            l10n,
+            proxy,
+            ntp,
+            questions,
+            network,
+            access,
+            storage,
+            users,
+            s390,
+            software,
+        ) = tokio::try_join!(
+            async {
+                Ok::<_, Error>(
+                    self.bootloader
+                        .call(bootloader::message::GetConfig)
+                        .await?
+                        .to_option(),
+                )
+            },
+            async { Ok::<_, Error>(self.hostname.call(hostname::message::GetConfig).await?) },
+            async { Ok::<_, Error>(self.iscsi.call(iscsi::message::GetConfig).await?) },
+            async { Ok::<_, Error>(self.l10n.call(l10n::message::GetConfig).await?) },
+            async { Ok::<_, Error>(self.proxy.call(proxy::message::GetConfig).await?) },
+            async { Ok::<_, Error>(self.ntp.call(ntp::message::GetConfig).await?) },
+            async { Ok::<_, Error>(self.questions.call(question::message::GetConfig).await?) },
+            async { Ok::<_, Error>(self.network.call(network::message::GetConfig).await?) },
+            async { Ok::<_, Error>(self.access.call(agama_access::message::GetConfig).await?) },
+            async {
+                if storage_available {
+                    Ok::<_, Error>(self.storage.call(storage::message::GetConfig).await?)
+                } else {
+                    Ok(Default::default())
+                }
+            },
+            async { Ok::<_, Error>(self.users.call(users::message::GetConfig).await?) },
+            async {
+                if let Some(s390) = &self.s390 {
+                    Ok::<_, Error>(Some(s390.call(s390::message::GetConfig).await?))
+                } else {
+                    Ok(None)
+                }
+            },
+            async {
+                if software_available {
+                    Ok::<_, Error>(Some(
+                        self.software.call(software::message::GetConfig).await?,
+                    ))
+                } else {
+                    self.product_software_config().await
+                }
+            },
+        )?;
+
         // FIXME: the security service might be busy asking some question, so it cannot answer.
         // By now, let's consider that the whole security configuration is set by the user
         // (ignoring imported certificates by questions).
         let security = self.config.security.clone();
-        let proxy = self.proxy.call(proxy::message::GetConfig).await?;
-        let ntp = self.ntp.call(ntp::message::GetConfig).await?;
-        let questions = self.questions.call(question::message::GetConfig).await?;
-        let network = self.network.call(network::message::GetConfig).await?;
-        let access = self.access.call(agama_access::message::GetConfig).await?;
-
-        // If the storage service is busy, it will not answer.
-        let storage = if self.is_storage_available().await? {
-            self.storage.call(storage::message::GetConfig).await?
-        } else {
-            Default::default()
-        };
-
-        let users = self.users.call(users::message::GetConfig).await?;
-
-        let s390 = if let Some(s390) = &self.s390 {
-            Some(s390.call(s390::message::GetConfig).await?)
-        } else {
-            None
-        };
-
-        // If the software service is busy, it will not answer.
-        let software = if self.is_software_available().await? {
-            Some(self.software.call(software::message::GetConfig).await?)
-        } else {
-            self.product_software_config().await?
-        };
 
         Ok(Config {
             schema: None,
@@ -828,35 +859,46 @@ impl MessageHandler<message::UpdateConfig> for Service {
 }
 
 impl MessageHandler<message::GetProposal> for Service {
-    /// It returns the current proposal, if any.
+    /// Returns the current configuration proposal, if any.
+    ///
+    /// Subsystem proposal queries are executed concurrently using [`tokio::try_join!`].
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
-        let bootloader = if self.is_storage_available().await? {
-            self.bootloader
-                .call(bootloader::message::GetProposal)
-                .await?
-        } else {
-            None
-        };
-        let hostname = self.hostname.call(hostname::message::GetProposal).await?;
-        let l10n = self.l10n.call(l10n::message::GetProposal).await?;
+        let status = self.status().await?;
+        let storage_available = Self::is_storage_available(&status);
+        let software_available = Self::is_software_available(&status);
 
-        // If the storage service is busy, it will not answer.
-        let storage = if self.is_storage_available().await? {
-            self.storage.call(storage::message::GetProposal).await?
-        } else {
-            Default::default()
-        };
-
-        let network = self.network.call(network::message::GetProposal).await?;
-        let users = self.users.call(users::message::GetProposal).await?;
-        let access = self.access.call(agama_access::message::GetProposal).await?;
-
-        // If the software service is busy, it will not answer.
-        let software = if self.is_software_available().await? {
-            self.software.call(software::message::GetProposal).await?
-        } else {
-            None
-        };
+        let (bootloader, hostname, l10n, storage, network, users, access, software) = tokio::try_join!(
+            async {
+                if storage_available {
+                    Ok::<_, Error>(
+                        self.bootloader
+                            .call(bootloader::message::GetProposal)
+                            .await?,
+                    )
+                } else {
+                    Ok(None)
+                }
+            },
+            async { Ok::<_, Error>(self.hostname.call(hostname::message::GetProposal).await?) },
+            async { Ok::<_, Error>(self.l10n.call(l10n::message::GetProposal).await?) },
+            async {
+                if storage_available {
+                    Ok::<_, Error>(self.storage.call(storage::message::GetProposal).await?)
+                } else {
+                    Ok(Default::default())
+                }
+            },
+            async { Ok::<_, Error>(self.network.call(network::message::GetProposal).await?) },
+            async { Ok::<_, Error>(self.users.call(users::message::GetProposal).await?) },
+            async { Ok::<_, Error>(self.access.call(agama_access::message::GetProposal).await?) },
+            async {
+                if software_available {
+                    Ok::<_, Error>(self.software.call(software::message::GetProposal).await?)
+                } else {
+                    Ok(None)
+                }
+            },
+        )?;
 
         Ok(Some(Proposal {
             bootloader,
@@ -950,8 +992,9 @@ impl MessageHandler<message::RunAction> for Service {
 impl MessageHandler<message::GetStorageModel> for Service {
     /// It returns the storage model.
     async fn handle(&mut self, _message: message::GetStorageModel) -> Result<Option<Value>, Error> {
+        let status = self.status().await?;
         // If the storage service is busy, it will not answer.
-        if self.is_storage_available().await? {
+        if Self::is_storage_available(&status) {
             return Ok(self.storage.call(storage::message::GetConfigModel).await?);
         }
         Ok(None)
@@ -1004,5 +1047,54 @@ impl MessageHandler<users::message::CheckPassword> for Service {
         message: users::message::CheckPassword,
     ) -> Result<PasswordCheckResult, Error> {
         Ok(self.users.call(message).await?)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use agama_utils::api::{
+        progress::Progress,
+        status::{Stage, Status, Task},
+        Scope,
+    };
+
+    #[test]
+    fn test_is_storage_available() {
+        let mut status = Status::default();
+        assert!(Service::is_storage_available(&status));
+
+        status.stage = Stage::Installing;
+        assert!(Service::is_storage_available(&status));
+
+        status.progresses.push(Progress {
+            scope: Scope::Storage,
+            size: 1,
+            steps: vec![],
+            step: String::new(),
+            index: 1,
+        });
+        assert!(!Service::is_storage_available(&status));
+
+        status.stage = Stage::Configuring;
+        assert!(Service::is_storage_available(&status));
+    }
+
+    #[test]
+    fn test_is_software_available() {
+        let mut status = Status::default();
+        assert!(Service::is_software_available(&status));
+
+        status.stage = Stage::Installing;
+        assert!(!Service::is_software_available(&status));
+
+        status.stage = Stage::Configuring;
+        status.tasks.push(Task {
+            id: 1,
+            scope: Scope::Software,
+            name: "install".to_string(),
+            description: "installing".to_string(),
+        });
+        assert!(!Service::is_software_available(&status));
     }
 }

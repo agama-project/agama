@@ -46,7 +46,7 @@ pub struct Proposal {
 }
 
 /// Bootloader configuration.
-#[derive(Clone, Debug, Serialize, Deserialize, Default, Merge, JsonSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, Default, PartialEq, Merge, JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 #[merge(strategy = merge::option::overwrite_none)]
 #[schemars(rename = "bootloader.Config", title = "Bootloader settings")]
@@ -72,17 +72,12 @@ pub struct Config {
 }
 
 impl Config {
+    pub fn is_empty(&self) -> bool {
+        self == &Self::default()
+    }
+
     pub fn to_option(self) -> Option<Self> {
-        if self.r#type.is_none()
-            && self.stop_on_boot_menu.is_none()
-            && self.timeout.is_none()
-            && self.extra_kernel_params.is_none()
-            && self.update_nvram.is_none()
-        {
-            None
-        } else {
-            Some(self)
-        }
+        (!self.is_empty()).then_some(self)
     }
 }
 
@@ -150,6 +145,12 @@ mod tests {
     fn test_to_option() {
         let empty = Config::default();
         assert!(empty.to_option().is_none());
+
+        let with_timeout = Config {
+            timeout: Some(5),
+            ..Default::default()
+        };
+        assert_eq!(with_timeout.clone().to_option(), Some(with_timeout));
 
         let with_type = Config {
             r#type: Some(BootloaderType::None),

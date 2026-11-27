@@ -59,7 +59,11 @@ mod tests {
     async fn test_progress(ctx: &mut Context) -> Result<(), Box<dyn std::error::Error>> {
         // Start a progress (first step)
         ctx.handler
-            .call(message::Start::new(Scope::L10n, 3, "first step"))
+            .call(message::Start::new(
+                Scope::L10n,
+                3,
+                "first step".to_string(),
+            ))
             .await?;
 
         let event = ctx.events_rx.recv().await.unwrap();
@@ -84,7 +88,10 @@ mod tests {
 
         // Second step
         ctx.handler
-            .call(message::NextWithStep::new(Scope::L10n, "second step"))
+            .call(message::NextWithStep::new(
+                Scope::L10n,
+                "second step".to_string(),
+            ))
             .await?;
 
         let event = ctx.events_rx.recv().await.unwrap();
@@ -240,10 +247,10 @@ mod tests {
     #[tokio::test]
     async fn test_several_progresses(ctx: &mut Context) -> Result<(), Box<dyn std::error::Error>> {
         ctx.handler
-            .call(message::Start::new(Scope::Manager, 2, ""))
+            .call(message::Start::new(Scope::Manager, 2, String::new()))
             .await?;
         ctx.handler
-            .call(message::Start::new(Scope::L10n, 2, ""))
+            .call(message::Start::new(Scope::L10n, 2, String::new()))
             .await?;
 
         let progresses = ctx.handler.call(message::GetProgress).await.unwrap();
@@ -260,7 +267,7 @@ mod tests {
         ctx: &mut Context,
     ) -> Result<(), Box<dyn std::error::Error>> {
         ctx.handler
-            .call(message::Start::new(Scope::L10n, 1, ""))
+            .call(message::Start::new(Scope::L10n, 1, String::new()))
             .await?;
         let error = ctx.handler.call(message::Next::new(Scope::L10n)).await;
         assert!(matches!(
@@ -277,7 +284,7 @@ mod tests {
     #[tokio::test]
     async fn test_missing_progress(ctx: &mut Context) -> Result<(), Box<dyn std::error::Error>> {
         ctx.handler
-            .call(message::Start::new(Scope::Manager, 2, ""))
+            .call(message::Start::new(Scope::Manager, 2, String::new()))
             .await?;
         let error = ctx.handler.call(message::Next::new(Scope::L10n)).await;
         assert!(matches!(
@@ -292,12 +299,12 @@ mod tests {
     #[tokio::test]
     async fn test_duplicated_progress(ctx: &mut Context) -> Result<(), Box<dyn std::error::Error>> {
         ctx.handler
-            .call(message::Start::new(Scope::L10n, 2, ""))
+            .call(message::Start::new(Scope::L10n, 2, String::new()))
             .await?;
 
         let error = ctx
             .handler
-            .call(message::Start::new(Scope::L10n, 1, ""))
+            .call(message::Start::new(Scope::L10n, 1, String::new()))
             .await;
         assert!(matches!(
             error,
@@ -342,7 +349,11 @@ mod tests {
 
         // Start a progress (first step)
         ctx.handler
-            .call(message::Start::new(Scope::L10n, 3, "first step"))
+            .call(message::Start::new(
+                Scope::L10n,
+                3,
+                "first step".to_string(),
+            ))
             .await?;
 
         let is_empty = ctx.handler.call(message::IsEmpty::new()).await?;

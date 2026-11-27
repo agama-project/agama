@@ -16,8 +16,6 @@ gettext-rs = { workspace = true }
 glob = { workspace = true }
 i18n-format = { workspace = true }
 openssl = { workspace = true }
-schemars = { workspace = true }
-serde = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }
 tracing = { workspace = true }

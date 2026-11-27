@@ -88,11 +88,7 @@ pub struct ProductConfig {
 
 impl ProductConfig {
     pub fn is_empty(&self) -> bool {
-        self.id.is_none()
-            && self.registration_code.is_none()
-            && self.registration_email.is_none()
-            && self.registration_url.is_none()
-            && self.addons.is_none()
+        self == &Self::default()
     }
 }
 
@@ -161,16 +157,12 @@ impl From<HashMap<String, Vec<String>>> for PatternsConfig {
 }
 
 impl SoftwareConfig {
+    pub fn is_empty(&self) -> bool {
+        self == &Self::default()
+    }
+
     pub fn to_option(self) -> Option<Self> {
-        if self.patterns.is_none()
-            && self.packages.is_none()
-            && self.extra_repositories.is_none()
-            && self.only_required.is_none()
-        {
-            None
-        } else {
-            Some(self)
-        }
+        (!self.is_empty()).then_some(self)
     }
 }
 

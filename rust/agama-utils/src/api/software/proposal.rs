@@ -37,7 +37,7 @@ pub enum SelectedBy {
 }
 
 /// Software proposal information.
-#[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct SoftwareProposal {
     /// Space required for installation in KiB.
@@ -48,7 +48,7 @@ pub struct SoftwareProposal {
 }
 
 /// Describes what Agama proposes for the target system.
-#[derive(Clone, Default, Debug, Deserialize, Serialize, JsonSchema)]
+#[derive(Clone, Default, Debug, Deserialize, Serialize, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 #[schemars(rename = "software.Proposal")]
 pub struct Proposal {
@@ -62,10 +62,11 @@ pub struct Proposal {
 }
 
 impl Proposal {
+    pub fn is_empty(&self) -> bool {
+        self == &Self::default()
+    }
+
     pub fn into_option(self) -> Option<Self> {
-        if self.software.is_none() && self.registration.is_none() {
-            return None;
-        }
-        Some(self)
+        (!self.is_empty()).then_some(self)
     }
 }

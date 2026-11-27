@@ -20,78 +20,14 @@
 
 use crate::service;
 use agama_utils::{
-    actor::Message,
     api::bootloader::{Config, Proposal},
-    BoxFuture,
+    define_message, BoxFuture,
 };
 use serde_json::Value;
 
-pub struct GetConfig;
-
-impl Message for GetConfig {
-    type Reply = Config;
-}
-
-pub struct GetProposal;
-
-impl Message for GetProposal {
-    type Reply = Option<Proposal>;
-}
-
-pub struct GetSystem;
-
-impl Message for GetSystem {
-    type Reply = Option<Value>;
-}
-
-pub struct SetConfig<T> {
-    pub config: Option<T>,
-}
-
-impl<T: Send + 'static> Message for SetConfig<T> {
-    type Reply = BoxFuture<Result<(), service::Error>>;
-}
-
-impl<T> SetConfig<T> {
-    pub fn new(config: Option<T>) -> Self {
-        Self { config }
-    }
-
-    pub fn with(config: T) -> Self {
-        Self {
-            config: Some(config),
-        }
-    }
-}
-
-pub struct SetKernelArg {
-    pub id: String,
-    pub value: String,
-}
-
-impl Message for SetKernelArg {
-    type Reply = ();
-}
-
-impl SetKernelArg {
-    pub fn new(id: String, value: String) -> Self {
-        Self { id, value }
-    }
-}
-
-#[derive(Clone)]
-pub struct SetLocale {
-    pub locale: String,
-}
-
-impl SetLocale {
-    pub fn new(locale: &str) -> Self {
-        Self {
-            locale: locale.to_string(),
-        }
-    }
-}
-
-impl Message for SetLocale {
-    type Reply = ();
-}
+define_message!(GetConfig -> Config);
+define_message!(GetProposal -> Option<Proposal>);
+define_message!(GetSystem -> Option<Value>);
+define_message!(SetConfig<T> { config: Option<T> } -> BoxFuture<Result<(), service::Error>>);
+define_message!(SetKernelArg { id: String, value: String } -> ());
+define_message!(SetLocale { locale: String } -> ());

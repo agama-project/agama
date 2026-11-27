@@ -8,11 +8,9 @@ edition.workspace = true
 agama-storage-client = { workspace = true }
 agama-utils = { workspace = true }
 async-trait = { workspace = true }
-serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }
-tokio-stream = { workspace = true }
 tracing = { workspace = true }
 zbus = { workspace = true }
 

@@ -20,16 +20,14 @@
 
 //! Common actor messages shared across agama services.
 
-use crate::actor::Message;
+use crate::define_message;
 use crate::resolvable::Resolvable;
 
-/// Message to query resolvables from a service.
-///
-/// Services that need software packages should implement a handler
-/// for this message that returns the list of packages/patterns/products
-/// they require based on their current configuration.
-pub struct GetResolvables;
-
-impl Message for GetResolvables {
-    type Reply = Vec<Resolvable>;
-}
+define_message!(
+    /// Message to query resolvables from a service.
+    ///
+    /// Services that need software packages should implement a handler
+    /// for this message that returns the list of packages/patterns/products
+    /// they require based on their current configuration.
+    GetResolvables -> Vec<Resolvable>
+);

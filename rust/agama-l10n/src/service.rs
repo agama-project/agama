@@ -19,7 +19,6 @@
 // find current contact information at www.suse.com.
 
 use crate::model::ModelAdapter;
-use crate::monitor::Monitor;
 use crate::{config::Config, Model};
 use crate::{message, monitor};
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
@@ -133,14 +132,11 @@ impl Starter {
     }
 
     pub async fn start_monitor(handler: Handler<Service>) {
-        match Monitor::new(handler.clone()).await {
-            Ok(monitor) => monitor::spawn(monitor),
-            Err(error) => {
-                tracing::error!(
+        if let Err(error) = monitor::start(handler).await {
+            tracing::error!(
                 "Could not launch the l10n monitor, therefore changes from systemd will be ignored. \
                  The original error was {error}"
             );
-            }
         }
     }
 }

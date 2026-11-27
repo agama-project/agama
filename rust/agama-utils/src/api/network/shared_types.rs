@@ -244,7 +244,7 @@ pub struct BridgePortSettings {
 
 impl BridgePortSettings {
     pub fn is_empty(&self) -> bool {
-        self.priority.is_none() && self.path_cost.is_none()
+        self == &Self::default()
     }
 }
 

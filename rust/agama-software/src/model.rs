@@ -33,7 +33,6 @@ use tokio::sync::{mpsc, oneshot};
 
 use crate::{model::state::SoftwareState, service, zypp_server::SoftwareAction};
 
-pub mod conflict;
 pub mod packages;
 #[cfg(target_pointer_width = "64")]
 pub mod registration;

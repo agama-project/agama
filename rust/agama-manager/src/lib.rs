@@ -173,4 +173,22 @@ mod test {
 
         Ok(())
     }
+
+    #[test_context(Context)]
+    #[tokio::test]
+    async fn test_get_system(ctx: &mut Context) -> Result<(), Error> {
+        let system = ctx.handler.call(message::GetSystem).await?;
+        assert!(!system.hostname.hostname.is_empty() || system.hostname.r#static.is_some());
+        assert!(!system.l10n.locales.is_empty());
+        Ok(())
+    }
+
+    #[test_context(Context)]
+    #[tokio::test]
+    async fn test_get_proposal(ctx: &mut Context) -> Result<(), Error> {
+        select_product(&ctx.handler).await?;
+        let proposal = ctx.handler.call(message::GetProposal).await?;
+        assert!(proposal.is_some());
+        Ok(())
+    }
 }

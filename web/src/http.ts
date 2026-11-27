@@ -81,12 +81,4 @@ const put = (url: string, data: object | string, config?: AxiosRequestConfig) =>
 const post = (url: string, data?: object | boolean) =>
   http.post(url, data).catch((error) => logRequestError(url, error, data));
 
-/**
- * Performs a DELETE request on the given URL
- *
- * @param url - endpoint URL
- * @param data - request payload
- */
-const del = (url: string) => http.delete(url).catch((error) => logRequestError(url, error));
-
-export { get, patch, post, put, del };
+export { get, patch, post, put };

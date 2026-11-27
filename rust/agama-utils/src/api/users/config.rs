@@ -47,11 +47,7 @@ impl Config {
     }
 
     pub fn to_api(&self) -> Option<Config> {
-        if self.root.is_none() && self.first_user.is_none() {
-            return None;
-        }
-
-        Some(self.clone())
+        (self != &Self::default()).then(|| self.clone())
     }
 
     pub fn is_empty(&self) -> bool {

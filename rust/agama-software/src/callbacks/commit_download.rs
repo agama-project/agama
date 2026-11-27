@@ -116,7 +116,7 @@ impl Callback for CommitDownload {
             // just ignore issues with reporting progress
             let _ = self
                 .progress
-                .cast(progress::message::NextWithStep::new(Scope::Software, &msg));
+                .cast(progress::message::NextWithStep::new(Scope::Software, msg));
         } else {
             // just log that download failed as libzypp will automatically use next mirror
             // so we should not bother user. But also do not update progress otherwise it will

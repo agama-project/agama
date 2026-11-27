@@ -27,7 +27,7 @@ use crate::{
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema)]
 pub enum Action {
     /// Performs an iSCSI discovery, finding nodes from the given portal.
     #[serde(rename = "discoverISCSI")]

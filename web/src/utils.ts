@@ -74,21 +74,6 @@ const locationReload = () => {
 };
 
 /**
- * Wrapper around window.location.search setter
- *
- * It's needed mainly to ease testing as we can't override window in jest with jsdom anymore
- *
- * See below links
- *   - https://github.com/jsdom/jsdom/blob/master/Changelog.md#2100
- *   - https://github.com/jsdom/jsdom/issues/3492
- *
- * @param query
- */
-const setLocationSearch = (query: string) => {
-  window.location.search = query;
-};
-
-/**
  * Whether Agama server is running locally or not.
  *
  * This function should be used only in special cases, the Agama behavior should
@@ -819,7 +804,6 @@ export {
   compact,
   hex,
   locationReload,
-  setLocationSearch,
   localConnection,
   dateTimeFormat,
   clearDateTimeFormatCache,

@@ -19,98 +19,16 @@
 // find current contact information at www.suse.com.
 
 use agama_utils::{
-    actor::Message,
     api::hostname::{Config, Proposal, SystemInfo},
+    define_message,
 };
 
-#[derive(Clone)]
-pub struct GetSystem;
-
-impl Message for GetSystem {
-    type Reply = SystemInfo;
-}
-
-pub struct SetSystem<T> {
-    pub config: T,
-}
-
-impl<T: Send + 'static> Message for SetSystem<T> {
-    type Reply = ();
-}
-
-impl<T> SetSystem<T> {
-    pub fn new(config: T) -> Self {
-        Self { config }
-    }
-}
-
-pub struct GetConfig;
-
-impl Message for GetConfig {
-    type Reply = Config;
-}
-
-pub struct SetConfig<T> {
-    pub config: Option<T>,
-}
-
-impl<T: Send + 'static> Message for SetConfig<T> {
-    type Reply = ();
-}
-
-impl<T> SetConfig<T> {
-    pub fn new(config: Option<T>) -> Self {
-        Self { config }
-    }
-
-    pub fn with(config: T) -> Self {
-        Self {
-            config: Some(config),
-        }
-    }
-}
-
-pub struct GetProposal;
-
-impl Message for GetProposal {
-    type Reply = Option<Proposal>;
-}
-
-pub struct UpdateHostname {
-    pub name: String,
-}
-
-impl Message for UpdateHostname {
-    type Reply = ();
-}
-
-pub struct UpdateStaticHostname {
-    pub name: String,
-}
-
-impl Message for UpdateStaticHostname {
-    type Reply = ();
-}
-
-pub struct Install;
-
-impl Message for Install {
-    type Reply = ();
-}
-
-#[derive(Clone)]
-pub struct SetLocale {
-    pub locale: String,
-}
-
-impl SetLocale {
-    pub fn new(locale: &str) -> Self {
-        Self {
-            locale: locale.to_string(),
-        }
-    }
-}
-
-impl Message for SetLocale {
-    type Reply = ();
-}
+define_message!(GetSystem -> SystemInfo);
+define_message!(SetSystem<T> { config: T } -> ());
+define_message!(GetConfig -> Config);
+define_message!(SetConfig<T> { config: Option<T> } -> ());
+define_message!(GetProposal -> Option<Proposal>);
+define_message!(UpdateHostname { name: String } -> ());
+define_message!(UpdateStaticHostname { name: String } -> ());
+define_message!(Install -> ());
+define_message!(SetLocale { locale: String } -> ());

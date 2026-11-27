@@ -18,58 +18,21 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::storage_client::proxies::{dasd, DASDProxy};
+pub use crate::storage_client::monitor::Error;
+use crate::storage_client::{
+    monitor::StorageMonitor,
+    proxies::{self, dasd, DASDProxy},
+};
 use agama_utils::{
     actor::Handler,
-    api::{
-        event::{self, Event},
-        s390::dasd::FormatSummary,
-        Progress, Scope,
-    },
+    api::{event, s390::dasd::FormatSummary, Event, Scope},
     progress,
 };
-use serde::Deserialize;
-use serde_json;
-use tokio::sync::broadcast;
 use tokio_stream::StreamExt;
-use zbus::{fdo::PropertiesChanged, message, Connection, MatchRule, MessageStream};
-
-#[derive(thiserror::Error, Debug)]
-pub enum Error {
-    #[error(transparent)]
-    Progress(#[from] progress::service::Error),
-    #[error(transparent)]
-    Event(#[from] broadcast::error::SendError<Event>),
-    #[error(transparent)]
-    DBus(#[from] zbus::Error),
-    #[error(transparent)]
-    DBusConversion(#[from] zbus::zvariant::Error),
-    #[error(transparent)]
-    Json(#[from] serde_json::Error),
-}
-
-#[derive(Debug, Deserialize)]
-struct ProgressData {
-    pub size: usize,
-    pub steps: Vec<String>,
-    pub step: String,
-    pub index: usize,
-}
-
-impl From<ProgressData> for Progress {
-    fn from(data: ProgressData) -> Self {
-        Progress {
-            scope: Scope::DASD,
-            size: data.size,
-            steps: data.steps,
-            step: data.step,
-            index: data.index,
-        }
-    }
-}
+use zbus::Connection;
 
 pub struct Monitor {
-    progress: Handler<progress::Service>,
+    storage_monitor: StorageMonitor,
     events: event::Sender,
     connection: Connection,
 }
@@ -81,7 +44,7 @@ impl Monitor {
         connection: Connection,
     ) -> Self {
         Self {
-            progress,
+            storage_monitor: StorageMonitor::new(progress, events.clone(), Scope::DASD),
             events,
             connection,
         }
@@ -89,26 +52,12 @@ impl Monitor {
 
     async fn run(&self) -> Result<(), Error> {
         let proxy = DASDProxy::new(&self.connection).await?;
-        let rule = MatchRule::builder()
-            .msg_type(message::Type::Signal)
-            .sender(proxy.inner().destination())?
-            .path(proxy.inner().path())?
-            .build();
-        let mut stream = MessageStream::for_match_rule(rule, &self.connection, None).await?;
+        let mut stream = proxies::proxy_signal_stream(&self.connection, proxy.inner()).await?;
 
         while let Some(message) = stream.next().await {
             let message = message?;
 
-            if let Some(signal) = PropertiesChanged::from_message(message.clone()) {
-                self.handle_properties_changed(signal)?;
-                continue;
-            }
-            if let Some(signal) = dasd::ProgressChanged::from_message(message.clone()) {
-                self.handle_progress_changed(signal).await?;
-                continue;
-            }
-            if let Some(signal) = dasd::ProgressFinished::from_message(message.clone()) {
-                self.handle_progress_finished(signal).await?;
+            if self.storage_monitor.handle_message(&message).await? {
                 continue;
             }
             if let Some(signal) = dasd::FormatChanged::from_message(message.clone()) {
@@ -122,31 +71,6 @@ impl Monitor {
             tracing::warn!("Unmanaged DASD signal: {message:?}");
         }
 
-        Ok(())
-    }
-
-    async fn handle_progress_changed(&self, signal: dasd::ProgressChanged) -> Result<(), Error> {
-        let args = signal.args()?;
-        let progress_data = serde_json::from_str::<ProgressData>(args.progress)?;
-        self.progress
-            .call(progress::message::SetProgress::new(progress_data.into()))
-            .await?;
-        Ok(())
-    }
-
-    async fn handle_progress_finished(&self, _signal: dasd::ProgressFinished) -> Result<(), Error> {
-        self.progress
-            .call(progress::message::Finish::new(Scope::DASD))
-            .await?;
-        Ok(())
-    }
-
-    fn handle_properties_changed(&self, signal: PropertiesChanged) -> Result<(), Error> {
-        let args = signal.args()?;
-        if args.changed_properties().get("System").is_some() {
-            self.events
-                .send(Event::SystemChanged { scope: Scope::DASD })?;
-        }
         Ok(())
     }
 
@@ -173,4 +97,24 @@ pub fn spawn(monitor: Monitor) -> Result<(), Error> {
         }
     });
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use agama_utils::progress;
+    use tokio::sync::broadcast;
+
+    #[tokio::test]
+    async fn test_format_finished_event() {
+        let (events_tx, mut events_rx) = broadcast::channel::<Event>(16);
+        let progress_handler = progress::Service::starter(events_tx.clone()).start();
+        let connection = zbus::connection::Builder::session().unwrap().build().await;
+        if let Ok(connection) = connection {
+            let monitor = Monitor::new(progress_handler, events_tx, connection);
+            monitor.events.send(Event::DASDFormatFinished).unwrap();
+            let event = events_rx.recv().await.unwrap();
+            assert!(matches!(event, Event::DASDFormatFinished));
+        }
+    }
 }

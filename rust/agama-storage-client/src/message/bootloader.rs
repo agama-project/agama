@@ -19,45 +19,10 @@
 // find current contact information at www.suse.com.
 
 use crate::service;
-use agama_utils::{actor::Message, api::bootloader, BoxFuture, Resolvable};
+use agama_utils::{api::bootloader, define_message, BoxFuture, Resolvable};
 
-pub struct GetConfig;
-
-impl Message for GetConfig {
-    type Reply = bootloader::Config;
-}
-
-pub struct GetProposal;
-
-impl Message for GetProposal {
-    type Reply = Option<bootloader::Proposal>;
-}
-
-pub struct GetSystem;
-
-impl Message for GetSystem {
-    type Reply = Option<serde_json::Value>;
-}
-
-pub struct GetResolvables;
-
-impl Message for GetResolvables {
-    type Reply = Vec<Resolvable>;
-}
-
-pub struct SetConfig {
-    pub config: serde_json::Value,
-}
-
-impl SetConfig {
-    // FIXME: To be consistent, this action should receive
-    // the bootloader configuration. However, it uses an internal
-    // FullConfig struct defined in the agama-bootloader::client module.
-    pub fn new(config: serde_json::Value) -> Self {
-        Self { config }
-    }
-}
-
-impl Message for SetConfig {
-    type Reply = BoxFuture<Result<(), service::Error>>;
-}
+define_message!(GetConfig -> bootloader::Config);
+define_message!(GetProposal -> Option<bootloader::Proposal>);
+define_message!(GetSystem -> Option<serde_json::Value>);
+define_message!(GetResolvables -> Vec<Resolvable>);
+define_message!(SetConfig { config: serde_json::Value } -> BoxFuture<Result<(), service::Error>>);

@@ -21,8 +21,9 @@
 //! Utilities to interact with D-Bus types.
 
 use std::collections::HashMap;
-use zbus::{message::Type as MessageType, MatchRule, MessageStream};
-use zvariant::{self, OwnedObjectPath, OwnedValue, Value};
+use tokio_stream::StreamExt;
+use zbus::fdo::{PropertiesChangedStream, PropertiesProxy};
+use zvariant::{self, OwnedValue, Value};
 
 /// Nested hash to send to D-Bus.
 pub type NestedHash<'a> = HashMap<&'a str, HashMap<&'a str, zvariant::Value<'a>>>;
@@ -67,15 +68,6 @@ where
     }
 }
 
-#[macro_export]
-macro_rules! property_from_dbus {
-    ($self:ident, $field:ident, $key:expr, $dbus:ident, $type:ty) => {
-        if let Some(v) = get_optional_property($dbus, $key)? {
-            $self.$field = v;
-        }
-    };
-}
-
 /// Converts a hash map containing zbus non-owned values to hash map with owned ones.
 ///
 /// NOTE: we could follow a different approach like building our own type (e.g.
@@ -92,32 +84,40 @@ pub fn to_owned_hash<T: ToString>(
     Ok(owned)
 }
 
-/// Extracts the object ID from the path.
-///
-/// TODO: should we merge this feature with the "DeviceSid"?
-pub fn extract_id_from_path(path: &OwnedObjectPath) -> Result<u32, zvariant::Error> {
-    path.as_str()
-        .rsplit_once('/')
-        .and_then(|(_, id)| id.parse::<u32>().ok())
-        .ok_or_else(|| {
-            zvariant::Error::Message(format!("Could not extract the ID from {}", path.as_str()))
-        })
+/// Monitors D-Bus property changes on a system service.
+pub struct PropertiesMonitor {
+    stream: PropertiesChangedStream,
 }
 
-/// Returns a stream of properties changes.
-///
-/// It listens for changes in several objects that are related to a network device.
-pub async fn build_properties_changed_stream(
-    connection: &zbus::Connection,
-) -> Result<MessageStream, zbus::Error> {
-    let rule = MatchRule::builder()
-        .msg_type(MessageType::Signal)
-        .interface("org.freedesktop.DBus.Properties")?
-        .member("PropertiesChanged")?
-        .build();
-    // The third parameter corresponds to the max_queue. We rely on the default (64).
-    let stream = MessageStream::for_match_rule(rule, connection, None).await?;
-    Ok(stream)
+impl PropertiesMonitor {
+    /// Creates a new monitor on the system bus for the given destination and path.
+    pub async fn new(destination: &'static str, path: &'static str) -> Result<Self, zbus::Error> {
+        let dbus = zbus::Connection::system().await?;
+        let proxy = PropertiesProxy::builder(&dbus)
+            .destination(destination)?
+            .path(path)?
+            .build()
+            .await?;
+        let stream = proxy.receive_properties_changed().await?;
+        Ok(Self { stream })
+    }
+
+    /// Returns the next map of changed properties, or `None` if the stream ended.
+    pub async fn next(&mut self) -> Option<HashMap<String, OwnedValue>> {
+        while let Some(changes) = self.stream.next().await {
+            let Ok(args) = changes.args() else {
+                continue;
+            };
+
+            let changes = args.changed_properties();
+            let Ok(changes) = to_owned_hash(changes) else {
+                continue;
+            };
+
+            return Some(changes);
+        }
+        None
+    }
 }
 
 #[cfg(test)]

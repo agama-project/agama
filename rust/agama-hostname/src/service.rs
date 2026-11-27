@@ -18,7 +18,6 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::monitor::Monitor;
 use crate::{message, monitor};
 use crate::{Model, ModelAdapter};
 use agama_utils::{
@@ -116,14 +115,11 @@ impl Starter {
     }
 
     pub async fn start_monitor(handler: Handler<Service>) {
-        match Monitor::new(handler.clone()).await {
-            Ok(monitor) => monitor::spawn(monitor),
-            Err(error) => {
-                tracing::error!(
+        if let Err(error) = monitor::start(handler).await {
+            tracing::error!(
                 "Could not launch the hostname monitor, therefore changes from systemd will be ignored. \
                  The original error was {error}"
             );
-            }
         }
     }
 }

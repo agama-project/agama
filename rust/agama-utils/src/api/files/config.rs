@@ -100,16 +100,12 @@ pub struct ScriptsConfig {
 }
 
 impl ScriptsConfig {
+    pub fn is_empty(&self) -> bool {
+        self == &Self::default()
+    }
+
     pub fn to_option(self) -> Option<Self> {
-        if self.pre.is_none()
-            && self.post_partitioning.is_none()
-            && self.post.is_none()
-            && self.init.is_none()
-        {
-            None
-        } else {
-            Some(self)
-        }
+        (!self.is_empty()).then_some(self)
     }
 }
 
@@ -132,6 +128,17 @@ mod tests {
         PreScript {
             base: base_script(name),
         }
+    }
+
+    #[test]
+    fn test_scripts_config_to_option() {
+        assert_eq!(ScriptsConfig::default().to_option(), None);
+
+        let config = ScriptsConfig {
+            pre: Some(vec![build_pre_script("test")]),
+            ..Default::default()
+        };
+        assert_eq!(config.clone().to_option(), Some(config));
     }
 
     #[test]

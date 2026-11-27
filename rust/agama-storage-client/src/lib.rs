@@ -28,4 +28,8 @@ pub use service::{Error, Service};
 
 pub mod message;
 
+pub mod monitor;
+
+pub mod progress;
+
 pub mod proxies;

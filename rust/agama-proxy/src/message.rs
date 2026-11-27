@@ -18,57 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::{actor::Message, api::proxy::Config};
+use agama_utils::{api::proxy::Config, define_message};
 
-#[derive(Clone)]
-pub struct GetSystem;
+define_message!(GetSystem -> Option<Config>);
+define_message!(GetConfig -> Option<Config>);
+define_message!(SetConfig<T> { config: Option<T> } -> ());
 
-impl Message for GetSystem {
-    type Reply = Option<Config>;
-}
-
-#[derive(Clone)]
-pub struct GetConfig;
-
-impl Message for GetConfig {
-    type Reply = Option<Config>;
-}
-
-pub struct SetConfig<T> {
-    pub config: Option<T>,
-}
-
-impl<T: Send + 'static> Message for SetConfig<T> {
-    type Reply = ();
-}
-
-impl<T> SetConfig<T> {
-    pub fn new(config: Option<T>) -> Self {
-        Self { config }
-    }
-}
-
-/// Execute actions at the end of the installation.
-#[derive(Clone)]
-pub struct Finish;
-
-impl Message for Finish {
-    type Reply = ();
-}
-
-#[derive(Clone)]
-pub struct SetLocale {
-    pub locale: String,
-}
-
-impl SetLocale {
-    pub fn new(locale: &str) -> Self {
-        Self {
-            locale: locale.to_string(),
-        }
-    }
-}
-
-impl Message for SetLocale {
-    type Reply = ();
-}
+define_message!(
+    /// Execute actions at the end of the installation.
+    Finish -> ()
+);
+define_message!(SetLocale { locale: String } -> ());

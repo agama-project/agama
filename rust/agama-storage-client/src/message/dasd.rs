@@ -19,36 +19,9 @@
 // find current contact information at www.suse.com.
 
 use crate::service;
-use agama_utils::{actor::Message, BoxFuture};
+use agama_utils::{define_message, BoxFuture};
 
-pub struct Probe;
-
-impl Message for Probe {
-    type Reply = ();
-}
-
-pub struct GetSystem;
-
-impl Message for GetSystem {
-    type Reply = Option<serde_json::Value>;
-}
-
-pub struct GetConfig;
-
-impl Message for GetConfig {
-    type Reply = Option<agama_utils::api::RawConfig>;
-}
-
-pub struct SetConfig {
-    pub config: Option<agama_utils::api::RawConfig>,
-}
-
-impl SetConfig {
-    pub fn new(config: Option<agama_utils::api::RawConfig>) -> Self {
-        Self { config }
-    }
-}
-
-impl Message for SetConfig {
-    type Reply = BoxFuture<Result<(), service::Error>>;
-}
+define_message!(Probe -> ());
+define_message!(GetSystem -> Option<serde_json::Value>);
+define_message!(GetConfig -> Option<agama_utils::api::RawConfig>);
+define_message!(SetConfig { config: Option<agama_utils::api::RawConfig> } -> BoxFuture<Result<(), service::Error>>);

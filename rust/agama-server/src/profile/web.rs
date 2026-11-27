@@ -18,6 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+#![allow(
+    clippy::result_large_err,
+    reason = "Returning Axum Response on error is standard practice (see tokio-rs/axum#3824)."
+)]
+
 use crate::{
     server::{config_schema, web::Error},
     web::error::ProblemDetailsExt,
@@ -177,11 +182,6 @@ impl ProfileBody {
     }
 }
 
-#[allow(
-    clippy::result_large_err,
-    reason = "Response is used to short-circuit with a pre-built HTTP response; the extra \
-              bytes are negligible per-request cost (see tokio-rs/axum#3824)"
-)]
 async fn validate(body: String) -> Result<(), Response> {
     let profile = ProfileBody::from_string(body);
     let profile_content = profile
