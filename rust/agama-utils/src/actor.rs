@@ -297,12 +297,14 @@ macro_rules! define_message {
     (
         $(#[$meta:meta])*
         $name:ident < $gen:ident > {
+            $(#[$field_meta:meta])*
             $field:ident : Option<$inner:ident> $(,)?
         } -> $reply:ty $(;)?
     ) => {
         $(#[$meta])*
         #[derive(Clone, Debug)]
         pub struct $name<$gen> {
+            $(#[$field_meta])*
             pub $field: Option<$gen>,
         }
 
@@ -327,12 +329,14 @@ macro_rules! define_message {
     (
         $(#[$meta:meta])*
         $name:ident < $gen:ident > {
+            $(#[$field_meta:meta])*
             $field:ident : $type:ty $(,)?
         } -> $reply:ty $(;)?
     ) => {
         $(#[$meta])*
         #[derive(Clone, Debug)]
         pub struct $name<$gen> {
+            $(#[$field_meta])*
             pub $field: $type,
         }
 
@@ -351,12 +355,14 @@ macro_rules! define_message {
     (
         $(#[$meta:meta])*
         $name:ident {
+            $(#[$field_meta:meta])*
             $field:ident : Option<$inner:ty> $(,)?
         } -> $reply:ty $(;)?
     ) => {
         $(#[$meta])*
         #[derive(Clone, Debug)]
         pub struct $name {
+            $(#[$field_meta])*
             pub $field: Option<$inner>,
         }
 
@@ -381,13 +387,19 @@ macro_rules! define_message {
     (
         $(#[$meta:meta])*
         $name:ident {
-            $($field:ident : $type:ty),* $(,)?
+            $(
+                $(#[$field_meta:meta])*
+                $field:ident : $type:ty
+            ),* $(,)?
         } -> $reply:ty $(;)?
     ) => {
         $(#[$meta])*
         #[derive(Clone, Debug)]
         pub struct $name {
-            $(pub $field: $type),*
+            $(
+                $(#[$field_meta])*
+                pub $field: $type,
+            )*
         }
 
         impl $crate::actor::Message for $name {
@@ -430,6 +442,15 @@ mod tests {
     define_message!(SetConfig<T> { config: Option<T> } -> ());
     define_message!(SetSystem<T> { config: T } -> ());
     define_message!(UpdateUser { id: u32, name: String } -> bool);
+    define_message!(
+        /// A documented message
+        DocumentedMsg {
+            /// The user ID
+            id: u32,
+            /// The user name
+            name: String,
+        } -> bool
+    );
 
     #[test]
     fn test_define_message_unit() {
@@ -467,5 +488,12 @@ mod tests {
         };
         assert_eq!(msg2.id, 2);
         assert_eq!(msg2.name, "Bob");
+    }
+
+    #[test]
+    fn test_define_message_doc_comments() {
+        let msg = DocumentedMsg::new(10, "Bob".to_string());
+        assert_eq!(msg.id, 10);
+        assert_eq!(msg.name, "Bob");
     }
 }

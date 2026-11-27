@@ -31,11 +31,3 @@ define_message!(GetSystem -> Option<Value>);
 define_message!(SetConfig<T> { config: Option<T> } -> BoxFuture<Result<(), service::Error>>);
 define_message!(SetKernelArg { id: String, value: String } -> ());
 define_message!(SetLocale { locale: String } -> ());
-
-impl<T> SetConfig<T> {
-    pub fn with(config: T) -> Self {
-        Self {
-            config: Some(config),
-        }
-    }
-}

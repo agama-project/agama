@@ -32,7 +32,10 @@ define_message!(
 
 define_message!(
     /// Message to set the user-provided remote access configuration.
-    SetConfig<T> { config: Option<T> } -> ()
+    SetConfig<T> {
+        /// The configuration payload to apply.
+        config: Option<T>
+    } -> ()
 );
 
 define_message!(
@@ -40,7 +43,12 @@ define_message!(
     ///
     /// Other components (like the `agama-users` module) use this message to ensure
     /// that a specific remote access mechanism (like SSH) gets enabled when needed.
-    SetAccess { id: String, config: Config } -> ()
+    SetAccess {
+        /// Module identifier (e.g., `"users"`).
+        id: String,
+        /// The requested remote access configuration from the module.
+        config: Config,
+    } -> ()
 );
 
 define_message!(

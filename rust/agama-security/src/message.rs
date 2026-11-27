@@ -27,7 +27,10 @@ define_message!(SetConfig<T> { config: Option<T> } -> ());
 define_message!(
     /// Message to check an SSL certificate.
     CheckCertificate {
+        /// X509 certificate.
         certificate: X509,
+        /// Certificate name. It is used as the filename (without the extension) when
+        ///   importing the certificate.
         name: String,
     } -> bool
 );

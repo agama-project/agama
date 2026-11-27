@@ -24,9 +24,10 @@ use agama_utils::{
 };
 
 define_message!(SetConfig { config: Option<Config> } -> ());
-
 define_message!(
     /// Run scripts of the given group.
+    ///
+    /// It returns true if any script ran; false otherwise.
     RunScripts { group: ScriptsGroup } -> bool
 );
 

@@ -867,7 +867,11 @@ impl MessageHandler<message::GetProposal> for Service {
         let (bootloader, hostname, l10n, storage, network, users, access, software) = tokio::try_join!(
             async {
                 if storage_available {
-                    Ok::<_, Error>(self.bootloader.call(bootloader::message::GetProposal).await?)
+                    Ok::<_, Error>(
+                        self.bootloader
+                            .call(bootloader::message::GetProposal)
+                            .await?,
+                    )
                 } else {
                     Ok(None)
                 }
