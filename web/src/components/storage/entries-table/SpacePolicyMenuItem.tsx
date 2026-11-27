@@ -52,25 +52,25 @@ function disabledDescription(config, systemDevices, entry): TranslatedString | u
 
   if (entry.isVolumeGroup) {
     if (!device.logicalVolumes.length) {
-      // TRANSLATORS: reason to disable de menu entry "Actions on current content"
+      // TRANSLATORS: reason to disable the menu entry "Actions on current content"
       return _("No content detected");
     }
 
     const group = entry.config;
     if (configModel.volumeGroup.isReusingLogicalVolumes(group)) {
-      // TRANSLATORS: reason to disable de menu entry "Actions on current content"
+      // TRANSLATORS: reason to disable the menu entry "Actions on current content"
       return _("Already using existing logical volumes");
     }
 
     if (!configModel.volumeGroup.isAddingLogicalVolumes(group)) {
-      // TRANSLATORS: reason to disable de menu entry "Actions on current content"
+      // TRANSLATORS: reason to disable the menu entry "Actions on current content"
       return _("No usage defined yet");
     }
   } else {
     const partitionable = entry.config;
 
     if (partitionable.filesystem?.reuse) {
-      // TRANSLATORS: reason to disable de menu entry "Actions on current content"
+      // TRANSLATORS: reason to disable the menu entry "Actions on current content"
       return _("The current data will be kept");
     }
 
@@ -80,7 +80,7 @@ function disabledDescription(config, systemDevices, entry): TranslatedString | u
       !systemDevices.some((d) => d.volumeGroup?.physicalVolumes.includes(device.sid)) &&
       !systemDevices.some((d) => d.md?.devices.includes(device.sid))
     ) {
-      // TRANSLATORS: reason to disable de menu entry "Actions on current content"
+      // TRANSLATORS: reason to disable the menu entry "Actions on current content"
       return _("No content detected");
     }
 
@@ -88,17 +88,17 @@ function disabledDescription(config, systemDevices, entry): TranslatedString | u
       !configModel.partitionable.isUsed(config, partitionable.name) &&
       !configModel.boot.hasDevice(config, partitionable.name)
     ) {
-      // TRANSLATORS: reason to disable de menu entry "Actions on current content"
+      // TRANSLATORS: reason to disable the menu entry "Actions on current content"
       return _("No usage defined yet");
     }
 
     if (!device.partitionTable || partitionable.filesystem) {
-      // TRANSLATORS: reason to disable de menu entry "Actions on current content"
+      // TRANSLATORS: reason to disable the menu entry "Actions on current content"
       return _("All disk content will be deleted");
     }
 
     if (configModel.partitionable.isReusingPartitions(partitionable)) {
-      // TRANSLATORS: reason to disable de menu entry "Actions on current content"
+      // TRANSLATORS: reason to disable the menu entry "Actions on current content"
       return _("Already using existing partitions");
     }
   }
