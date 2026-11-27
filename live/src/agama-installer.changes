@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Nov 27 12:08:47 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix 32 bits build (gh#agama-project/agama#4319):
+  - Do not configure speech-dispatcher if not installed.
+  - Move brltty to the list of basic packages to install.
+
+-------------------------------------------------------------------
 Wed Nov 25 14:58:39 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add Orca and brttly to the installation medium
