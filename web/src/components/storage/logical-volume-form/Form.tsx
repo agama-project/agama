@@ -126,7 +126,7 @@ function LogicalVolumeFormContent({
   unusedMountPoints,
   config,
 }: LogicalVolumeFormContentQuery) {
-  const { id } = useParams();
+  const { id, deviceName } = useParams();
   const volumeGroupIndex = Number(id);
   const navigate = useNavigate();
   const addLogicalVolume = useAddLogicalVolume();
@@ -163,7 +163,15 @@ function LogicalVolumeFormContent({
   });
 
   const form = useAppForm({
-    ...mergeFormDefaults(defaultOptions, toFormValues(initialLogicalVolume)),
+    /* Arriving to reuse a logical volume that is already on the volume group
+       starts the form with it chosen. Editing keeps what is stored, and a name
+       that cannot be reused is ignored. */
+    ...mergeFormDefaults(defaultOptions, {
+      ...toFormValues(initialLogicalVolume),
+      ...(!initialLogicalVolume && availableLogicalVolumes.some((lv) => lv.name === deviceName)
+        ? { target: deviceName }
+        : {}),
+    }),
     validators: {
       onSubmitAsync: async (ctx) => {
         const fieldErrors = validate(ctx.value, usedMountPoints);

@@ -89,6 +89,7 @@ const STORAGE = {
     edit: "/storage/volume-groups/:id/edit",
     logicalVolume: {
       add: "/storage/volume-groups/:id/logical-volumes/add",
+      reuse: "/storage/volume-groups/:id/logical-volumes/:deviceName/use",
       edit: "/storage/volume-groups/:id/logical-volumes/:logicalVolumeId/edit",
     },
   },

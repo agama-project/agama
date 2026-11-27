@@ -109,16 +109,48 @@ describe("ShrinkRefusal", () => {
   });
 });
 
+describe("ShrinkRefusal on a logical volume", () => {
+  it("answers in terms of logical volumes where the machine gives no reason", () => {
+    plainRender(
+      <ShrinkRefusal
+        partition={partition({ supported: false, reasons: [] })}
+        kind="logicalVolume"
+      />,
+    );
+
+    screen.getByText("This logical volume cannot be made smaller.");
+  });
+
+  it("still shows the machine's reason", () => {
+    plainRender(
+      <ShrinkRefusal
+        partition={partition({ supported: false, reasons: ["The file system is full."] })}
+        kind="logicalVolume"
+      />,
+    );
+
+    screen.getByText("The file system is full.");
+  });
+});
+
 describe("usePartitionSpaceItems", () => {
   const shrinkable = { ...partition({ supported: true, minSize: 20 * GiB }), name: "/dev/vda2" };
   const unshrinkable = partition({ supported: false });
 
-  function Items({ part, rule }: { part: System.Device; rule?: Decision }) {
+  function Items({
+    part,
+    rule,
+    collection = "drives",
+  }: {
+    part: System.Device;
+    rule?: Decision;
+    collection?: "drives" | "volumeGroups";
+  }) {
     const items = usePartitionSpaceItems({
       partition: part,
       governed: [unshrinkable, shrinkable],
       entries: [],
-      collection: "drives",
+      collection,
       index: 0,
       rule,
     });
@@ -149,5 +181,42 @@ describe("usePartitionSpaceItems", () => {
     expect(screen.getByRole("menuitem", { name: /^Shrink if needed/ })).not.toHaveClass(
       "pf-m-selected",
     );
+  });
+
+  describe("on the logical volumes of a volume group", () => {
+    it("speaks of logical volumes when offering to delete", () => {
+      installerRender(<Items part={shrinkable} collection="volumeGroups" />);
+
+      expect(screen.getByRole("menuitem", { name: /^Delete/ })).toHaveTextContent(
+        "freed for new logical volumes",
+      );
+    });
+
+    it("speaks of logical volumes when offering to shrink", () => {
+      installerRender(<Items part={shrinkable} collection="volumeGroups" />);
+
+      expect(screen.getByRole("menuitem", { name: /^Shrink if needed/ })).toHaveTextContent(
+        "may be freed for new logical volumes",
+      );
+    });
+
+    it("says a logical volume cannot be made smaller, where it cannot", () => {
+      installerRender(<Items part={unshrinkable} collection="volumeGroups" />);
+
+      expect(screen.getByRole("menuitem", { name: /^Shrink if needed/ })).toHaveTextContent(
+        "This logical volume cannot be made smaller.",
+      );
+    });
+
+    it("keeps speaking of partitions on a disk", () => {
+      installerRender(<Items part={shrinkable} />);
+
+      expect(screen.getByRole("menuitem", { name: /^Delete/ })).toHaveTextContent(
+        "freed for new partitions",
+      );
+      expect(screen.getByRole("menuitem", { name: /^Shrink if needed/ })).toHaveTextContent(
+        "may be freed for new partitions",
+      );
+    });
   });
 });
