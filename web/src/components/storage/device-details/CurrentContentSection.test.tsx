@@ -29,10 +29,11 @@ import { generateEncodedPath } from "~/utils";
 import type { Storage as System } from "~/model/system";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 import type { Entry } from "~/components/storage/device-details/entry";
+import { MenuButtonItem } from "~/components/core/MenuButton";
 import CurrentContentSection from "~/components/storage/device-details/CurrentContentSection";
 
 const mockAnnounce = jest.fn();
-const mockDeleteLogicalVolume = jest.fn();
+const mockSpaceItems = jest.fn();
 
 jest.mock("~/context/announcer", () => ({
   ...jest.requireActual("~/context/announcer"),
@@ -41,13 +42,11 @@ jest.mock("~/context/announcer", () => ({
 
 jest.mock("~/components/storage/device-details/partition-space", () => ({
   ...jest.requireActual("~/components/storage/device-details/partition-space"),
-  usePartitionSpaceItems: () => [],
+  usePartitionSpaceItems: (...args: unknown[]) => mockSpaceItems(...args),
 }));
 
 jest.mock("~/hooks/model/storage/config-model", () => ({
   ...jest.requireActual("~/hooks/model/storage/config-model"),
-  useDeletePartition: () => jest.fn(),
-  useDeleteLogicalVolume: () => mockDeleteLogicalVolume,
   useSetSpacePolicy: () => jest.fn(),
 }));
 
@@ -106,7 +105,18 @@ const renderShown = async (ui: React.ReactElement) => {
   return rendered;
 };
 
+/** Stands for the decisions the row menus offer, which are tested with the hook giving them. */
+const spaceItems = () =>
+  ["Delete", "Shrink if needed", "Do not modify"].map((name) => (
+    <MenuButtonItem key={name}>{name}</MenuButtonItem>
+  ));
+
 describe("CurrentContentSection", () => {
+  beforeEach(() => {
+    mockSpaceItems.mockReturnValue([]);
+    mockNavigateFn.mockClear();
+  });
+
   it("sums up what happens to the partitions, with how many there are in bold", () => {
     installerRender(<CurrentContentSection entry={entry("delete")} subject={subject} />);
 
@@ -205,7 +215,6 @@ describe("CurrentContentSection", () => {
     };
 
     beforeEach(() => {
-      mockDeleteLogicalVolume.mockClear();
       mockNavigateFn.mockClear();
     });
 
@@ -235,16 +244,31 @@ describe("CurrentContentSection", () => {
       expect(within(screen.getByRole("menu")).queryByText(/partition/i)).toBeNull();
     });
 
-    it("offers to modify or stop using one the new system uses", async () => {
+    it("offers the same decisions and to edit one the new system uses", async () => {
+      mockSpaceItems.mockReturnValue(spaceItems());
       const used = group([{ name: "/dev/system/home", mountPath: "/home" }]);
       const { user } = await showLogicalVolumes(
         <CurrentContentSection entry={used} subject={groupSubject} />,
       );
       await user.click(screen.getByRole("button", { name: "Actions for home" }));
 
-      await user.click(
-        screen.getByRole("menuitem", { name: "Modify how the logical volume is used" }),
+      expect(screen.getAllByRole("menuitem").map((item) => item.textContent)).toEqual([
+        "Delete",
+        "Shrink if needed",
+        "Do not modify",
+        "EditModify how the logical volume is used",
+      ]);
+      expect(screen.queryByRole("menuitem", { name: /^Assign a mount point/ })).toBeNull();
+      expect(screen.queryByRole("menuitem", { name: /^Stop using/ })).toBeNull();
+    });
+
+    it("edits one the new system uses, by its mount point", async () => {
+      const used = group([{ name: "/dev/system/home", mountPath: "/home" }]);
+      const { user } = await showLogicalVolumes(
+        <CurrentContentSection entry={used} subject={groupSubject} />,
       );
+      await user.click(screen.getByRole("button", { name: "Actions for home" }));
+      await user.click(screen.getByRole("menuitem", { name: /^Edit/ }));
 
       expect(mockNavigateFn).toHaveBeenCalledWith({
         pathname: generateEncodedPath(PATHS.volumeGroup.logicalVolume.edit, {
@@ -253,20 +277,62 @@ describe("CurrentContentSection", () => {
         }),
         search: expect.any(String),
       });
-      await user.click(screen.getByRole("button", { name: "Actions for home" }));
-      screen.getByRole("menuitem", { name: "Stop using" });
-      expect(screen.queryByRole("menuitem", { name: /^Assign a mount point/ })).toBeNull();
     });
 
-    it("stops using it by its mount point, in its volume group", async () => {
-      const used = group([{ name: "/dev/system/home", mountPath: "/home" }]);
+    it("offers no decision on a logical volume when decisions are fixed", async () => {
+      mockSpaceItems.mockReturnValue(spaceItems());
       const { user } = await showLogicalVolumes(
-        <CurrentContentSection entry={used} subject={groupSubject} />,
+        <CurrentContentSection entry={group()} subject={groupSubject} fixedDecision="keep" />,
       );
-      await user.click(screen.getByRole("button", { name: "Actions for home" }));
-      await user.click(screen.getByRole("menuitem", { name: "Stop using" }));
+      await user.click(screen.getByRole("button", { name: "Actions for root" }));
 
-      expect(mockDeleteLogicalVolume).toHaveBeenCalledWith("system", "/home");
+      expect(screen.getAllByRole("menuitem")).toHaveLength(1);
+      screen.getByRole("menuitem", { name: /^Assign a mount point/ });
+    });
+  });
+
+  describe("on the partitions of a disk", () => {
+    const used = entry("custom", [{ name: "/dev/vdd2", mountPath: "/home" }]);
+
+    it("offers the same decisions and to edit one the new system uses", async () => {
+      mockSpaceItems.mockReturnValue(spaceItems());
+      const { user } = await renderShown(<CurrentContentSection entry={used} subject={subject} />);
+      await user.click(screen.getByRole("button", { name: "Actions for vdd2" }));
+
+      expect(screen.getAllByRole("menuitem").map((item) => item.textContent)).toEqual([
+        "Delete",
+        "Shrink if needed",
+        "Do not modify",
+        "EditModify how the partition is used",
+      ]);
+      expect(screen.queryByRole("menuitem", { name: /^Stop using/ })).toBeNull();
+    });
+
+    it("edits one the new system uses, by its mount point", async () => {
+      const { user } = await renderShown(<CurrentContentSection entry={used} subject={subject} />);
+      await user.click(screen.getByRole("button", { name: "Actions for vdd2" }));
+      await user.click(screen.getByRole("menuitem", { name: /^Edit/ }));
+
+      expect(mockNavigateFn).toHaveBeenCalledWith({
+        pathname: generateEncodedPath(PATHS.editPartition, {
+          collection: "drives",
+          index: "0",
+          partitionId: "/home",
+        }),
+        search: expect.any(String),
+      });
+    });
+
+    it("offers only to edit one the new system uses when decisions are fixed", async () => {
+      mockSpaceItems.mockReturnValue(spaceItems());
+      const { user } = await renderShown(
+        <CurrentContentSection entry={used} subject={subject} fixedDecision="keep" />,
+      );
+      await user.click(screen.getByRole("button", { name: "Actions for vdd2" }));
+
+      expect(screen.getAllByRole("menuitem").map((item) => item.textContent)).toEqual([
+        "EditModify how the partition is used",
+      ]);
     });
   });
 
