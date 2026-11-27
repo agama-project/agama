@@ -161,6 +161,8 @@ const HostnameFields = withForm({
                     <field.TextField
                       // TRANSLATORS: label for hostname input
                       label={_("Name")}
+                      // TRANSLATORS: hint below the static hostname input
+                      helperText={_("Use only letters, digits, hyphens and dots.")}
                     />
                   )}
                 </form.AppField>

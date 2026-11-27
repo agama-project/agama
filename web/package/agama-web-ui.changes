@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Nov 26 09:39:54 UTC 2026 - Arshil Ahmed <194646586+arshil42@users.noreply.github.com>
+
+- Tell which static hostnames are valid, below the field and in the
+  validation errors (gh#agama-project/agama#4213,
+  gh#agama-project/agama#4310).
+
+-------------------------------------------------------------------
 Thu Nov 26 08:28:30 UTC 2026 - David Díaz <dgonzalez@suse.com>
 
 - Stop highlighting the first option of a menu opened with a click

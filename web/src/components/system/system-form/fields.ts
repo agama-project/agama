@@ -28,9 +28,10 @@
  */
 
 import ipaddr from "ipaddr.js";
+import { sprintf } from "sprintf-js";
 import { formOptions } from "@tanstack/react-form";
 import { isEmpty, shake } from "radashi";
-import { requiredValidList, requiredValidString } from "~/components/form/validation-helpers";
+import { requiredString, requiredValidList } from "~/components/form/validation-helpers";
 import { _ } from "~/i18n";
 
 import type {
@@ -101,6 +102,54 @@ export const defaultOptions = formOptions({
 const HOSTNAME_RE =
   /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$/;
 
+/** Characters a static hostname can have. */
+const HOSTNAME_CHARS_RE = /^[a-zA-Z0-9.-]+$/;
+
+/** Longest static hostname the system accepts (the kernel limit, see hostname(5)). */
+const HOSTNAME_MAX_LENGTH = 64;
+
+/** Longest part between dots (a DNS label). */
+const HOSTNAME_PART_MAX_LENGTH = 63;
+
+/**
+ * Checks a static hostname, returning the message of the first rule it
+ * breaks, or undefined when it is valid.
+ */
+function hostnameError(value: string): string | undefined {
+  // TRANSLATORS: validation error when static hostname value is empty
+  const required = requiredString(value, _("Enter a hostname value."));
+  if (required) return required;
+
+  if (!HOSTNAME_CHARS_RE.test(value)) {
+    // TRANSLATORS: validation error for the static hostname
+    return _("The name has characters that are not allowed.");
+  }
+
+  if (value.length > HOSTNAME_MAX_LENGTH) {
+    // TRANSLATORS: validation error, %d is replaced with the maximum number of characters
+    return sprintf(_("The name cannot be longer than %d characters."), HOSTNAME_MAX_LENGTH);
+  }
+
+  const parts = value.split(".");
+  if (parts.some((part) => part === "")) {
+    // TRANSLATORS: validation error for the static hostname
+    return _("The name cannot begin or end with a dot, or have two dots in a row.");
+  }
+
+  if (parts.some((part) => part.startsWith("-") || part.endsWith("-"))) {
+    // TRANSLATORS: validation error for the static hostname
+    return _("Each part of the name must begin and end with a letter or a digit.");
+  }
+
+  if (parts.some((part) => part.length > HOSTNAME_PART_MAX_LENGTH)) {
+    // TRANSLATORS: validation error, %d is replaced with the maximum number of characters
+    return sprintf(
+      _("Each part of the name between dots cannot be longer than %d characters."),
+      HOSTNAME_PART_MAX_LENGTH,
+    );
+  }
+}
+
 /**
  * Returns true if the value is a valid NTP server address.
  *
@@ -126,13 +175,7 @@ function validateHostnameFields(
   return {
     hostnameValue:
       formValues.hostnameMode === HOSTNAME_MODE.STATIC
-        ? // TRANSLATORS: validation error when static hostname value is empty
-          requiredValidString(
-            formValues.hostnameValue,
-            (value) => HOSTNAME_RE.test(value),
-            _("Enter a hostname value."),
-            _("Invalid hostname value."),
-          )
+        ? hostnameError(formValues.hostnameValue)
         : undefined,
   };
 }
