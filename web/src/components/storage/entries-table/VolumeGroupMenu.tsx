@@ -101,14 +101,6 @@ export default function VolumeGroupMenu({ group, subject }: VolumeGroupMenuProps
               <MenuButtonItem
                 key="open"
                 icon={<Icon size="md" name="article" />}
-                /* Screen readers get the full name, since a group name alone, as in
-                   "Configure system", is ambiguous; on screen, the row says which
-                   group. */
-                aria-label={sprintf(
-                  // TRANSLATORS: opens a volume group panel. %s is its name, such as "system"
-                  _("Configure %s LVM volume group"),
-                  group.vgName,
-                )}
                 onClick={() => openDetails(subject)}
                 description={_("Customize how the volume group will be used")}
               >

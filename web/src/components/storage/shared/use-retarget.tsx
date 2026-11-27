@@ -88,19 +88,20 @@ const Description = ({ modelDevice, device }: DescriptionProps) => {
     if (volumeGroups.length > 1) {
       if (isExplicitBoot) {
         return sprintf(
-          // TRANSLATORS: %s is the name of the disk (eg. sda)
+          // TRANSLATORS: %s is the name of the disk, such as "sda"
           _("%s will still contain the configured LVM groups and any partition needed to boot"),
           devName,
         );
       }
 
-      // TRANSLATORS: %s is the name of the disk (eg. sda)
+      // TRANSLATORS: %s is the name of the disk, such as "sda"
       return sprintf(_("The configured LVM groups will remain at %s"), devName);
     }
 
     if (isExplicitBoot) {
       return sprintf(
-        // TRANSLATORS: %1$s is the name of the disk (eg. sda) and %2$s the name of the LVM
+        // TRANSLATORS: %1$s is the name of the disk, such as "sda" and %2$s the name of the volume
+        // group
         _("%1$s will still contain the LVM group '%2$s' and any partition needed to boot"),
         devName,
         vgName,
@@ -108,7 +109,8 @@ const Description = ({ modelDevice, device }: DescriptionProps) => {
     }
 
     return sprintf(
-      // TRANSLATORS: %1$s is the name of the LVM and %2$s the name of the disk (eg. sda)
+      // TRANSLATORS: %1$s is the name of the volume group and %2$s the name of the disk such as
+      // "sda"
       _("The LVM group '%1$s' will remain at %2$s"),
       vgName,
       devName,
@@ -116,7 +118,7 @@ const Description = ({ modelDevice, device }: DescriptionProps) => {
   }
 
   if (isExplicitBoot) {
-    // TRANSLATORS: %s is the name of the disk (eg. sda)
+    // TRANSLATORS: %s is the name of the disk, such as "sda"
     return sprintf(_("Partitions needed for booting will remain at %s"), devName);
   }
 
@@ -150,8 +152,7 @@ const Title = ({ modelDevice }: TitleProps) => {
   }
 
   return sprintf(
-    // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
-    // single mount point in the singular case).
+    // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"'
     _("Choose a different device to create %s"),
     formatList(newMountPaths.map((p) => formattedPath(p))),
   );

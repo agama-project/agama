@@ -76,8 +76,8 @@ function resize(systems: string[], devices: System.Device[]): TranslatedString |
           named,
         )
       : sprintf(
-          // TRANSLATORS: %d is the number of partitions being made smaller.
           n_(
+            // TRANSLATORS: %d is the number of partitions being made smaller.
             "Includes a non-destructive reduction of %d partition.",
             "Includes a non-destructive reduction of %d partitions.",
             count,
@@ -100,8 +100,8 @@ function resize(systems: string[], devices: System.Device[]): TranslatedString |
           named,
         )
       : sprintf(
-          // TRANSLATORS: %d is the number of logical volumes being made smaller.
           n_(
+            // TRANSLATORS: %d is the number of logical volumes being made smaller.
             "Includes a non-destructive reduction of %d logical volume.",
             "Includes a non-destructive reduction of %d logical volumes.",
             count,

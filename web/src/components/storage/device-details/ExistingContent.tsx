@@ -56,8 +56,8 @@ export default function ExistingContent({ entry, isDeleted = false }: ExistingCo
       return (
         <Deleted
           sentence={sprintf(
-            // TRANSLATORS: %s is a filesystem type like "Ext4". Keep the brackets around the words
-            // about the data loss.
+            // TRANSLATORS: %s is a file system type, like "Ext4". Keep the brackets: they mark the
+            // data loss.
             _("%s file system: [it will be deleted and its data lost]."),
             type,
           )}
@@ -68,7 +68,7 @@ export default function ExistingContent({ entry, isDeleted = false }: ExistingCo
     return (
       <p>
         {
-          // TRANSLATORS: %s is a filesystem type like "Ext4" or "Btrfs"
+          // TRANSLATORS: %s is a file system type, like "Ext4"
           sprintf(_("%s file system."), type)
         }
       </p>
@@ -82,9 +82,9 @@ export default function ExistingContent({ entry, isDeleted = false }: ExistingCo
       return (
         <Deleted
           sentence={sprintf(
-            // TRANSLATORS: %s is an LVM volume group name, like "system". Keep the brackets around
-            // the words about the data loss.
             _(
+              // TRANSLATORS: %s is a volume group name, like "system". Keep the brackets: they mark
+              // the data loss.
               "LVM physical volume: [the whole volume group %s will be deleted and its data lost].",
             ),
             formattedPath(baseName(group.name)),
@@ -96,7 +96,7 @@ export default function ExistingContent({ entry, isDeleted = false }: ExistingCo
     return (
       <p>
         {sprintf(
-          // TRANSLATORS: %s is the name of an LVM volume group, like "system"
+          // TRANSLATORS: %s is a volume group name, like "system"
           _("LVM physical volume for the volume group %s."),
           formattedPath(baseName(group.name)),
         )}
@@ -110,8 +110,8 @@ export default function ExistingContent({ entry, isDeleted = false }: ExistingCo
       return (
         <Deleted
           sentence={sprintf(
-            // TRANSLATORS: %s is an MD RAID name, like "md0". Keep the brackets around the words
-            // about the data loss.
+            // TRANSLATORS: %s is an MD RAID name, like "md0". Keep the brackets: they mark the data
+            // loss.
             _("Part of a RAID: [the whole RAID %s will be deleted and its data lost]."),
             formattedPath(baseName(raid.name)),
           )}
@@ -122,7 +122,7 @@ export default function ExistingContent({ entry, isDeleted = false }: ExistingCo
     return (
       <p>
         {sprintf(
-          // TRANSLATORS: %s is the name of an MD RAID, like "md0".
+          // TRANSLATORS: %s is an MD RAID name, like "md0".
           _("Part of the RAID %s."),
           formattedPath(baseName(raid.name)),
         )}

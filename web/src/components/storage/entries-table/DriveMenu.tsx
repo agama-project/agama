@@ -115,12 +115,6 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
         <MenuButtonItem
           key="open"
           icon={<Icon size="md" name="article" />}
-          /* Screen readers get the full name; on screen, the row says which device. */
-          aria-label={sprintf(
-            // TRANSLATORS: opens the details panel of a device. %s is its name, such as "sda"
-            _("Configure %s"),
-            name,
-          )}
           description={_("Customize how the disk will be used")}
           onClick={() => openDetails(subject)}
         >
