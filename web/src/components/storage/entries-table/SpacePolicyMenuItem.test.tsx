@@ -28,11 +28,19 @@ import { _ } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
 import SpacePolicyMenuItem from "~/components/storage/entries-table/SpacePolicyMenuItem";
 
+const mockConfig = jest.fn();
 const mockSetSpacePolicy = jest.fn();
 
 jest.mock("~/hooks/model/storage/config-model", () => ({
   ...jest.requireActual("~/hooks/model/storage/config-model"),
+  useConfigModel: () => mockConfig(),
   useSetSpacePolicy: () => mockSetSpacePolicy,
+}));
+
+jest.mock("~/hooks/model/system/storage", () => ({
+  ...jest.requireActual("~/hooks/model/system/storage"),
+  useDevice: () => ({ partitionTable: {}, logicalVolumes: [{}] }),
+  useFlattenDevices: () => [],
 }));
 
 /* Fly-outs watch their size, which jsdom cannot report. */
@@ -44,17 +52,23 @@ beforeAll(() => {
   } as unknown as typeof ResizeObserver;
 });
 
-const renderIn = (collection: "drives" | "volumeGroups", policy: ConfigModel.SpacePolicy) =>
-  installerRender(
+const renderIn = (collection: "drives" | "volumeGroups", policy: ConfigModel.SpacePolicy) => {
+  const drive = { name: "/dev/vda", spacePolicy: policy, partitions: [{ mountPath: "/" }] };
+  const group = { vgName: "system", spacePolicy: policy, logicalVolumes: [{ mountPath: "/" }] };
+  mockConfig.mockReturnValue({
+    drives: [drive, drive],
+    volumeGroups: [group, group],
+  } as ConfigModel.Config);
+
+  return installerRender(
     <MenuButton
       menuProps={{ "aria-label": _("Actions"), hasFlyouts: true }}
-      items={[
-        <SpacePolicyMenuItem key="policy" collection={collection} index={1} policy={policy} />,
-      ]}
+      items={[<SpacePolicyMenuItem key="policy" subject={{ collection, index: 1 }} />]}
     >
       Actions
     </MenuButton>,
   );
+};
 
 const openChoices = async (user) => {
   await user.click(screen.getByRole("button", { name: "Actions" }));
