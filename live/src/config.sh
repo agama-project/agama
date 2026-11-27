@@ -375,7 +375,7 @@ rpm -qa | grep ^libQt | xargs --no-run-if-empty rpm -e --nodeps
 # root (ConditionUser=!root in their systemd user units), so there is no
 # PulseAudio-compatible server available for speech-dispatcher to talk to.
 # Use ALSA directly instead, so Orca's speech output works in the live session.
-sed -i 's/^#\? *AudioOutputMethod .*/AudioOutputMethod "alsa"/' /etc/speech-dispatcher/speechd.conf
+test -f /etc/speech-dispatcher/speechd.conf && sed -i 's/^#\? *AudioOutputMethod .*/AudioOutputMethod "alsa"/' /etc/speech-dispatcher/speechd.conf
 
 ## removing drivers and firmware makes the Live ISO about 370MiB smaller
 
