@@ -232,6 +232,7 @@ export default function ProposalFailedInfo() {
       actionLabel={_("Show details…")}
       // TRANSLATORS: screen reader name of "Show details…". It must start with the same words.
       actionAriaLabel={_("Show details about the failed storage calculation.")}
+      // TRANSLATORS: title of the dialog explaining why no layout can be calculated
       popupTitle={_("Failed to plan storage changes")}
     >
       <Description />
