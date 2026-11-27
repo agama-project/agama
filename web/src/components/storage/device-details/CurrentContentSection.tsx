@@ -180,8 +180,7 @@ function PartitionMenu({
           keepQuery
           description={_("Used by the new system, keeping or deleting data.")}
         >
-          {/* TRANSLATORS: keep the ellipsis: it says a form follows */}
-          {_("Assign a mount point…")}
+          {_("Assign a mount point")}
         </MenuButtonItem>,
       ];
 

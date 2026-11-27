@@ -74,7 +74,7 @@ function driveUsedFor(
       ? // TRANSLATORS: %s is a mount point, such as "/home"
         [withNames(_("Mounting it at %s"), [device.mountPath])]
       : // TRANSLATORS: %s is a mount point, such as "/home"
-        [withNames(_("Formating it for %s"), [device.mountPath])];
+        [withNames(_("Formatting it for %s"), [device.mountPath])];
   }
 
   const lines: React.ReactNode[] = [];
@@ -151,7 +151,12 @@ function driveUsedFor(
       }
     } else {
       if (newPartPaths.length <= NAMES_PER_LINE) {
-        lines.push(withNames(_("%s"), newPartPaths));
+        lines.push(
+          withNames(
+            n_("%s as a new partition", "%s as new partitions", newPartPaths.length),
+            newPartPaths,
+          ),
+        );
       } else {
         lines.push(
           sprintf(
@@ -208,7 +213,16 @@ function volumeGroupUsedFor(group: ConfigModel.VolumeGroup): React.ReactNode[] {
 
   if (!isSystem && newVols.length) {
     if (newPaths.length <= NAMES_PER_LINE) {
-      lines.push(withNames(_("%s"), newPaths));
+      if (group.name) {
+        lines.push(
+          withNames(
+            n_("%s as a new logical volume", "%s as new logical volumes", newPaths.length),
+            newPaths,
+          ),
+        );
+      } else {
+        lines.push(withNames("%s", newPaths));
+      }
     } else {
       lines.push(
         sprintf(
@@ -334,8 +348,10 @@ const existingDriveActions = (
     lines.push(_("Some existing partitions may be shrunk"));
   }
 
-  if (deleted + formatParts.length === total) {
+  if (deleted === total) {
     lines.push(_("All disk content will be deleted"));
+  } else if (deleted + formatParts.length === total) {
+    lines.push(_("All data will be deleted"));
   } else if (!deleted && !formatParts.length) {
     if (canShrink) {
       lines.push(_("The current data will be kept"));

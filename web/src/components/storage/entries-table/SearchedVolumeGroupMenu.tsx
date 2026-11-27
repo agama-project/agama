@@ -97,14 +97,7 @@ export default function SearchedVolumeGroupMenu({
   ];
 
   if (subject) {
-    items.push(
-      <SpacePolicyMenuItem
-        key="space-policy"
-        collection={subject.collection}
-        index={subject.index}
-        policy={entry.spacePolicy}
-      />,
-    );
+    items.push(<SpacePolicyMenuItem key="space-policy" subject={subject} />);
   }
 
   // "Do not use" is offered only when there is another device to install on.

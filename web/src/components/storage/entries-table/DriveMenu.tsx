@@ -135,14 +135,7 @@ export default function DriveMenu({ entry, subject }: DriveMenuProps): React.Rea
   );
 
   if (subject) {
-    items.push(
-      <SpacePolicyMenuItem
-        key="space-policy"
-        collection={subject.collection}
-        index={subject.index}
-        policy={entry.spacePolicy}
-      />,
-    );
+    items.push(<SpacePolicyMenuItem key="space-policy" subject={subject} />);
   } else {
     items.push(<NewVgMenuOption key="volume-group" device={entry} />);
   }
