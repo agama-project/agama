@@ -262,6 +262,13 @@ describe("PartitionForm", () => {
       expect(screen.getByLabelText("File system")).toHaveTextContent(/Current/);
     });
 
+    it("starts with a new partition when the one named cannot be reused", () => {
+      mockParams({ collection: "drives", index: "0", deviceName: "vdd9" });
+      installerRender(<PartitionForm />);
+
+      expect(screen.getByLabelText("Partition")).toHaveTextContent(/New partition/);
+    });
+
     it("reuses it when accepted", async () => {
       const { user } = installerRender(<PartitionForm />);
       await user.type(screen.getByLabelText("Mount point"), "/data");

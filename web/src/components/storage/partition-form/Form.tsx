@@ -180,10 +180,13 @@ function PartitionFormContent({
   const form = useAppForm({
     /* Arriving to reuse a partition that is already on the device starts the
        form with that partition chosen, rather than asking the reader to find
-       again the one they just picked. Editing keeps what is stored. */
+       again the one they just picked. Editing keeps what is stored, and a name
+       that cannot be reused is ignored. */
     ...mergeFormDefaults(defaultOptions, {
       ...toFormValues(initialPartition),
-      ...(!initialPartition && deviceName ? { name: deviceName } : {}),
+      ...(!initialPartition && availablePartitions.some((p) => p.name === deviceName)
+        ? { name: deviceName }
+        : {}),
     }),
     validators: {
       onSubmitAsync: async (ctx) => {
