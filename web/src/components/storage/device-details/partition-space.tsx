@@ -35,22 +35,14 @@ import type { Storage as System } from "~/model/system";
 type Decision = "keep" | "resizeIfNeeded" | "delete";
 
 /**
- * The three decisions a partition can carry.
- *
- * An explicit size to shrink to and a conditional delete are states the
- * configuration can hold, and they are still read elsewhere; neither is offered
- * here, because neither is a decision the reader can make anywhere else either.
+ * The decisions offered for a partition. The configuration can also hold a
+ * target size and a conditional delete, which are not offered.
  */
 const DECISIONS: Decision[] = ["delete", "resizeIfNeeded", "keep"];
 
 /**
- * What a device's own rule allows each of its partitions, where the rule is one
- * for the whole device.
- *
- * The three answers are the same three a partition can carry on its own, said
- * once for every part rather than part by part. Custom has no answer here: it
- * is the answer that says there is none for the device, and each part gives its
- * own.
+ * The decision a device rule gives all its partitions. Custom has none, since
+ * then each partition has its own.
  */
 function decisionUnder(policy: ConfigModel.SpacePolicy): Decision | undefined {
   switch (policy) {
@@ -65,13 +57,7 @@ function decisionUnder(policy: ConfigModel.SpacePolicy): Decision | undefined {
   }
 }
 
-/**
- * The word for one decision, as the thing a reader asks for.
- *
- * An imperative, because this is what the menu offering it needs: a reader
- * picking "Delete" is telling the installer to. Where the same decision is only
- * being reported, the row says it as a state of affairs instead.
- */
+/** The menu label of a decision, as an imperative. */
 function decisionLabel(decision: Decision): TranslatedString {
   switch (decision) {
     case "keep":
@@ -113,10 +99,7 @@ function meaning(decision: Decision, partition: System.Device, kind: Kind): Tran
   }
 }
 
-/**
- * Whether the installer configures booting on the device at the given place,
- * whether it chose that device itself or the reader did.
- */
+/** Whether the installer configures booting on the given device. */
 function isBootDevice(
   config: ConfigModel.Config | null,
   collection: DeviceCollection,
@@ -128,11 +111,7 @@ function isBootDevice(
   return !!name && !!configModel.boot.hasDevice(config, name);
 }
 
-/**
- * How much shrinking one partition can free, as the machine reports it.
- *
- * Nothing where it cannot be shrunk, which is what tells the two cases apart.
- */
+/** How much shrinking a partition can free, or nothing when it cannot be shrunk. */
 function recoverableBy(partition: System.Device): number | undefined {
   const shrinking = partition.block?.shrinking;
   if (shrinking?.supported !== true || !shrinking.minSize) return undefined;
@@ -140,27 +119,14 @@ function recoverableBy(partition: System.Device): number | undefined {
   return partition.block.size - shrinking.minSize;
 }
 
-/**
- * The first reason the machine gives for not shrinking a partition, if any.
- *
- * One reason only, whatever the machine gives, for where there is room for a
- * single line. The reasons come translated and are shown as they come.
- */
+/** The first reason the system gives for not shrinking a partition, if any. */
 function shrinkReason(partition: System.Device): string | undefined {
   return partition.block?.shrinking?.reasons?.[0];
 }
 
 /**
- * Why a partition cannot be shrunk, in the machine's own words.
- *
- * The first reason only, as one sentence, since it sits under a menu item
- * where there is room for a line. None of it can be opened or closed: every
- * control added to a menu is one more stop for a keyboard and one more thing
- * to find.
- *
- * The reasons come translated and are shown as they come. Where the machine
- * gives none, a sentence of our own says so rather than leaving the reader
- * with no answer.
+ * Why a partition cannot be shrunk: the first reason the system gives, already
+ * translated, or a generic sentence when it gives none.
  */
 function ShrinkRefusal({
   partition,
@@ -179,14 +145,14 @@ function ShrinkRefusal({
   return _("This partition cannot be made smaller.");
 }
 
-/** The decision a partition carries today, read from its configuration entry. */
+/** The current decision of a partition, from its configuration entry. */
 function decisionOf(entry?: ConfigModel.Partition | ConfigModel.LogicalVolume): Decision {
   if (entry?.delete) return "delete";
   if (entry?.resizeIfNeeded) return "resizeIfNeeded";
   return "keep";
 }
 
-/** What one option says about itself, on this partition. */
+/** The description of an option for a given partition. */
 function descriptionOf(
   decision: Decision,
   partition: System.Device,
@@ -197,6 +163,7 @@ function descriptionOf(
   if (refused) return <ShrinkRefusal partition={partition} kind={kind} />;
 
   if (decision === "keep" && booting && isExistingBootPartition(partition)) {
+    // TRANSLATORS: explains keeping a partition the new system may need to boot
     return _("May be used to boot the new system.");
   }
 
@@ -221,42 +188,27 @@ function descriptionOf(
 }
 
 export type PartitionSpaceItemsProps = {
-  /** The partition these decide about, as the machine reports it. */
+  /** The partition, as the system reports it. */
   partition: System.Device;
-  /** Every partition the decision governs on this device, in the same terms. */
+  /** All partitions on the device the decision applies to. */
   governed: System.Device[];
-  /** The device's configuration entries, which carry the decisions made so far. */
+  /** The configuration entries of the device partitions. */
   entries: (ConfigModel.Partition | ConfigModel.LogicalVolume)[];
-  /** Where the entry is written. */
+  /** Where the device is in the configuration. */
   collection: DeviceCollection;
   index: number;
-  /** What the device's own rule allows every partition, where it has one. */
+  /** The decision of the device rule, when it has one. */
   rule?: Decision;
 };
 
 /**
- * What the installer may do to one partition, or to one logical volume, offered
- * where that is decided one at a time.
+ * The menu items to decide what the installer may do to a partition or a
+ * logical volume. A decision is a permission: "Shrink if needed" holds even
+ * when no shrinking happens.
  *
- * Menu items rather than a control of their own, in the same menu as everything
- * else the row can be told to do. A row offering two ways in asks the reader to
- * learn which of its own things live where; and a control sitting in a column
- * of its own gives a decision already written in the row's first column a
- * second place to be read.
- *
- * It is a permission rather than an instruction: "Shrink if needed" is the
- * whole truth about a partition the installer did not have to shrink.
- *
- * Every partition's decision is written back with the one being changed,
- * because the configuration clears them all before applying the list it is
- * given. Sending only the partition that changed would quietly undo every other
- * decision on the device. Where the device gives every partition the same
- * decision, that is the one each of the others carries on.
- *
- * An option that cannot apply stays offered and says why, reachable by keyboard.
- * Shrinking always says something about this partition in particular: how much
- * it can free, or why it cannot be shrunk. It is where a reader considering it
- * decides, whatever the device's own rule is.
+ * The decisions of all partitions are written back together, since the
+ * configuration replaces the whole list. An option that cannot apply stays
+ * offered, with the reason, and reachable by keyboard.
  */
 function usePartitionSpaceItems({
   partition,
@@ -312,7 +264,6 @@ function usePartitionSpaceItems({
 }
 
 export {
-  decisionLabel,
   decisionOf,
   decisionUnder,
   recoverableBy,

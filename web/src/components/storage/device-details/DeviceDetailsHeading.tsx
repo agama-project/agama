@@ -33,14 +33,8 @@ export type DeviceDetailsHeadingProps = {
 };
 
 /**
- * Which entry the panel is about, said exactly the way its row says it.
- *
- * The same name, shortened the same way, and the same size beside it, so the
- * row a reader opened and the panel that opens are visibly the same thing. The
- * panel can cover the list, and then this is what keeps the entry at hand.
- *
- * A volume group the machine has carries its size too, as in its row; one
- * being created has none yet (see {@link volumeGroupFacts}).
+ * The panel title: the entry name and size, shortened like in its row. A
+ * volume group the installation creates has no size yet.
  */
 export default function DeviceDetailsHeading({
   entry,

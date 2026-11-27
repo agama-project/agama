@@ -71,10 +71,10 @@ export default function PartitionableMountContent({ entry, subject }: DeviceDeta
     <DetailsItem value={value}>
       <Flex gap={{ default: "gapMd" }} flexWrap={{ default: "wrap" }}>
         <Link to={editPath} keepQuery variant="link" isInline>
-          {/* TRANSLATORS: verb, changes how the file system is used. */}
+          {/* TRANSLATORS: verb */}
           {_("Edit")}
         </Link>
-        {/* A button, since it acts in place, styled like the link beside it. */}
+        {/* A button, since it acts in place, looking like the link beside it. */}
         <Button
           variant="link"
           isInline
@@ -83,7 +83,7 @@ export default function PartitionableMountContent({ entry, subject }: DeviceDeta
               setFilesystem(subject.collection, subject.index, {});
           }}
         >
-          {/* TRANSLATORS: stops using the whole device for this file system. */}
+          {/* TRANSLATORS: stops using the whole device for this file system */}
           {_("Stop using")}
         </Button>
       </Flex>

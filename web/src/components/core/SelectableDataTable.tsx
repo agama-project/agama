@@ -285,12 +285,8 @@ export type SelectableDataTableProps<T = any> = {
   emptyState?: React.ReactNode;
 
   /**
-   * Whether the cells of every row are centered vertically in it, rather than
-   * placed at its top.
-   *
-   * Useful when some cells hold more than one line, such as a value with a note
-   * under it: the single-line cells then sit beside the whole of that cell
-   * instead of beside its first line only. Off by default.
+   * Whether row cells are centered vertically instead of top aligned, for rows
+   * where some cells span several lines. Defaults to false.
    */
   hasVerticallyCenteredRows?: boolean;
 } & TableProps;

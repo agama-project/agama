@@ -31,7 +31,13 @@ type TextStyleKey = keyof typeof textStyles;
 
 type TextProps = React.HTMLProps<HTMLSpanElement> &
   React.PropsWithChildren<{
-    /** The HTML element to use for wrapping given children */
+    /**
+     * The HTML element to use for wrapping given children.
+     *
+     * Use `"strong"` for text of strong importance, such as a data loss. It is
+     * the right markup, but most screen readers do not announce it by default,
+     * so the words themselves must say why the text matters.
+     */
     component?: "small" | "span" | "strong";
     /** Whether apply bold font weight */
     isBold?: boolean;

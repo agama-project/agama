@@ -28,17 +28,16 @@ import type { Entry } from "~/components/storage/device-details/entry";
 export type Planned = ConfigModel.Partition | ConfigModel.LogicalVolume;
 
 /**
- * Returns the partition id, if any: some partitions (a BIOS boot one, for
- * example) are requested by id instead of by mount point. Logical volumes
- * have none.
+ * The partition id, if any. Some partitions, such as BIOS boot, are requested
+ * by id instead of mount point.
  */
 export function partitionId(part: Planned): ConfigModel.PartitionId | undefined {
   return "id" in part ? part.id : undefined;
 }
 
 /**
- * Returns what is planned on the entry, new or reused. Reused ones count too,
- * so a device that only mounts an existing partition does not look empty.
+ * What is planned on the entry, new or reused, so a device that only mounts an
+ * existing partition does not look empty.
  */
 export function plannedOn(entry: Entry): Planned[] {
   const parts = entry.isVolumeGroup

@@ -1,0 +1,190 @@
+// Side panel styles: everything core/SidePanel needs.
+//
+// How it scrolls:
+//
+//   +-- page (scrolls as a whole) ------------------+
+//   | content kept in view, such as a sticky result |
+//   +----------------------+------------------------+
+//   | page content,        | panel: sticks below    |
+//   | scrolls with the     | the content kept in    |
+//   | page                 | view; only its body    |
+//   |                      | scrolls                |
+//   +----------------------+------------------------+
+//
+// - The page scrolls as a whole, like every other page.
+// - The panel is sticky: it stays right below the content kept in view
+//   (`pinnedOffset`), as tall as the visible area. SidePanel measures both.
+// - Sticky only works when no box between the panel and the page scrolls on
+//   its own, so those boxes clip their overflow instead of scrolling it.
+// - Inside the panel, the heading stays and only the body scrolls.
+
+// With a panel, the page fills the window when short and scrolls as a whole
+// when long.
+.pf-v6-c-page__main-group:has(.agm-side-panel-frame),
+.pf-v6-c-page__main-section:has(.agm-side-panel-frame) {
+  flex: 1 0 auto;
+}
+
+// The drawer reaches the edges of the page box, with the page padding moved
+// inside it, so the page stays in place. It takes its content height rather
+// than the full section height, and clips rather than scrolls, so the panel
+// can be sticky.
+.agm-side-panel-frame {
+  --agm-side-panel-frame--inset-block-start: var(--pf-v6-c-page__main-section--PaddingBlockStart);
+  --agm-side-panel-frame--inset-block-end: var(--pf-v6-c-page__main-section--PaddingBlockEnd);
+  --agm-side-panel-frame--border-start: var(--pf-v6-c-page__main-container--BorderInlineStartWidth);
+  --agm-side-panel-frame--border-end: var(--pf-v6-c-page__main-container--BorderInlineEndWidth);
+  --agm-side-panel-frame--inset-inline-start: calc(
+    var(--pf-v6-c-page__main-section--PaddingInlineStart) - var(
+        --agm-side-panel-frame--border-start
+      )
+  );
+  --agm-side-panel-frame--inset-inline-end: calc(
+    var(--pf-v6-c-page__main-section--PaddingInlineEnd) - var(--agm-side-panel-frame--border-end)
+  );
+
+  flex: 1 0 auto;
+  block-size: auto;
+  margin-block: calc(-1 * var(--agm-side-panel-frame--inset-block-start))
+    calc(-1 * var(--agm-side-panel-frame--inset-block-end));
+  margin-inline: calc(-1 * var(--agm-side-panel-frame--inset-inline-start))
+    calc(-1 * var(--agm-side-panel-frame--inset-inline-end));
+  overflow: clip;
+}
+
+.agm-side-panel-frame > .pf-v6-c-drawer__main {
+  overflow: clip;
+}
+
+// Lets the page narrow with the window, so wide content scrolls in its own box
+// instead of being clipped.
+.agm-side-panel-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__content {
+  min-width: 0;
+}
+
+// Below content kept in view, such as a sticky section, the drawer starts
+// right under it.
+.agm-side-panel-frame:not(:first-child) {
+  --agm-side-panel-frame--inset-block-start: 0px;
+
+  margin-block-start: calc(-1 * var(--pf-v6-c-page__main-section--RowGap));
+}
+
+.agm-side-panel-frame:not(:first-child)
+  > .pf-v6-c-drawer__main
+  > .pf-v6-c-drawer__content
+  > .pf-v6-c-drawer__body {
+  padding-block-start: var(--agm-side-panel-frame--inset-inline-start);
+}
+
+.agm-side-panel-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__content > .pf-v6-c-drawer__body {
+  padding-block: var(--agm-side-panel-frame--inset-block-start)
+    var(--agm-side-panel-frame--inset-block-end);
+  padding-inline: var(--agm-side-panel-frame--inset-inline-start)
+    var(--agm-side-panel-frame--inset-inline-end);
+}
+
+// The panel body scrolls its own content, not the whole panel, so the panel
+// heading stays in view.
+.agm-side-panel-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__panel {
+  --pf-v6-c-drawer__panel--PaddingBlockStart: 0;
+  --pf-v6-c-drawer__panel--PaddingBlockEnd: 0;
+
+  overflow: hidden;
+}
+
+// The block PatternFly puts between the drawer and the panel.
+.agm-side-panel-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__panel > .pf-v6-c-drawer__body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+// A light tint over the covered page, which is inert, so it visibly reads as
+// out of reach while staying readable. On the drawer rather than the page, so
+// it does not scroll away.
+.agm-side-panel-frame--covered > .pf-v6-c-drawer__main {
+  position: relative;
+}
+
+.agm-side-panel-frame--covered > .pf-v6-c-drawer__main::after {
+  position: absolute;
+  z-index: var(--pf-v6-c-drawer__content--ZIndex);
+  inset: 0;
+  content: "";
+  background-color: color-mix(
+    in srgb,
+    var(--pf-t--global--background--color--backdrop--default) 15%,
+    transparent
+  );
+  animation: agm-side-panel-backdrop-in var(--pf-t--global--motion--duration--fade--default)
+    ease-in-out;
+}
+
+@keyframes agm-side-panel-backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+
+// The sticky panel. Only while open: a closed panel stays in the layout,
+// hidden, and would otherwise keep the page as long as an open one.
+.agm-side-panel-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__content {
+  overflow: visible;
+}
+
+.agm-side-panel-frame > .pf-v6-c-drawer__main > .pf-v6-c-drawer__panel:not([hidden]) {
+  position: sticky;
+  inset-block-start: var(--agm-side-panel--pinned-offset, 0);
+  align-self: flex-start;
+  block-size: var(--agm-side-panel--pinned-height, auto);
+  max-block-size: none;
+}
+
+// The panel fills the height it gets; its body scrolls its own content.
+.agm-side-panel {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  padding: var(--agm-t--side-panel--padding--block, var(--pf-t--global--spacer--sm))
+    var(--agm-t--side-panel--padding--inline, var(--pf-t--global--spacer--md));
+  background: var(--pf-t--global--background--color--primary--default);
+}
+
+// Focus ring drawn inside, since the frame clips the outside.
+.agm-side-panel:focus-visible {
+  outline: 3px solid var(--agm-t--focus--color, var(--agm-t--color--waterhole--50));
+  outline-offset: -3px;
+}
+
+.agm-side-panel__head {
+  flex: 0 0 auto;
+  padding-block-end: var(--pf-t--global--spacer--sm);
+  margin-block-end: var(--pf-t--global--spacer--md);
+  border-block-end: 1px solid var(--pf-t--global--border--color--default);
+}
+
+// Sized as body text rather than a heading, so the panel does not outrank the
+// page.
+.agm-side-panel__title {
+  margin: 0;
+  font-size: var(--pf-t--global--font--size--body--lg);
+  font-weight: var(--pf-t--global--font--weight--body--bold);
+  line-height: var(--pf-t--global--font--line-height--heading);
+}
+
+// The body scrolls when its content does not fit.
+.agm-side-panel__body {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+
+// An edge against the covered page.
+.agm-side-panel-frame__side {
+  border-inline-start: 1px solid var(--pf-t--global--border--color--default);
+}

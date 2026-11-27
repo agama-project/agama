@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import { useMemo } from "react";
 import DevicesManager from "~/model/storage/devices-manager";
 import { useFlattenDevices as useSystemDevices } from "~/hooks/model/system/storage";
 import {
@@ -29,23 +29,16 @@ import {
 } from "~/hooks/model/proposal/storage";
 
 /**
- * What the installer worked out, as the machine before, the machine after, and
- * the steps between them.
- *
- * Read from the plan the solver produced rather than from the configuration, so
- * everything asked of it reports what will happen rather than what was asked
- * for. A device allowed to lose partitions it did not have to lose says it
- * loses nothing.
+ * The devices before and after the planned changes, read from the computed
+ * plan rather than the configuration, so it reports what will happen rather
+ * than what was asked for.
  */
 function useDevicesManager(): DevicesManager {
   const system = useSystemDevices();
   const staging = useProposalDevices();
   const actions = useActions();
 
-  return React.useMemo(
-    () => new DevicesManager(system, staging, actions),
-    [system, staging, actions],
-  );
+  return useMemo(() => new DevicesManager(system, staging, actions), [system, staging, actions]);
 }
 
 export { useDevicesManager };

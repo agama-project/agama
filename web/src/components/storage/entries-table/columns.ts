@@ -22,26 +22,18 @@
 
 import { _, TranslatedString } from "~/i18n";
 
-/**
- * What each column of the list is called, as its header shows it.
- */
+/** The column names of the storage entries table. */
 function columnName(column: "device" | "usedFor" | "existingData" | "actions"): TranslatedString {
   switch (column) {
     case "device":
-      // TRANSLATORS: names the column of the list holding what each entry of
-      // the installation is called.
       return _("Device");
     case "existingData":
-      // TRANSLATORS: names the column of the list saying what happens to the
-      // data already on each device: kept, shrunk or deleted.
+      // TRANSLATORS: column with what happens to the data on each device: kept, shrunk or deleted
       return _("Actions on current content");
     case "usedFor":
-      // TRANSLATORS: names the column of the list saying what the system being
-      // installed uses each device for, such as its mount points.
+      // TRANSLATORS: column with what the new system uses each device for
       return _("Used for");
     case "actions":
-      // TRANSLATORS: names the column of the list holding the menu of what can
-      // be done to each entry of the installation.
       return _("Actions");
   }
 }

@@ -22,6 +22,8 @@
 
 import React from "react";
 import { sprintf } from "sprintf-js";
+import Interpolate from "~/components/core/Interpolate";
+import DataLoss from "~/components/storage/shared/DataLoss";
 import { baseName, formattedPath, filesystemLabel } from "~/components/storage/utils";
 import { useFlattenDevices as useSystemDevices } from "~/hooks/model/system/storage";
 import { _ } from "~/i18n";
@@ -33,9 +35,16 @@ export type ExistingContentProps = {
   isDeleted?: boolean;
 };
 
-/**
- * Says what is on a device today and whether the installation deletes it.
- */
+/** A sentence with its bracketed part, the data loss, set apart. */
+function Deleted({ sentence }: { sentence: string }) {
+  return (
+    <p>
+      <Interpolate sentence={sentence}>{(loss) => <DataLoss>{loss}</DataLoss>}</Interpolate>
+    </p>
+  );
+}
+
+/** What is on a device and whether the installation deletes it. */
 export default function ExistingContent({ entry, isDeleted = false }: ExistingContentProps) {
   const systemDevices = useSystemDevices();
   const device = entry.device;
@@ -45,20 +54,21 @@ export default function ExistingContent({ entry, isDeleted = false }: ExistingCo
 
     if (isDeleted) {
       return (
-        <p>
-          {sprintf(
-            // TRANSLATORS: %s is a filesystem type like "Ext4" or "Btrfs"
-            _("%s file system: it will be deleted and its data lost."),
+        <Deleted
+          sentence={sprintf(
+            // TRANSLATORS: %s is a file system type, like "Ext4". Keep the brackets: they mark the
+            // data loss.
+            _("%s file system: [it will be deleted and its data lost]."),
             type,
           )}
-        </p>
+        />
       );
     }
 
     return (
       <p>
         {
-          // TRANSLATORS: %s is a filesystem type like "Ext4" or "Btrfs"
+          // TRANSLATORS: %s is a file system type, like "Ext4"
           sprintf(_("%s file system."), type)
         }
       </p>
@@ -70,20 +80,23 @@ export default function ExistingContent({ entry, isDeleted = false }: ExistingCo
   if (group) {
     if (isDeleted) {
       return (
-        <p>
-          {sprintf(
-            // TRANSLATORS: %s is the name of an LVM volume group, like "system"
-            _("LVM physical volume: the whole volume group %s will be deleted and its data lost."),
+        <Deleted
+          sentence={sprintf(
+            _(
+              // TRANSLATORS: %s is a volume group name, like "system". Keep the brackets: they mark
+              // the data loss.
+              "LVM physical volume: [the whole volume group %s will be deleted and its data lost].",
+            ),
             formattedPath(baseName(group.name)),
           )}
-        </p>
+        />
       );
     }
 
     return (
       <p>
         {sprintf(
-          // TRANSLATORS: %s is the name of an LVM volume group, like "system"
+          // TRANSLATORS: %s is a volume group name, like "system"
           _("LVM physical volume for the volume group %s."),
           formattedPath(baseName(group.name)),
         )}
@@ -95,20 +108,21 @@ export default function ExistingContent({ entry, isDeleted = false }: ExistingCo
   if (raid) {
     if (isDeleted) {
       return (
-        <p>
-          {sprintf(
-            // TRANSLATORS: %s is the name of an MD RAID, like "md0".
-            _("Part of a RAID: the whole RAID %s will be deleted and its data lost."),
+        <Deleted
+          sentence={sprintf(
+            // TRANSLATORS: %s is an MD RAID name, like "md0". Keep the brackets: they mark the data
+            // loss.
+            _("Part of a RAID: [the whole RAID %s will be deleted and its data lost]."),
             formattedPath(baseName(raid.name)),
           )}
-        </p>
+        />
       );
     }
 
     return (
       <p>
         {sprintf(
-          // TRANSLATORS: %s is the name of an MD RAID, like "md0".
+          // TRANSLATORS: %s is an MD RAID name, like "md0".
           _("Part of the RAID %s."),
           formattedPath(baseName(raid.name)),
         )}

@@ -22,21 +22,20 @@
 
 import React from "react";
 import { Flex, FlexItem } from "@patternfly/react-core";
-import Text from "~/components/core/Text";
 
 export type SummaryWithActionsProps = {
-  /** What the section has to say, in one line. */
+  /** A one-line summary. */
   summary: React.ReactNode;
-  /** An optional second line, explaining the summary or what can be done next. */
+  /** An optional second line. */
   detail?: React.ReactNode;
-  /** The ways to act on it, such as links to a form. Shown under the text. */
+  /** Actions shown under the text, such as links to a form. */
   actions?: React.ReactNode;
 };
 
 /**
- * A short statement for a section with little or nothing to list yet,
- * followed by the ways to act on it. A paragraph rather than a centered empty
- * state, so the actions stay where every other section has them.
+ * A short statement and its actions, for a section with little or nothing to
+ * list yet. A paragraph rather than an empty state, so the actions stay where
+ * other sections have them.
  *
  * @example
  * <SummaryWithActions
@@ -57,9 +56,7 @@ export default function SummaryWithActions({ summary, detail, actions }: Summary
   return (
     <Flex direction={{ default: "column" }} gap={{ default: "gapMd" }}>
       <FlexItem>
-        <p>
-          <Text>{summary}</Text>
-        </p>
+        <p>{summary}</p>
         {detail && <p>{detail}</p>}
       </FlexItem>
       {actions && (

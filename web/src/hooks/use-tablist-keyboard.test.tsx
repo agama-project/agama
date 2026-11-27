@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { screen } from "@testing-library/react";
 import { Tab, Tabs, TabTitleText } from "@patternfly/react-core";
 import { plainRender } from "~/test-utils";
@@ -28,7 +28,7 @@ import { useTablistKeyboard } from "~/hooks/use-tablist-keyboard";
 
 /** A strip of three, as the panel builds one. */
 function Strip() {
-  const [tab, setTab] = React.useState("one");
+  const [tab, setTab] = useState("one");
   const { containerProps, tabProps } = useTablistKeyboard(["one", "two", "three"], tab, setTab);
 
   return (

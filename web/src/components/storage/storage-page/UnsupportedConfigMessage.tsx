@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Button,
   Content,
@@ -38,13 +38,10 @@ import { useReset } from "~/hooks/model/config/storage";
 import { useActions } from "~/hooks/model/proposal/storage";
 import { _ } from "~/i18n";
 
-/**
- * A button like the others of the message, opening what the configuration will
- * do to the disks. It is only for where a layout was calculated.
- */
+/** A button opening the planned changes, when a layout was calculated. */
 function PreviewResult(): React.ReactNode {
   const actions = useActions();
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
@@ -54,9 +51,9 @@ function PreviewResult(): React.ReactNode {
       {isOpen && (
         <Popup
           isOpen
-          // TRANSLATORS: title of the popup with the layout the disks will have
-          // and the actions needed to get there. "Planned" because nothing is
-          // applied until the installation starts.
+          // TRANSLATORS: title of the popup with the layout the disks will have and the actions
+          // needed to get there. "Planned" because nothing is applied until the installation
+          // starts.
           title={_("Planned storage changes")}
           description={summaryOf(actions)}
           variant="large"
@@ -72,12 +69,9 @@ function PreviewResult(): React.ReactNode {
 }
 
 /**
- * Shown instead of the page when the storage configuration is correct and the
- * installation can proceed, but it is made of things this interface cannot
- * represent, and so cannot let the reader change.
- *
- * It is not an error: the result can be previewed, and the reader may still
- * start over with a simple configuration.
+ * Shown instead of the page when the storage configuration is valid but made
+ * of things this interface cannot represent, so it cannot be changed here. The
+ * result can still be previewed, and the user can start over.
  */
 export default function UnsupportedConfigMessage(): React.ReactNode {
   const reset = useReset();

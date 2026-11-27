@@ -21,12 +21,11 @@
  */
 
 import React from "react";
-import { sprintf } from "sprintf-js";
 import { MenuButtonItem } from "~/components/core/MenuButton";
 import { useSetSpacePolicy } from "~/hooks/model/storage/config-model";
 import { _, TranslatedString } from "~/i18n";
-import type { ConfigModel, DeviceCollection } from "~/model/storage/config-model";
 import Icon from "~/components/layout/Icon";
+import type { ConfigModel, DeviceCollection } from "~/model/storage/config-model";
 
 /** Safest first, so the one that loses data comes last. */
 const POLICIES: ConfigModel.SpacePolicy[] = ["delete", "resize"];
@@ -37,11 +36,11 @@ function label(policy: ConfigModel.SpacePolicy): TranslatedString {
 }
 
 function meaning(policy: ConfigModel.SpacePolicy, isVg: boolean): TranslatedString {
-  return policy === "delete"
-    ? _("The space will be available for the new system")
-    : isVg
-      ? _("Some logical volumes may be reduced if needed")
-      : _("Some partitions may be reduced if needed");
+  if (policy === "delete") return _("The space will be available for the new system");
+
+  return isVg
+    ? _("Some logical volumes may be reduced if needed")
+    : _("Some partitions may be reduced if needed");
 }
 
 export type SpacePolicyMenuItemProps = {
@@ -49,20 +48,17 @@ export type SpacePolicyMenuItemProps = {
   index: number;
   /** What the device allows its partitions today. */
   policy: ConfigModel.SpacePolicy;
-  isFlyout?: boolean;
 };
 
 export default function SpacePolicyMenuItem({
   collection,
   index,
   policy,
-  isFlyout = false,
 }: SpacePolicyMenuItemProps) {
   const setSpacePolicy = useSetSpacePolicy();
   const isVolumeGroup = collection === "volumeGroups";
 
-  /* Choosing what the device already allows changes nothing, so nothing is
-     written. */
+  /* Choosing the current policy changes nothing. */
   const choose = (next: ConfigModel.SpacePolicy) => {
     if (next !== policy) setSpacePolicy(collection, index, { type: next });
   };
@@ -87,17 +83,8 @@ export default function SpacePolicyMenuItem({
     <MenuButtonItem
       key="space-policy"
       icon={<Icon size="md" name="home_storage" />}
-      /* Leading back out, named after where the reader is, for context; and
-         saying it leads back, for whoever hears rather than sees it. */
-      upProps={{
-        label: title,
-        // TRANSLATORS: name of the item leading back to the full menu from
-        // the choices for a device's current partitions. %s is the title of
-        // those choices, such as "Existing partitions".
-        "aria-label": sprintf(_("Back from %s"), title),
-      }}
       description={description}
-      {...(isFlyout ? { flyoutItems: choices } : { items: choices })}
+      flyoutItems={choices}
     >
       {title}
     </MenuButtonItem>

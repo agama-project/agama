@@ -23,16 +23,14 @@
 import { useEffect, useState } from "react";
 
 /**
- * Tells whether an element's content is wider than the element, that is,
- * whether it scrolls sideways.
+ * Whether the content of an element is wider than the element, so it scrolls
+ * sideways.
  *
- * Meant for scroll boxes that should be a Tab stop only while they scroll:
- * keyboard users need to focus a box to scroll it, but a box that fits needs
- * no extra stop.
+ * Useful for a scroll box that is a Tab stop only while it scrolls, so keyboard
+ * users can scroll it without an extra stop when it fits.
  *
- * Checks again whenever the element or its direct children change size. Pass
- * the element itself (from a callback ref), not a ref object; see
- * `useElementSize` for why.
+ * Checks again when the element or its children change size. Takes the element,
+ * from a callback ref, rather than a ref object, like `useElementSize`.
  *
  * @example
  * const [box, setBox] = useState<HTMLDivElement | null>(null);

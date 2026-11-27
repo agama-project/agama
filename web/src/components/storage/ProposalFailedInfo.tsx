@@ -28,8 +28,8 @@ import { useAvailableDevices, useVolumeTemplates } from "~/hooks/model/system/st
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { _, n_, formatList } from "~/i18n";
 import { formattedPath } from "~/components/storage/utils";
-import type { TranslatedString } from "~/i18n";
 import { sprintf } from "sprintf-js";
+import type { TranslatedString } from "~/i18n";
 
 function snapshotsRelevant(volumes, partitions) {
   const rootOutline = volumes.find((v) => v.mountPath === "/")?.outline;
@@ -68,8 +68,8 @@ function SizeExplanations() {
     return (
       <Content component="p">
         {sprintf(
-          // TRANSLATORS: %s is the formatted mount point for root, '"/"
           _(
+            // TRANSLATORS: %s is the root mount point, '"/"'
             "Bear in mind the automatically calculated sizes of the partition for %s is influenced by the usage of Btrfs snapshots and the amount of RAM in the system.",
           ),
           formattedPath("/"),
@@ -82,8 +82,8 @@ function SizeExplanations() {
     return (
       <Content component="p">
         {sprintf(
-          // TRANSLATORS: %s is the formatted mount point for root, '"/"
           _(
+            // TRANSLATORS: %s is the root mount point, '"/"'
             "Bear in mind the automatically calculated sizes of some partitions are influenced by the amount of RAM in the system and, in the case of %s, by the usage of Btrfs snapshots.",
           ),
           formattedPath("/"),
@@ -96,8 +96,8 @@ function SizeExplanations() {
     return (
       <Content component="p">
         {sprintf(
-          // TRANSLATORS: %s is the formatted mount point for root, '"/"
           _(
+            // TRANSLATORS: %s is the root mount point, '"/"'
             "Bear in mind that using Btrfs snapshots results in a bigger auto-calculated size of the partition for %s.",
           ),
           formattedPath("/"),
@@ -109,8 +109,8 @@ function SizeExplanations() {
   return (
     <Content component="p">
       {sprintf(
-        // TRANSLATORS: %s (used only in the singular case) is a formatted mount point like "/home"
         n_(
+          // TRANSLATORS: %s, only in the singular, is a mount point like "/home"
           "Bear in mind the automatically calculated sizes of the partition for '%s' is influenced by the amount of RAM in the system",
           "Bear in mind the automatically calculated sizes of some partitions are influenced by the amount of RAM in the system",
           ramPaths.length,
@@ -184,11 +184,11 @@ const Intro = () => {
     <Content component="p">
       {sprintf(
         isBootConfigured
-          ? // TRANSLATORS: %s is a list of formatted mount points with a partition size like
-            // '"/" (at least 10 GiB), "/var" (20 GiB) and "swap" (2 GiB)'
+          ? // TRANSLATORS: %s is a list of mount points and sizes, like '"/" (at least 10 GiB) and
+            // "swap" (2 GiB)'
             _("Applying the configuration implies allocating the boot partition and also %s.")
-          : // TRANSLATORS: %s is a list of formatted mount points with a partition size like
-            // '"/" (at least 10 GiB), "/var" (20 GiB) and "swap" (2 GiB)'
+          : // TRANSLATORS: %s is a list of mount points and sizes, like '"/" (at least 10 GiB) and
+            // "swap" (2 GiB)'
             _("Applying the configuration implies allocating %s."),
         formatList(mountPaths),
       )}
@@ -208,8 +208,7 @@ const Description = () => {
 
 /** The one line saying that no layout could be worked out. */
 function proposalFailedTitle(): TranslatedString {
-  // TRANSLATORS: reported at the top of the storage page when the installer
-  // cannot work out how to lay out the disks for the new system.
+  // TRANSLATORS: shown when no storage layout can be calculated
   return _("The configuration cannot be applied");
 }
 
@@ -228,15 +227,12 @@ export default function ProposalFailedInfo() {
     <AlertWithDetailsPopup
       variant="warning"
       title={proposalFailedTitle()}
-      // TRANSLATORS: opens a popup explaining why no storage layout can be
-      // calculated.
+      // TRANSLATORS: opens a dialog explaining why no layout can be calculated. Keep the ellipsis:
+      // it signals a dialog.
       actionLabel={_("Show details…")}
-      // TRANSLATORS: the full name of the "Show more" action, read by screen
-      // readers. It must start with the same words as the translation of "Show
-      // more", so that people using speech input can say what they see.
+      // TRANSLATORS: screen reader name of "Show details…". It must start with the same words.
       actionAriaLabel={_("Show details about the failed storage calculation.")}
-      // TRANSLATORS: title of the popup explaining why no storage layout can be
-      // calculated.
+      // TRANSLATORS: title of the dialog explaining why no layout can be calculated
       popupTitle={_("Failed to plan storage changes")}
     >
       <Description />

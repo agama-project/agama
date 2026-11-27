@@ -27,6 +27,7 @@ import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacin
 import { sprintf } from "sprintf-js";
 import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
+import DataLoss from "~/components/storage/shared/DataLoss";
 import SpaceDecision from "~/components/storage/device-details/SpaceDecision";
 import { buildCurrentContentSummary } from "~/components/storage/device-details/current-content-summary";
 import Interpolate, { markerText } from "~/components/core/Interpolate";
@@ -79,7 +80,7 @@ function rowsOf(entry: Entry): Row[] {
 /**
  * Whether the device will contain partitions or logical volumes.
  *
- * TODO: this is COMPLETELY misplaced here.
+ * TODO: move to the model.
  */
 export function hasCurrentContent(entry: Entry): boolean {
   return rowsOf(entry).length > 0;
@@ -179,6 +180,7 @@ function PartitionMenu({
           keepQuery
           description={_("Used by the new system, keeping or deleting data.")}
         >
+          {/* TRANSLATORS: keep the ellipsis: it says a form follows */}
           {_("Assign a mount point…")}
         </MenuButtonItem>,
       ];
@@ -211,10 +213,6 @@ const COLUMNS = {
   action: { hasBorderBefore: true },
 } satisfies Record<string, ColumnLook>;
 
-/* Losses are shown in the danger color of the entries table, with no extra
-   icon. */
-const DESTROYS_CLASS = "agm-entries-table__cost--destroys";
-
 /**
  * What becomes of one partition, whether that loses data, and an optional
  * note shown under it.
@@ -226,7 +224,7 @@ type Status = { text: string; destroys: boolean; note?: string };
  * - reused by the new system: mounted as is, or formatted, at its mount point;
  * - otherwise: what its space decision allows (keep, shrink if needed, delete).
  *
- * Formatting and deleting lose data, so they are flagged to be colored. Based
+ * Formatting and deleting lose data, so they are flagged to be set apart. Based
  * on the request, not on what the installer made of it.
  */
 function statusFor(
@@ -265,8 +263,8 @@ function statusFor(
       }
 
       return {
-        // TRANSLATORS: action for an existing partition: make it smaller if room is
-        // needed, keeping its data
+        // TRANSLATORS: action for an existing partition: make it smaller if room is needed, keeping
+        // its data
         text: _("Shrink if needed"),
         destroys: false,
         note: recoverable
@@ -362,7 +360,7 @@ function PartitionRow({
       <Td {...columnProps(COLUMNS.action)}>
         {status && (
           <>
-            <div className={status.destroys ? DESTROYS_CLASS : undefined}>{status.text}</div>
+            {status.destroys ? <DataLoss>{status.text}</DataLoss> : status.text}
             {status.note && <div className="agm-row-note">{status.note}</div>}
           </>
         )}
@@ -448,7 +446,7 @@ export default function CurrentContentSection({
   );
 
   const someReused = entries.some((e) => e.name && e.mountPath);
-  /* Only where the partitions are the reader's to decide. */
+  /* Only where each partition has its own decision. */
   const isDecidable = !fixedDecision && governed.length > 0;
 
   /* Kept in the URL, so reload, Back and shared links keep it. Closed by

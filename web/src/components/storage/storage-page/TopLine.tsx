@@ -33,7 +33,7 @@ import Icon, { IconProps } from "~/components/layout/Icon";
 import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
 import { bootIcon } from "~/components/storage/shared/boot";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { EXPANDED, SETTINGS_TAB, DEVICE_DETAILS } from "~/components/storage/ui-state-params";
+import { EXPANDED, DEVICE_DETAILS } from "~/components/storage/ui-state-params";
 import configModel from "~/model/storage/config-model";
 import Summary from "~/components/storage/storage-page/Summary";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
@@ -43,30 +43,21 @@ import { useClearSearchParams } from "~/hooks/use-search-param-state";
 import { _ } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
 
-/** The value a setting phrase carries, set apart from the words naming it. */
+/** Renders a setting value in bold. */
 const bold = (text: string) => <Text isBold>{text}</Text>;
 
-/** A setting phrase, with the part in square brackets as its value. */
+/** A setting phrase, its part in square brackets in bold. */
 const phrase = (sentence: string) => <Interpolate sentence={sentence}>{bold}</Interpolate>;
 
-/**
- * Where the machine will start from, said as a value rather than as a setting.
- *
- * The mark says what the value says, so the pair can be recognized before it is
- * read: a decision the reader made by hand is not the automatic one, and a
- * machine set to start from nowhere is neither.
- */
+/** The boot setting, as a phrase and its icon. */
 function boot(config: ConfigModel.Config): { value: React.ReactNode; icon: IconProps["name"] } {
   if (!config.boot?.configure) {
-    // TRANSLATORS: the disk the machine will start from: none, because the
-    // reader has said nothing is to be set up for starting it. The text in
-    // square brackets is shown in bold.
+    // TRANSLATORS: no disk is set up to boot the system. Text in square brackets is shown in bold.
     return { value: phrase(_("Boot disk: [not configured]")), icon: bootIcon(config) };
   }
 
   if (configModel.boot.isDefault(config)) {
-    // TRANSLATORS: the disk the machine will start from: the installer works
-    // it out by itself. The text in square brackets is shown in bold.
+    // TRANSLATORS: the installer picks the boot disk. Text in square brackets is shown in bold.
     return { value: phrase(_("Boot disk: [auto]")), icon: bootIcon(config) };
   }
 
@@ -74,12 +65,9 @@ function boot(config: ConfigModel.Config): { value: React.ReactNode; icon: IconP
 
   return {
     value: device?.name ? (
-      /* Shortened where it is long, such as a multipath name, so it never
-           pushes the line wider than the page; the full name stays in a
-           tooltip and for screen readers. */
+      /* Long names are shortened, with the full one in a tooltip. */
       <Interpolate
-        // TRANSLATORS: the disk the machine is set to start from, chosen by
-        // the reader. %s is its name, such as "sda".
+        // TRANSLATORS: %s is the name of the boot disk, such as "sda"
         sentence={_("Boot disk: %s")}
       >
         {() => (
@@ -90,9 +78,8 @@ function boot(config: ConfigModel.Config): { value: React.ReactNode; icon: IconP
       </Interpolate>
     ) : (
       phrase(
-        // TRANSLATORS: said where the machine is set to start from a disk the
-        // reader has yet to choose. The text in square brackets is shown in
-        // bold.
+        // TRANSLATORS: a boot disk is required but not chosen yet. Text in square brackets is shown
+        // in bold.
         _("Boot disk: [not selected]"),
       )
     ),
@@ -100,26 +87,23 @@ function boot(config: ConfigModel.Config): { value: React.ReactNode; icon: IconP
   };
 }
 
-/** The same, for what protects the data the installation writes. */
+/** The encryption setting, as a phrase and its icon. */
 function encryption(config: ConfigModel.Config): {
   value: React.ReactNode;
   icon: IconProps["name"];
 } {
   if (!config.encryption) {
-    // TRANSLATORS: what protects the data the installation writes: nothing.
-    // The text in square brackets is shown in bold.
+    // TRANSLATORS: the installation is not encrypted. Text in square brackets is shown in bold.
     return { value: phrase(_("Encryption: [none]")), icon: "lock_open" };
   }
 
   return {
     value: phrase(
       config.encryption.tpm
-        ? // TRANSLATORS: how the installation is encrypted, where the machine's
-          // security chip releases the key at start-up. The text in square
+        ? // TRANSLATORS: TPM is the security chip releasing the key at boot. Text in square
           // brackets is shown in bold.
           _("Encryption: [LUKS2 with TPM]")
-        : // TRANSLATORS: how the installation is encrypted. The text in square
-          // brackets is shown in bold.
+        : // TRANSLATORS: text in square brackets is shown in bold
           _("Encryption: [LUKS2]"),
     ),
     icon: "lock",
@@ -127,23 +111,11 @@ function encryption(config: ConfigModel.Config): {
 }
 
 /**
- * The page's own line: what this page is for, and the two decisions that belong
- * to the installation rather than to any one device.
+ * The line under the page title: what the page is for, the boot and encryption
+ * settings of the whole installation, and the actions on the configuration.
  *
- * Boot and encryption are read far more often than they are changed, so they
- * are set here as values with a way in rather than as controls: they sit above
- * what the page reports rather than inside it, because neither is about
- * anything the summary names. Their marks say what their values say, so the
- * pair can be told apart before it is read.
- *
- * Both lead to pages of their own, and always will. Every form in the installer
- * lives at a route of its own, and a form needs what a panel cannot give it:
- * somewhere to return to on cancel, an address that survives a reload, and a
- * guard when leaving with unsaved changes.
- *
- * The sentence names no technology. LVM is one of the things a reader may
- * structure devices into rather than the point of the page, and the list below
- * names it where it is there.
+ * Boot and encryption are read more often than changed, so they are links to
+ * their own pages rather than controls.
  */
 export default function TopLine(): React.ReactNode {
   const config = useConfigModel();
@@ -157,17 +129,13 @@ export default function TopLine(): React.ReactNode {
 
   const onReset = () => {
     reset();
-    /* Everything the address says about how this page is being looked at. What
-       it points at is about to stop existing. */
-    clearSearchParams(EXPANDED, SETTINGS_TAB, DEVICE_DETAILS);
+    /* The view state in the address points at things the reset removes. */
+    clearSearchParams(EXPANDED, DEVICE_DETAILS);
   };
 
-  /* On the same line as the settings, which it introduces. */
   const description = (
-    <FlexItem>
+    <FlexItem component="p">
       <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
-        {/* TRANSLATORS: says what the storage page is for, next to the
-            settings that apply to the whole installation. */}
         {_("Configure which storage devices will be used to install and how")}
       </Text>
     </FlexItem>
@@ -178,13 +146,10 @@ export default function TopLine(): React.ReactNode {
       alignItems={{ default: "alignItemsCenter" }}
       justifyContent={{ default: "justifyContentSpaceBetween" }}
       gap={{ default: "gapMd" }}
-      /* Wrapping rather than pinned on one line. A strip this crowded runs
-             out of room before the window does, and a row that cannot wrap
-             scrolls the page sideways instead. */
       flexWrap={{ default: "wrap" }}
     >
       {description}
-      {/* Kept at the right edge also when it wraps under the sentence. */}
+      {/* At the end of the line, also when wrapped. */}
       <FlexItem align={{ default: "alignRight" }}>
         <Flex
           alignItems={{ default: "alignItemsCenter" }}
@@ -192,13 +157,6 @@ export default function TopLine(): React.ReactNode {
           flexWrap={{ default: "wrap" }}
         >
           <FlexItem>
-            {/* Laid out as a row of pairs rather than as PatternFly's columns,
-                which share out whatever width they are given: two settings and
-                a sentence spread across a whole strip read as three things
-                placed apart rather than as one line. */}
-            {/* Each setting said as one phrase that is also the way to change
-                it, so it reads the same anywhere, including in a screen
-                reader's list of links. */}
             <ul className="agm-top-line__settings">
               <li>
                 <Icon name={bootMark} aria-hidden />
@@ -217,18 +175,11 @@ export default function TopLine(): React.ReactNode {
           <FlexItem>
             <MenuButton
               menuProps={{
-                // TRANSLATORS: names the menu of things that can be done to the
-                // whole storage configuration.
                 "aria-label": _("Actions for this configuration"),
                 popperProps: { position: "end" },
               }}
               toggleProps={{
-                /* PatternFly's own padding kept, so the toggle is a target a
-                   finger or an unsteady hand can hit, not just its three
-                   dots. */
                 variant: "plain",
-                /* Three dots name nothing. Without this the toggle reaches a
-                   screen reader as an unnamed button. */
                 "aria-label": _("Actions for this configuration"),
               }}
               items={[
@@ -251,10 +202,8 @@ export default function TopLine(): React.ReactNode {
 }
 
 /**
- * What every setting on the storage page leads to: the summary of the planned
- * changes or, where no layout could be found, the problem that takes its
- * place. Kept apart from the settings line so the page can keep it in sight
- * while the rest scrolls.
+ * The result at the top of the storage page: the summary of the planned
+ * changes, or the problem preventing them.
  */
 export function TopResult(): React.ReactNode {
   const proposal = useProposal();

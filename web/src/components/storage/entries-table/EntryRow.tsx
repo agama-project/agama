@@ -26,37 +26,33 @@ import { Label, Stack, StackItem } from "@patternfly/react-core";
 import { css } from "@patternfly/react-styles";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import Text from "~/components/core/Text";
+import CellValues from "~/components/storage/entries-table/CellValues";
 import { useDeviceDetails } from "~/components/storage/shared/use-device-details";
 import { columnName } from "~/components/storage/entries-table/columns";
 import type { DetailsSubject } from "~/components/storage/shared/use-device-details";
 
 export type EntryRowProps = {
-  /** What the entry is called, as the page names things: `sda`, `system`. */
+  /** The entry name, such as `sda` or `system`. */
   name: React.ReactNode;
-  /** How big it is, read on the name's own line. */
+  /** The entry size. */
   size?: string;
-  /** What it is, under the name: its model or its kind. */
+  /** A line under the name, such as the model of a disk. */
   description?: string;
-  /** What it is for, in the words the panel marks it with. */
+  /** Short labels next to the name. */
   marks?: string[];
-  /** What the new system uses it for, one value per line. */
+  /** What the new system uses the entry for. */
   usedFor: React.ReactNode[];
-  /**
-   * Whether nothing is planned here, so the installation leaves the entry out.
-   * The whole row reads quieter then, as the absence it is.
-   */
+  /** Whether nothing is planned on the entry, which dims the row. */
   isIdle?: boolean;
-  /** What happens to what it holds today. */
+  /** What happens to the existing data. */
   existingData: React.ReactNode;
-  /** The menu of what can be done to this entry. */
+  /** The entry menu. */
   menu: React.ReactNode;
-  /** Where this entry is written, which is how the panel is opened on it. */
+  /** Where the entry is in the configuration. */
   subject: DetailsSubject;
 };
 
-/**
- * One entry of the configuration, as a row of the list.
- */
+/** A row of the storage entries table. */
 export default function EntryRow({
   name,
   size,
@@ -73,10 +69,7 @@ export default function EntryRow({
     open !== null && open.collection === subject.collection && open.index === subject.index;
 
   return (
-    <Tr
-      className={css("agm-entries-table__row", isIdle && "agm-entries-table__row--idle")}
-      isRowSelected={isOpen}
-    >
+    <Tr className={css(isIdle && "agm-entries-table__row--idle")} isRowSelected={isOpen}>
       <Th scope="row" dataLabel={columnName("device")}>
         <Stack>
           <StackItem>
@@ -95,15 +88,10 @@ export default function EntryRow({
         </Stack>
       </Th>
       <Td dataLabel={columnName("usedFor")}>
-        <Stack>
-          {usedFor.map((line, index) => (
-            <StackItem key={index}>{line}</StackItem>
-          ))}
-        </Stack>
+        <CellValues values={usedFor} />
       </Td>
       <Td dataLabel={columnName("existingData")}>{existingData}</Td>
-      {/* Named after the entry, so the panel can give focus back to this menu
-          when it closes. */}
+      {/* Lets the panel return focus to this menu when it closes. */}
       <Td isActionCell dataLabel={columnName("actions")} data-entry-menu={keyOf(subject)}>
         {menu}
       </Td>

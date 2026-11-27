@@ -52,9 +52,9 @@ import {
   useAddVolumeGroup,
   useEditVolumeGroup,
 } from "~/hooks/model/storage/config-model";
+import Text from "~/components/core/Text";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
-import Text from "~/components/core/Text";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const FUTURE = [
@@ -196,8 +196,7 @@ export default function LvmPage() {
       editVolumeGroup(volumeGroup.vgName, data);
     }
 
-    /* Back to the page as it was left, with an open panel on the group still
-       open on it, under its new name if it was renamed. */
+    /* Back to the page as it was, the panel following a renamed group. */
     const search = volumeGroup
       ? renamedGroupSearch(location.search, volumeGroup.vgName, name)
       : location.search;

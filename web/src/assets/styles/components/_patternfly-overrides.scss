@@ -70,9 +70,8 @@
   );
 }
 
-// The room around the content of every page, one value per axis so that all
-// pages keep the same frame. The side panel reads these to reach the edges of
-// the box, so it follows whatever they resolve to.
+// The room around every page content, one value per axis, so all pages share
+// the same frame. The side panel reads it to reach the page box edges.
 .pf-v6-c-page__main-section {
   --pf-v6-c-page__main-section--PaddingBlockStart: var(
     --agm-t--page--padding--block,
@@ -101,15 +100,11 @@
   background-color: var(--pf-t--global--background--color--primary--default);
 }
 
-// A sticky section inside a page section reaches the page's edges, so what
-// scrolls under it, a backdrop included, never shows beside it. Its content
-// stays where it was: the same room moves inside it.
+// A sticky section inside a page section reaches the page edges, so nothing
+// scrolling under it shows beside it, with the page room moved inside it.
 .pf-v6-c-page__main-section .pf-v6-c-page__main-section.pf-m-sticky-top {
-  // The page's room, read from the token rather than from the section's own
-  // padding variables, which its no-padding modifier sets to zero. Like the
-  // page's sections, it leaves out the width of the frame's border: reaching
-  // over it made the page a few pixels wider than its area, which then always
-  // showed a horizontal scrollbar.
+  // From the token, since the no-padding modifier zeroes the section padding.
+  // Without the frame border width, which would add a horizontal scrollbar.
   --agm-sticky-section--edge: calc(
     var(--agm-t--page--padding--inline, var(--pf-t--global--spacer--md)) - var(
         --pf-v6-c-page__main-container--BorderInlineEndWidth,
@@ -189,9 +184,8 @@
   white-space: normal;
 }
 
-// An item with an icon lines its description up with the label, not with the
-// icon, which PatternFly leaves outside the row holding both. A subgrid keeps
-// the icon in a column of its own, whatever size the theme gives it.
+// In an item with an icon, the description lines up with the label rather
+// than the icon. A subgrid keeps the icon in a column of its own.
 .pf-v6-c-menu__item:has(> .pf-v6-c-menu__item-main > .pf-v6-c-menu__item-icon) {
   --pf-v6-hidden-visible--visible--Display: grid;
   grid-template-columns: auto 1fr auto;
@@ -203,7 +197,7 @@
     grid-template-columns: subgrid;
   }
 
-  // Centred on the label, rather than sitting on the text's baseline.
+  // Centered on the label.
   .pf-v6-c-menu__item-icon {
     display: flex;
   }
@@ -250,10 +244,8 @@
   --pf-v6-c-button--m-link--m-inline__icon--Color: var(--pf-t--global--text--color--link--default);
 }
 
-// Agama's icons placed in PatternFly's icon slots sit where PatternFly's own
-// icons do. Those slots are laid out for PatternFly's icons, which are moved
-// down by an eighth of their size; without that, Agama's icons sat higher than
-// the words beside them.
+// Agama icons in PatternFly icon slots get the same eighth of their size
+// downward shift as PatternFly icons, so they line up with the words beside.
 :is(.pf-v6-c-button__icon, .pf-v6-c-menu-toggle__icon) > svg[data-icon-name] {
   vertical-align: -0.125em;
 }
@@ -455,8 +447,7 @@ label.pf-m-disabled + .pf-v6-c-check__description {
 // which is not the case for Agama tables. Hence this custom CSS to get the
 // visual feedback without the misleading affordance.
 //
-// A row titling a group of rows (agm-table-group__title-row) is not an entry,
-// so it never lights up.
+// Group title rows (agm-table-group__title-row) never light up.
 .pf-v6-c-table tbody tr:not(.agm-table-group__title-row):hover,
 .pf-v6-c-table tbody tr:not(.agm-table-group__title-row):focus-within,
 .pf-v6-c-table

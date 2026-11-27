@@ -26,12 +26,13 @@ import { MenuButtonItem } from "~/components/core/MenuButton";
 import configModel from "~/model/storage/config-model";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
+import Icon from "~/components/layout/Icon";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage } from "~/model/system";
 import type { MenuItemProps } from "@patternfly/react-core";
-import Icon from "~/components/layout/Icon";
 
-const useOnlyOneOption = (
+/** Whether the device is the only one its configuration can be on. */
+const isOnlyOption = (
   config: ConfigModel.Config,
   device: ConfigModel.Drive | ConfigModel.MdRaid,
 ): boolean => {
@@ -67,12 +68,10 @@ const Description = ({ modelDevice, actionDescription }: DescriptionProps) => {
     return _("This uses the existing file system at the disk");
 
   if (isReusingPartitions) {
-    // The current device will be the only option to choose from
     return _("This uses existing partitions at the disk");
   }
 
   if (!hasMountPaths) {
-    // The current device will be the only option to choose from
     if (hasPv) {
       if (volumeGroups.length > 1) {
         if (isExplicitBoot) {
@@ -92,7 +91,6 @@ const Description = ({ modelDevice, actionDescription }: DescriptionProps) => {
       return sprintf(_("It is chosen for the LVM group '%s'"), vgName);
     }
 
-    // The current device will be the only option to choose from
     if (isExplicitBoot) {
       return _("It is chosen for booting");
     }
@@ -105,13 +103,10 @@ export type ChangeDeviceMenuItemProps = {
   modelDevice: ConfigModel.Drive | ConfigModel.MdRaid;
   device: Storage.Device;
   actionTitle?: React.ReactNode;
-  actionDescription?: React.ReactNode;
   openFn: () => void;
 } & MenuItemProps;
 
-/**
- * Internal component holding the presentation of the option to change the device
- */
+/** The menu item to use another device instead of the current one. */
 export default function ChangeDeviceMenuItem({
   modelDevice,
   device,
@@ -120,14 +115,13 @@ export default function ChangeDeviceMenuItem({
   ...props
 }: ChangeDeviceMenuItemProps): React.ReactNode {
   const config = useConfigModel();
-  const isDisabled = useOnlyOneOption(config, modelDevice);
+  const isDisabled = isOnlyOption(config, modelDevice);
 
   return (
     <MenuButtonItem
-      aria-label={_("Change device menu")}
       icon={<Icon size="md" name="move_down" />}
       description={<Description modelDevice={modelDevice} actionDescription={actionTitle} />}
-      isDisabled={isDisabled}
+      isAriaDisabled={isDisabled}
       key="retarget"
       {...props}
       onClick={isDisabled ? undefined : openFn}

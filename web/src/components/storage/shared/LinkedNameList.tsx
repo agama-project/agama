@@ -25,43 +25,43 @@ import DetailsOpener from "~/components/storage/shared/DetailsOpener";
 import { formatListToParts } from "~/i18n";
 import type { Related } from "~/components/storage/shared/users";
 
-export type RelatedNamesProps = {
+export type LinkedNameListProps = {
+  /** The entries to name, in order. */
   items: Related[];
 };
 
 /**
- * Other entries of the plan, named in a sentence, each a way to itself.
+ * A list of related storage entries inside a sentence, such as the disks a
+ * volume group takes room from. Each name links to its panel when the entry is
+ * in the configuration, and stays plain text otherwise. The separators come
+ * from the language (`Intl.ListFormat`).
  *
- * Naming something a reader can go to without offering the way there leaves
- * them to find it by hand in a list they may have to close this panel to see.
- *
- * The separators and the conjunction belong to the language, so the list is
- * punctuated by `Intl.ListFormat` and its pieces are put back around the names
- * rather than joined with a comma of ours.
+ * @example
+ * // "LVM physical volumes will be added as partitions on vdb and vdc.",
+ * // with "vdb" linking to its panel and "vdc" plain text.
+ * <Interpolate sentence={_("LVM physical volumes will be added as partitions on %s.")}>
+ *   {() => (
+ *     <LinkedNameList
+ *       items={[{ name: "vdb", subject: { collection: "drives", index: 0 } }, { name: "vdc" }]}
+ *     />
+ *   )}
+ * </Interpolate>
  */
-export default function RelatedNames({ items }: RelatedNamesProps): React.ReactNode {
+export default function LinkedNameList({ items }: LinkedNameListProps): React.ReactNode {
   const parts = formatListToParts(items.map((item) => item.name));
   /* Matched by position rather than by name, since two entries may share one. */
-  let at = -1;
+  let next = 0;
 
-  return (
-    <>
-      {parts.map((part, index) => {
-        if (part.type === "literal")
-          return <React.Fragment key={index}>{part.value}</React.Fragment>;
+  return parts.map((part, key) => {
+    if (part.type === "literal") return <React.Fragment key={key}>{part.value}</React.Fragment>;
 
-        at += 1;
-        const item = items[at];
+    const { name, subject } = items[next++];
+    if (!subject) return <React.Fragment key={key}>{name}</React.Fragment>;
 
-        /* Named and no more where there is no panel for it to lead to. */
-        if (!item.subject) return <React.Fragment key={index}>{item.name}</React.Fragment>;
-
-        return (
-          <DetailsOpener key={index} subject={item.subject}>
-            {item.name}
-          </DetailsOpener>
-        );
-      })}
-    </>
-  );
+    return (
+      <DetailsOpener key={key} subject={subject}>
+        {name}
+      </DetailsOpener>
+    );
+  });
 }

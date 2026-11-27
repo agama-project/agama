@@ -20,15 +20,13 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { proposalQuery } from "~/hooks/model/proposal";
 
 /*
- * When the reader last saw the planned changes, kept for the whole session:
- * the installer is a single sitting, and a reload starting over is acceptable.
- * Entering the storage page counts as seeing them, and so does opening their
- * details.
+ * When the user last saw the planned changes, kept for the session. Entering
+ * the storage page and opening the changes both count as seeing them.
  */
 let seenAt: number | null = null;
 const listeners = new Set<() => void>();
@@ -47,21 +45,19 @@ function markSeen(at: number) {
 }
 
 /**
- * Whether the planned changes arrived after the reader last saw them, and a
- * way to record that they have seen the latest ones.
+ * Whether the planned changes arrived after the user last saw them, and a way
+ * to mark them as seen.
  *
- * TODO: it only compares when the latest proposal arrived, so a proposal
- * fetched again with the same content also counts as new. Telling whether its
- * content changed, so a setting changed and set back clears it, is left for
- * later.
+ * TODO: only the arrival time is compared, so the same proposal fetched again
+ * counts as new.
  */
 function useUnseenChanges() {
   const { dataUpdatedAt } = useSuspenseQuery({ ...proposalQuery, select: () => null });
-  const lastSeenAt = React.useSyncExternalStore(subscribe, read);
-  const markCurrentSeen = React.useCallback(() => markSeen(dataUpdatedAt), [dataUpdatedAt]);
+  const lastSeenAt = useSyncExternalStore(subscribe, read);
+  const markCurrentSeen = useCallback(() => markSeen(dataUpdatedAt), [dataUpdatedAt]);
 
-  /* The planned changes shown when entering the page are seen by being shown. */
-  React.useEffect(() => {
+  /* Entering the page shows them. */
+  useEffect(() => {
     if (seenAt === null) markSeen(dataUpdatedAt);
   }, [dataUpdatedAt]);
 

@@ -58,9 +58,8 @@ const COLUMNS = {
 } satisfies Record<string, ColumnLook>;
 
 /**
- * Returns the text that names a planned item in the table: its mount point, or
- * what it is for when requested by id (see {@link partitionIdLabel}). Paths go
- * without quotes, since a column of them has no text around to set them apart.
+ * The name of a planned item in the table: its mount point, or its purpose
+ * when requested by id (see {@link partitionIdLabel}). Paths go without quotes.
  */
 function label(part: Planned): string {
   if (part.mountPath) return part.mountPath;
@@ -69,9 +68,7 @@ function label(part: Planned): string {
   return id ? partitionIdLabel(id) : "";
 }
 
-/**
- * Corresponding device for a reused partition or logical volume.
- */
+/** The system device of a reused partition or logical volume. */
 function sourceFor(vol: Planned, entry: Entry): Storage.Device | undefined {
   if (vol.name) {
     if (entry.isVolumeGroup) {
@@ -84,24 +81,44 @@ function sourceFor(vol: Planned, entry: Entry): Storage.Device | undefined {
   return undefined;
 }
 
+/** What the installation does with a planned item. */
+function action(vol: Planned, entry: Entry) {
+  const source = sourceFor(vol, entry);
+  const keepsData = Boolean(vol.name) && vol.filesystem?.reuse === true;
+
+  if (source) {
+    const name = formattedPath(baseName(source.name, { truncate: true }));
+
+    // TRANSLATORS: %s is the short-name of a partition, like sda3
+    if (keepsData) return sprintf(_("Mount %s"), name);
+
+    // TRANSLATORS: %s is the short-name of a partition, like sda3
+    return sprintf(_("Format %s"), name);
+  }
+
+  if (entry.isVolumeGroup) {
+    // TRANSLATORS: refers to an LVM logical volume, %s is its escaped name
+    return sprintf(_("Create %s"), formattedPath((vol as ConfigModel.LogicalVolume).lvName));
+  }
+
+  return _("Create");
+}
+
 export type PlannedContentSectionProps = {
   entry: Entry;
   /** Where the entry is in the storage configuration, used to edit or delete its parts. */
   subject: DetailsSubject;
-  /** Whether every other row of the table is shaded. Off by default. */
+  /** Whether every other row is shaded. Defaults to false. */
   isStriped?: boolean;
 };
 
 /**
- * Table of what the user planned for the new system on a device: partitions on
- * a disk, or logical volumes in a volume group.
+ * The table of what the user planned on a device for the new system:
+ * partitions on a disk, or logical volumes in a volume group. It shows the
+ * request, not the final layout.
  *
- * It shows the plan as requested, not the final layout the installer computes
- * from it.
- *
- * Screen readers name the table after the title of the section it is in. If
- * that title stops describing the table, give the table a visually hidden
- * caption instead.
+ * The table is named after its section title. Give it a hidden caption if that
+ * title stops describing it.
  */
 export default function PlannedContentSection({
   entry,
@@ -190,21 +207,7 @@ export default function PlannedContentSection({
                   : vol.filesystem && filesystemType(vol.filesystem)}
               </Td>
               <Td {...columnProps(COLUMNS.size)}>{sizeDescription(vol.size)}</Td>
-              <Td {...columnProps(COLUMNS.action)}>
-                {source
-                  ? sprintf(
-                      // TRANSLATORS: %s is the short-name of a partition, like sda3
-                      keepsData ? _("Mount %s") : _("Format %s"),
-                      formattedPath(baseName(source.name, { truncate: true })),
-                    )
-                  : isVolumeGroup
-                    ? sprintf(
-                        // TRANSLATORS: refers to an LVM logical volume, %s is its escaped name
-                        _("Create %s"),
-                        formattedPath((vol as ConfigModel.LogicalVolume).lvName),
-                      )
-                    : _("Create")}
-              </Td>
+              <Td {...columnProps(COLUMNS.action)}>{action(vol, entry)}</Td>
               <Td isActionCell>
                 {/* Edit and delete need a mount point: items requested by id get no menu. */}
                 {vol.mountPath && (

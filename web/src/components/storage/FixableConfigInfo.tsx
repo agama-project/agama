@@ -64,7 +64,8 @@ export default function FixableConfigInfo({ issues }: FixableConfigInfoProps) {
     <AlertWithDetailsPopup
       variant="warning"
       title={fixableConfigTitle()}
-      // TRANSLATORS: opens a popup listing the problems of the storage settings.
+      // TRANSLATORS: opens a dialog listing the problems of the storage
+      // settings. Keep the ellipsis: it says the button opens a dialog.
       actionLabel={_("Show issues…")}
       // TRANSLATORS: title of the popup listing the problems of the storage
       // settings.
