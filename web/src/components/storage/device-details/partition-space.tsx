@@ -232,8 +232,13 @@ function usePartitionSpaceItems({
   let current = decisionFor(partition);
   if (current === "resizeIfNeeded" && !canShrink) current = "keep";
 
+  /* A partition the new system uses has no decision, but the entry that says
+     so. Choosing one drops that use, and the partition is decided with the rest. */
+  const isReused = Boolean(entryFor(partition)?.mountPath);
+
   const choose = (decision: Decision) => {
-    const actions = governed
+    const decided = isReused ? [...governed, partition] : governed;
+    const actions = decided
       .map((device) => ({
         deviceName: device.name,
         value: device.name === partition.name ? decision : decisionFor(device),
@@ -243,7 +248,11 @@ function usePartitionSpaceItems({
           action.value !== "keep",
       );
 
-    setSpacePolicy(collection, index, { type: "custom", actions });
+    setSpacePolicy(collection, index, {
+      type: "custom",
+      actions,
+      release: isReused ? partition.name : undefined,
+    });
   };
 
   return DECISIONS.map((decision) => {
