@@ -616,25 +616,24 @@ impl Service {
     /// version of these actions are already reporting the D-Bus result.
     ///
     /// All these action calls will be improved for 16.2, making this method unnecessary.
-    fn is_storage_busy(status: &Status) -> bool {
+    fn is_storage_available(status: &Status) -> bool {
         let is_installing = status.stage == Stage::Installing;
         let has_progress = status.progresses.iter().any(|p| p.scope == Scope::Storage);
         let has_tasks = status.tasks.iter().any(|p| p.scope == Scope::Storage);
-        is_installing && (has_progress || has_tasks)
+        !(is_installing && (has_progress || has_tasks))
     }
 
-    async fn is_storage_available(&self) -> Result<bool, Error> {
-        let status = self.status().await?;
-        Ok(!Self::is_storage_busy(&status))
-    }
-
-    fn is_software_busy(status: &Status) -> bool {
+    /// Determines whether the software service is available.
+    ///
+    /// Consider the service as available if there is no pending progress or task.
+    fn is_software_available(status: &Status) -> bool {
         if status.stage == Stage::Installing {
-            return true;
+            return false;
         }
 
-        status.progresses.iter().any(|p| p.scope == Scope::Software)
-            || status.tasks.iter().any(|p| p.scope == Scope::Software)
+        let is_busy = status.progresses.iter().any(|p| p.scope == Scope::Software)
+            || status.tasks.iter().any(|p| p.scope == Scope::Software);
+        !is_busy
     }
 
     /// Returns the installation status, including the pending tasks.
@@ -686,8 +685,8 @@ impl MessageHandler<message::GetSystem> for Service {
     /// Subsystem worker queries are executed concurrently using [`tokio::try_join!`].
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         let status = self.status().await?;
-        let storage_available = !Self::is_storage_busy(&status);
-        let software_available = !Self::is_software_busy(&status);
+        let storage_available = Self::is_storage_available(&status);
+        let software_available = Self::is_software_available(&status);
 
         let (hostname, l10n, iscsi, bootloader, network, storage, s390, software) = tokio::try_join!(
             async { Ok::<_, Error>(self.hostname.call(hostname::message::GetSystem).await?) },
@@ -748,8 +747,8 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
     /// Subsystem configuration queries are executed concurrently using [`tokio::try_join!`].
     async fn handle(&mut self, _message: message::GetExtendedConfig) -> Result<Config, Error> {
         let status = self.status().await?;
-        let storage_available = !Self::is_storage_busy(&status);
-        let software_available = !Self::is_software_busy(&status);
+        let storage_available = Self::is_storage_available(&status);
+        let software_available = Self::is_software_available(&status);
 
         let (
             bootloader,
@@ -865,8 +864,8 @@ impl MessageHandler<message::GetProposal> for Service {
     /// Subsystem proposal queries are executed concurrently using [`tokio::try_join!`].
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         let status = self.status().await?;
-        let storage_available = !Self::is_storage_busy(&status);
-        let software_available = !Self::is_software_busy(&status);
+        let storage_available = Self::is_storage_available(&status);
+        let software_available = Self::is_software_available(&status);
 
         let (bootloader, hostname, l10n, storage, network, users, access, software) = tokio::try_join!(
             async {
@@ -993,8 +992,9 @@ impl MessageHandler<message::RunAction> for Service {
 impl MessageHandler<message::GetStorageModel> for Service {
     /// It returns the storage model.
     async fn handle(&mut self, _message: message::GetStorageModel) -> Result<Option<Value>, Error> {
+        let status = self.status().await?;
         // If the storage service is busy, it will not answer.
-        if self.is_storage_available().await? {
+        if Self::is_storage_available(&status) {
             return Ok(self.storage.call(storage::message::GetConfigModel).await?);
         }
         Ok(None)
@@ -1060,12 +1060,12 @@ mod tests {
     };
 
     #[test]
-    fn test_is_storage_busy() {
+    fn test_is_storage_available() {
         let mut status = Status::default();
-        assert!(!Service::is_storage_busy(&status));
+        assert!(Service::is_storage_available(&status));
 
         status.stage = Stage::Installing;
-        assert!(!Service::is_storage_busy(&status));
+        assert!(Service::is_storage_available(&status));
 
         status.progresses.push(Progress {
             scope: Scope::Storage,
@@ -1074,19 +1074,19 @@ mod tests {
             step: String::new(),
             index: 1,
         });
-        assert!(Service::is_storage_busy(&status));
+        assert!(!Service::is_storage_available(&status));
 
         status.stage = Stage::Configuring;
-        assert!(!Service::is_storage_busy(&status));
+        assert!(Service::is_storage_available(&status));
     }
 
     #[test]
-    fn test_is_software_busy() {
+    fn test_is_software_available() {
         let mut status = Status::default();
-        assert!(!Service::is_software_busy(&status));
+        assert!(Service::is_software_available(&status));
 
         status.stage = Stage::Installing;
-        assert!(Service::is_software_busy(&status));
+        assert!(!Service::is_software_available(&status));
 
         status.stage = Stage::Configuring;
         status.tasks.push(Task {
@@ -1095,6 +1095,6 @@ mod tests {
             name: "install".to_string(),
             description: "installing".to_string(),
         });
-        assert!(Service::is_software_busy(&status));
+        assert!(!Service::is_software_available(&status));
     }
 }
