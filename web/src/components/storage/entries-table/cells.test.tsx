@@ -70,7 +70,7 @@ describe("driveUsedFor", () => {
 
   it("says where a new whole-disk file system is mounted", () => {
     const device = drive({ mountPath: "/home", filesystem: { reuse: false, default: false } });
-    expect(lines(driveUsedFor(device, [], false, false))).toEqual(['Formating it for "/home"']);
+    expect(lines(driveUsedFor(device, [], false, false))).toEqual(['Formatting it for "/home"']);
   });
 
   it("says when the disk holds the system and boots it", () => {
