@@ -120,11 +120,11 @@ function PartitionMenu({
   const deleteLogicalVolume = useDeleteLogicalVolume();
   const isLogicalVolume = collection === "volumeGroups";
   const name = baseName(part.name);
-  const menuLabel = isLogicalVolume
-    ? // TRANSLATORS: %s is a logical volume name, like "root"
-      sprintf(_("Actions for %s"), name)
-    : // TRANSLATORS: %s is a partition name, like "vda2"
-      sprintf(_("Actions for %s"), name);
+  const menuLabel = sprintf(
+    // TRANSLATORS: %s is the name of a partition or a logical volume, like "vda2" or "root"
+    _("Actions for %s"),
+    name,
+  );
   const at = { collection, index: String(index) };
   /* Called on every row, since hooks cannot be conditional, but used only
      where the row decides. */
@@ -168,7 +168,6 @@ function PartitionMenu({
             : _("Modify how the partition is used")}
         </MenuButtonItem>,
         <MenuButtonItem key="stop" icon={<Icon size="md" name="link_off" />} onClick={stopUsing}>
-          {/* TRANSLATORS: on a partition or logical volume the new system reuses: stop reusing it */}
           {_("Stop using")}
         </MenuButtonItem>,
       ]

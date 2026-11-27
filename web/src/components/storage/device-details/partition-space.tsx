@@ -75,14 +75,10 @@ function decisionUnder(policy: ConfigModel.SpacePolicy): Decision | undefined {
 function decisionLabel(decision: Decision): TranslatedString {
   switch (decision) {
     case "keep":
-      // TRANSLATORS: offered on one partition already on a device: do nothing to it.
       return _("Do not modify");
     case "resizeIfNeeded":
-      // TRANSLATORS: offered on one partition already on a device: allow it to
-      // be made smaller, should the installation run short of room.
       return _("Shrink if needed");
     case "delete":
-      // TRANSLATORS: offered on one partition already on a device: remove it.
       return _("Delete");
   }
 }
@@ -102,15 +98,15 @@ function meaning(decision: Decision, partition: System.Device, kind: Kind): Tran
       return _("Data will be kept, not used by the new system.");
     case "delete":
       if (kind === "logicalVolume") {
-        // TRANSLATORS: %s is a size, such as "45 GiB".
         return sprintf(
+          // TRANSLATORS: %s is a size, such as "45 GiB".
           _("Data will be lost, %s will be freed for new logical volumes."),
           deviceSize(partition.block?.size),
         );
       }
 
-      // TRANSLATORS: %s is a size, such as "45 GiB".
       return sprintf(
+        // TRANSLATORS: %s is a size, such as "45 GiB".
         _("Data will be lost, %s will be freed for new partitions."),
         deviceSize(partition.block?.size),
       );
@@ -177,13 +173,9 @@ function ShrinkRefusal({
   if (reasons[0]) return reasons[0];
 
   if (kind === "logicalVolume") {
-    // TRANSLATORS: why a logical volume cannot be allowed to shrink, where the
-    // machine says nothing more.
     return _("This logical volume cannot be made smaller.");
   }
 
-  // TRANSLATORS: why a partition cannot be allowed to shrink, where the
-  // machine says nothing more.
   return _("This partition cannot be made smaller.");
 }
 
@@ -205,25 +197,21 @@ function descriptionOf(
   if (refused) return <ShrinkRefusal partition={partition} kind={kind} />;
 
   if (decision === "keep" && booting && isExistingBootPartition(partition)) {
-    // TRANSLATORS: explains keeping one partition that the new system may
-    // need in order to start.
     return _("May be used to boot the new system.");
   }
 
   const recoverable = decision === "resizeIfNeeded" && recoverableBy(partition);
   if (recoverable) {
     if (kind === "logicalVolume") {
-      // TRANSLATORS: explains allowing one logical volume to be made smaller, and
-      // how much room that can give at most. %s is a size, such as "45 GiB".
       return sprintf(
+        // TRANSLATORS: %s is a size, such as "45 GiB".
         _("Data will be kept, up to %s may be freed for new logical volumes."),
         deviceSize(recoverable),
       );
     }
 
-    // TRANSLATORS: explains allowing one partition to be made smaller, and
-    // how much room that can give at most. %s is a size, such as "45 GiB".
     return sprintf(
+      // TRANSLATORS: %s is a size, such as "45 GiB".
       _("Data will be kept, up to %s may be freed for new partitions."),
       deviceSize(recoverable),
     );
